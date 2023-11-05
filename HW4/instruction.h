@@ -23,7 +23,7 @@ enum instructions {
     addi, slli, slti, sltui, xori, srli, srai, ori, andi,
     auipc,
     sb, sh, sw, fsw,
-    add, mul, sub, sll, mulh, slt, mulhsu, sltu, mulhu, _xor, div, srl, divu, sra, _or, rem, _and, remu, 
+    add, mul, sub, sll, mulh, slt, mulhsu, sltu, mulhu, _xor, _div, srl, divu, sra, _or, rem, _and, remu, 
     lui, 
     beq, bne, blt, bge, bltu, bgeu, 
     jalr, jal, 
@@ -264,7 +264,7 @@ public:
                                 operation = _xor;
                                 break;
                             case 0b0000001:
-                                operation = div;
+                                operation = _div;
                                 break;
                         }
                         break;
