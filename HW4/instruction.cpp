@@ -25,29 +25,29 @@ int32_t Instruction::getImmediate(uint32_t instruction) {
 }
 
 void Instruction::printInstruction() {
+    std::cout << "Instruction: " << std::hex << instruction << std::dec << "\n";
     std::cout << "Decoded Instruction:\n";
-    std::cout << "Instruction: " << std::hex << instruction << std::dec << std::endl;
-    std::cout << "Opcode: " << opcode << std::endl;
-    std::cout << "RS1: " << rs1 << std::endl;
-    std::cout << "RS2: " << rs2 << std::endl;
-    std::cout << "RD: " << rd << std::endl;
-    std::cout << "Funct3: " << funct3 << std::endl;
-    std::cout << "Funct7: " << funct7 << std::endl;
-    std::cout << "Immediate: " << imm << std::endl;
+    std::cout << "Opcode: " << opcode << "\n";
+    std::cout << "RS1: " << rs1 << "\n";
+    std::cout << "RS2: " << rs2 << "\n";
+    std::cout << "RD: " << rd << "\n";
+    std::cout << "Funct3: " << funct3 << "\n";
+    std::cout << "Funct7: " << funct7 << "\n";
+    std::cout << "Immediate: " << imm << "\n";
 
     // Control Signals
     std::cout << "Control Signals:\n";
-    std::cout << "regWrite = " << regWrite << std::endl;
-    std::cout << "ALUop = " << ALUop << std::endl;
-    std::cout << "ALUsrc = " << ALUsrc << std::endl;
-    std::cout << "memWrite = " << memWrite << std::endl;
-    std::cout << "memRead = " << memRead << std::endl;
-    std::cout << "memToReg = " << memToReg << std::endl;
-    std::cout << "branch = " << branch << std::endl;
-    std::cout << "jump = " << jump << std::endl;
-    std::cout << "PCtoReg = " << PCtoReg << std::endl;
-    std::cout << "RegToPC = " << RegToPC << std::endl;
-    std::cout << "rm = " << rm << std::endl;
+    std::cout << "regWrite = " << regWrite << "\n";
+    std::cout << "ALUop = " << ALUop << "\n";
+    std::cout << "ALUsrc = " << ALUsrc << "\n";
+    std::cout << "memWrite = " << memWrite << "\n";
+    std::cout << "memRead = " << memRead << "\n";
+    std::cout << "memToReg = " << memToReg << "\n";
+    std::cout << "branch = " << branch << "\n";
+    std::cout << "jump = " << jump << "\n";
+    std::cout << "PCtoReg = " << PCtoReg << "\n";
+    std::cout << "RegToPC = " << RegToPC << "\n";
+    std::cout << "rm = " << rm << "\n";
 }
 
 void Instruction::printAssembly() {

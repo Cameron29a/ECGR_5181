@@ -8,7 +8,7 @@ class RAM {
     std::vector<uint8_t> memory;
 
 public:
-    RAM(uint32_t size) : memory(size) {}
+    RAM(uint32_t size) : memory(size, 0) {}
 
     // Read data from memory at the specified address (2 CPU cycles)
     uint32_t Read(uint32_t address) {
@@ -26,23 +26,24 @@ public:
         memory[address] = data;
     }
 
-    // Print the contents of the memory
+    // Print the contents of the memory map
     void PrintMemoryContents() {
-        std::cout << "Memory Contents:" << std::endl;
-        
+        std::cout << "Memory Contents:\n";
         uint32_t address = 0;
+        uint8_t data;
         while (address <= memory.size()) {
-            std::cout << "Address 0x" << std::hex << address << ": 0x";
-
-            // Print 1 byte per line
-            for (int i = 0; i < 8; ++i) {
-                std::cout << memory[address];
-                address++;
+            std::cout << "Address 0x" << std::hex << address << ": 0b";
+            data = static_cast<int>(memory[address]);
+            // Print the single byte stored in each address
+            // Decrementing for loop = little endiness
+            // Incrementing for loop = big endiness
+            for (int i = 7; i >= 0; i--) {
+                std::cout << std::hex << ((data >> i) & 0b1);
             }
             std::cout << "\n";
+            address++;
         }
     }
-
 
 };
 
