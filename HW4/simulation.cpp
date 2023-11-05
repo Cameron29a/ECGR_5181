@@ -91,15 +91,15 @@ inline void Simulation::runSimulation() {
     std::cout << "Create CPU\n";
     CPU cpu1;
 
-    // Start CPU and start running instructions from memory
-    while (1) {             // change end condition later
+    // // Start CPU and start running instructions from memory
+    // while (1) {             // change end condition later
 
-        cpu1.runCPU();
+    //     cpu1.runCPU();
 
-        // Uncomment to print ram contents every cycle
-        // memory.PrintMemoryContents();
+    //     // Uncomment to print ram contents every cycle
+    //     // memory.PrintMemoryContents();
 
-    }
+    // }
 
 
     
