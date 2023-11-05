@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <string>
+#include <random>
 
 #include "CPU.cpp"
 #include "ram.h"
@@ -14,6 +15,7 @@ public:
     // Function to run the simulation
     void printEvents();
     void loadInstructionsToMemory(const std::string& filename, RAM &memory, uint32_t startAddress);
+    void fillRandomData(RAM &memory, uint32_t startAddress, uint32_t endAddress);
     void runSimulation();
     
 };
