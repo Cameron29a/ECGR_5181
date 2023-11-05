@@ -15,7 +15,7 @@ public:
 
         std::cout << "Memory Read from Address 0x" << std::hex << address << std::dec << std::endl;
 
-        return memory[address];
+        return memory[*address];
     }
 
     // Write data to memory at the specified address (2 CPU cycles)
@@ -23,7 +23,7 @@ public:
 
         std::cout << "Memory Write to Address 0x" << std::hex << address << std::dec << std::endl;
         
-        memory[address] = data;
+        memory[*address] = data;
     }
     
 };

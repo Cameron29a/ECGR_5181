@@ -17,41 +17,51 @@
 #define JALR         0b1100111
 #define JAL          0b1101111
 #define FP_TYPE      0b1010011
-// enum Format { R_FORMAT, I_FORMAT, S_FORMAT, B_FORMAT, U_FORMAT, J_FORMAT };
+
+enum instructions {
+    lb, lh, lw, lbu, lhu, flw,
+    addi, slli, slti, sltui, xori, srli, srai, ori, andi,
+    auipc,
+    sb, sh, sw, fsw,
+    add, mul, sub, sll, mulh, slt, mulhsu, sltu, mulhu, _xor, div, srl, divu, sra, _or, rem, _and, remu, 
+    lui, 
+    beq, bne, blt, bge, bltu, bgeu, 
+    jalr, jal, 
+    fadd_s, fsub_s, fmul_s, fdiv_s, fsgnj_s, fsgnjn_s, fsgnjx_s, fmin_s, fmax_s, fsqrt_s, feq_s, flt_s, fle_s, 
+    fcvt_w_s, fcvt_wu_s, fcvt_s_w, fcvt_s_wu, fmv_x_w, fclass_s, fmv_w_x
+};
 
 // Define a class for RISC-V instructions
 class Instruction {
 public:
     uint32_t instruction;
-    // Format format;
+    int operation;
 
     // Instruction Variables
     uint32_t opcode, rs1, rs2, rd, funct3, funct7;
     int32_t imm;
 
     // Control Signals
-    bool regWrite, ALUsrc, memWrite, memRead, memToReg, branch, jump, PCtoReg, RegToPC, rm = 0;
+    bool regWrite, ALUsrc, memWrite, memRead, memToReg, branch, jump, PCtoReg, RegToPC, rm;
     int ALUop;
 
     // Decode functions
-    // void decodeInstruction(uint32_t instruction);
-    uint32_t getRS1(uint32_t instruction);
-    uint32_t getRS2(uint32_t instruction);
-    uint32_t getRD(uint32_t instruction);
     int32_t getImmediate(uint32_t instruction);
-    uint32_t getFunct3(uint32_t instruction);
-    uint32_t getFunct7(uint32_t instruction);
+    void printInstruction();
+    void printAssembly();
 
     Instruction(uint32_t instruction) {
-        // void decodeInstruction(uint32_t instruction);
-        opcode = instruction & 0x7F;
+        this->instruction = instruction;
+        opcode = (instruction & 0x7F);
+        rs1 = (instruction >> 15) & 0x1F;
+        rs2 = (instruction >> 20) & 0x1F;
+        rd = (instruction >> 7) & 0x1F;
+        funct3 = (instruction >> 12) & 0x7;
+        funct7 = (instruction >> 25) & 0x7F;
+        imm = getImmediate(instruction);
+
         switch (opcode) {
             case LOAD:
-                std::cout << "Executing LOAD instruction.\n";
-                rs1 = getRS1(instruction);
-                rd = getRD(instruction);
-                imm = getImmediate(instruction);
-                funct3 = getFunct3(instruction);
                 regWrite = 1;
                 ALUop = 0;
                 ALUsrc = 1;
@@ -65,29 +75,23 @@ public:
                 rm = 0;
                 switch (funct3) {
                     case 0b000:
-                        std::cout << "lb";
+                        operation = lb;
                         break;
                     case 0b001:
-                        std::cout << "lh";
+                        operation = lh;
                         break;
                     case 0b010:
-                        std::cout << "lw";
+                        operation = lw;
                         break;
                     case 0b100:
-                        std::cout << "lbu";
+                        operation = lbu;
                         break;
                     case 0b101:
-                        std::cout << "lhu";
+                        operation = lhu;
                         break;
                 }
-                std::cout << " x" << rd << ", " << imm << "(x" << rs1 << ")\n";
                 break;
             case LOAD_FP:
-                std::cout << "Executing LOAD_FP instruction.\n";
-                rs1 = getRS1(instruction);
-                rd = getRD(instruction);
-                imm = getImmediate(instruction);
-                funct3 = getFunct3(instruction);
                 regWrite = 1;
                 ALUop = 0;
                 ALUsrc = 1;
@@ -100,14 +104,9 @@ public:
                 RegToPC = 0;
                 rm = 0;
                 if(funct3 != 0b010) break;
-                std::cout << "flw f" << rd << ", " << imm << "(x" << rs1 << ")\n";
+                operation = flw;
                 break;
             case I_TYPE:
-                std::cout << "Executing I_TYPE instruction.\n";
-                rs1 = getRS1(instruction);
-                rd = getRD(instruction);
-                imm = getImmediate(instruction);   
-                funct3 = getFunct3(instruction);
                 regWrite = 1;
                 ALUop = 2;
                 ALUsrc = 1;
@@ -121,37 +120,36 @@ public:
                 rm = 0;
                 switch (funct3) {
                     case 0b000:
-                        std::cout << "addi";
+                        operation = addi;
                         break;
                     case 0b001:
-                        std::cout << "slli";
+                        operation = slli;
                         break;
                     case 0b010:
-                        std::cout << "slti";
+                        operation = slti;
                         break;
                     case 0b011:
-                        std::cout << "sltui";
+                        operation = sltui;
                         break;
                     case 0b100:
-                        std::cout << "xori";
+                        operation = xori;
                         break;
                     case 0b101:
-                        if (funct7 == 0b0000000) std::cout << "srli";
-                        else std::cout << "srai";
+                        if (funct7 == 0b0000000) {
+                            operation = srli;
+                        } else {
+                            operation = srai;
+                        }
                         break;
                     case 0b110:
-                        std::cout << "ori";
+                        operation = ori;
                         break;
                     case 0b111:
-                        std::cout << "andi";
+                        operation = andi;
                         break;
                 }
-                std::cout << " x" << rd << ", x" << rs1 << ", " << imm << "\n";
                 break;
             case AUIPC:
-                std::cout << "Executing AUIPC instruction.\n";
-                rd = getRD(instruction);
-                imm = getImmediate(instruction);
                 regWrite = 1;
                 ALUop = 2;
                 ALUsrc = 1;
@@ -163,14 +161,9 @@ public:
                 PCtoReg = 0;
                 RegToPC = 0;
                 rm = 0;
-                std::cout << "auipc x" << rd << ", " << imm << "\n";
+                operation = auipc;
                 break;
             case S_TYPE:
-                std::cout << "Executing S_TYPE instruction.\n";
-                rs1 = getRS1(instruction);
-                rs2 = getRS2(instruction);
-                imm = getImmediate(instruction);
-                funct3 = getFunct3(instruction);
                 regWrite = 0;
                 ALUop = 0;
                 ALUsrc = 1;
@@ -184,23 +177,17 @@ public:
                 rm = 0;
                 switch (funct3) {
                     case 0b000:
-                        std::cout << "sb";
+                        operation = sb;
                         break;
                     case 0b001:
-                        std::cout << "sh";
+                        operation = sh;
                         break;
                     case 0b010:
-                        std::cout << "sw";
+                        operation = sw;
                         break;
                 }
-                std::cout << " x" << rs2 << ", " << imm << "(x" << rs1 << ")\n";
                 break;
             case S_TYPE_FP:
-                std::cout << "Executing S_TYPE_FP instruction.\n";
-                rs1 = getRS1(instruction);
-                rs2 = getRS2(instruction);
-                imm = getImmediate(instruction);
-                funct3 = getFunct3(instruction);
                 regWrite = 0;
                 ALUop = 0;
                 ALUsrc = 1;
@@ -213,15 +200,9 @@ public:
                 RegToPC = 0;
                 rm = 0;
                 if(funct3 != 0b010) break;
-                std::cout << "fsw f" << rs2 << ", " << imm << "(x" << rs1 << ")\n";
+                operation = fsw;
                 break;
             case R_TYPE:
-                std::cout << "Executing R_TYPE instruction.\n";
-                rs1 = getRS1(instruction);
-                rs2 = getRS2(instruction);
-                rd = getRD(instruction);
-                funct3 = getFunct3(instruction);
-                funct7 = getFunct7(instruction);
                 regWrite = 1;
                 ALUop = 2;
                 ALUsrc = 0;
@@ -237,97 +218,93 @@ public:
                     case 0b000:
                         switch (funct7) {
                             case 0b0000000:
-                                std::cout << "add";
+                                operation = add;
                                 break;
                             case 0b0000001:
-                                std::cout << "mul";
+                                operation = mul;
                                 break;
                             case 0b0100000:
-                                std::cout << "sub";
+                                operation = sub;
                                 break;
                         }
                         break;
                     case 0b001:
                         switch (funct7) {
                             case 0b0000000:
-                                std::cout << "sll";
+                                operation = sll;
                                 break;
                             case 0b0000001:
-                                std::cout << "mulh";
+                                operation = mulh;
                                 break;
                         }
                         break;
                     case 0b010:
                         switch (funct7) {
                             case 0b0000000:
-                                std::cout << "slt";
+                                operation = slt;
                                 break;
                             case 0b0000001:
-                                std::cout << "mulhsu";
+                                operation = mulhsu;
                                 break;
                         }
                         break;
                     case 0b011:
                         switch (funct7) {
                             case 0b0000000:
-                                std::cout << "sltu";
+                                operation = sltu;
                                 break;
                             case 0b0000001:
-                                std::cout << "mulhu";
+                                operation = mulhu;
                                 break;
                         }
                         break;
                     case 0b100:
                         switch (funct7) {
                             case 0b0000000:
-                                std::cout << "xor";
+                                operation = _xor;
                                 break;
                             case 0b0000001:
-                                std::cout << "div";
+                                operation = div;
                                 break;
                         }
                         break;
                     case 0b101:
                         switch (funct7) {
                             case 0b0000000:
-                                std::cout << "srl";
+                                operation = srl;
                                 break;
                             case 0b0000001:
-                                std::cout << "divu";
+                                operation = divu;
                                 break;
                             case 0b0100000:
-                                std::cout << "sra";
+                                operation = sra;
                                 break;
                         }
                         break;
                     case 0b110:
                         switch (funct7) {
                             case 0b0000000:
-                                std::cout << "or";
+                                operation = _or;
                                 break;
                             case 0b0000001:
-                                std::cout << "rem";
+                                operation = rem;
                                 break;
                         }
                         break;
                     case 0b111:
                         switch (funct7) {
                             case 0b0000000:
-                                std::cout << "and";
+                                operation = _and;
                                 break;
                             case 0b0000001:
-                                std::cout << "remu";
+                                operation = remu;
                                 break;
                         }
                         break;
                     break;
                 }
-                std::cout << " x" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
                 break;
             case LUI:
-                std::cout << "Executing LUI instruction.\n";
-                rd = getRD(instruction);
-                imm = getImmediate(instruction);
                 regWrite = 1;
                 ALUop = 2;
                 ALUsrc = 1;
@@ -339,14 +316,9 @@ public:
                 PCtoReg = 0;
                 RegToPC = 0;
                 rm = 0;
-                std::cout << "lui x" << rd << ", " << imm << "\n";
+                operation = lui;
                 break;
             case SB_TYPE:
-                std::cout << "Executing SB_TYPE instruction.\n";
-                rs1 = getRS1(instruction);
-                rs2 = getRS2(instruction);
-                imm = getImmediate(instruction);
-                funct3 = getFunct3(instruction);
                 regWrite = 0;
                 ALUop = 1;
                 ALUsrc = 0;
@@ -360,32 +332,26 @@ public:
                 rm = 0;
                 switch (funct3) {
                     case 0b000:
-                        std::cout << "beq";
+                        operation = beq;
                         break;
                     case 0b001:
-                        std::cout << "bne";
+                        operation = bne;
                         break;
                     case 0b100:
-                        std::cout << "blt";
+                        operation = blt;
                         break;
                     case 0b101:
-                        std::cout << "bge";
+                        operation = bge;
                         break;
                     case 0b110:
-                        std::cout << "bltu";
+                        operation = bltu;
                         break;
                     case 0b111:
-                        std::cout << "bgeu";
+                        operation = bgeu;
                         break;
                 }
-                std::cout << " x" << rs1 << ", x" << rs2 << ", " << imm << "\n";
                 break;
             case JALR:
-                std::cout << "Executing JALR instruction.\n";
-                rs1 = getRS1(instruction);
-                rd = getRD(instruction);
-                imm = getImmediate(instruction);
-                funct3 = getFunct3(instruction);
                 regWrite = 1;
                 ALUop = 2;
                 ALUsrc = 1;
@@ -396,12 +362,10 @@ public:
                 jump = 1;
                 PCtoReg = 1;
                 RegToPC = 1;
-                std::cout << "jalr x" << rd << ", x" << rs1 << ", " << imm << "\n";
+                rm = 0;
+                operation = jalr;
                 break;
             case JAL:
-                std::cout << "Executing JAL instruction.\n";
-                rd = getRD(instruction);
-                imm = getImmediate(instruction);
                 regWrite = 1;
                 ALUop = 2;
                 ALUsrc = 1;
@@ -413,15 +377,9 @@ public:
                 PCtoReg = 1;
                 RegToPC = 0;
                 rm = 0;
-                std::cout << "jal x" << rd << ", " << imm << "\n";
+                operation = jal;
                 break;
             case FP_TYPE:
-                std::cout << "Executing FP_TYPE instruction.\n";
-                rs1 = getRS1(instruction);
-                rs2 = getRS2(instruction);
-                rd = getRD(instruction);
-                funct3 = getFunct3(instruction);
-                funct7 = getFunct7(instruction);
                 regWrite = 1;
                 ALUop = 2;
                 ALUsrc = 0;
@@ -436,67 +394,67 @@ public:
                 switch (funct7) {
                     case 0b0000000:
                         rm = 1;
-                        std::cout << "fadd.s";
+                        operation = fadd_s;
                         break;
                     case 0b0000100:
                         rm = 1;
-                        std::cout << "fsub.s";
+                        operation = fsub_s;
                         break;
                     case 0b0001000:
                         rm = 1;
-                        std::cout << "fmul.s";
+                        operation = fmul_s;
                         break;
                     case 0b0001100:
                         rm = 1;
-                        std::cout << "fdiv.s";
+                        operation = fdiv_s;
                         break;
                     case 0b0010000:
                         switch (funct3) {
                             case 0b000:
-                                std::cout << "fsgnj.s";
+                                operation = fsgnj_s;
                                 break;
                             case 0b001:
-                                std::cout << "fsgnjn.s";
+                                operation = fsgnjn_s;
                                 break;
                             case 0b010:
-                                std::cout << "fsgnjx.s";
+                                operation = fsgnjx_s;
                                 break;
                         }
                         break;
                     case 0b0010100:
                         switch (funct3) {
                             case 0b000:
-                                std::cout << "fmin.s";
+                                operation = fmin_s;
                                 break;
                             case 0b001:
-                                std::cout << "fmax.s";
+                                operation = fmax_s;
                                 break;
                         }
                         break;
                     case 0b0101100:
                         rm = 1;
-                        std::cout << "fsqrt.s";
+                        operation = fsqrt_s;
                         break;
                     case 0b1010000:
                         switch (funct3) {
                             case 0b000:
-                                std::cout << "feq.s";
+                                operation = feq_s;
                                 break;
                             case 0b001:
-                                std::cout << "flt.s";
+                                operation = flt_s;
                                 break;
                             case 0b010:
-                                std::cout << "fle.s";
+                                operation = fle_s;
                                 break;
                         }
                         break;
                     case 0b1100000:
                         switch (rs2) {
                             case 0b00000:
-                                std::cout << "fcvt.w.s";
+                                operation = fcvt_w_s;
                                 break;
                             case 0b00001:
-                                std::cout << "fcvt.wu.s";
+                                operation = fcvt_wu_s;
                                 break;
                         }
                         rm = 1;
@@ -504,10 +462,10 @@ public:
                     case 0b1101000:
                         switch (rs2) {
                             case 0b00000:
-                                std::cout << "fcvt.s.w";
+                                operation = fcvt_s_w;
                                 break;
                             case 0b00001:
-                                std::cout << "fcvt.s.wu";
+                                operation = fcvt_s_wu;
                                 break;
                         }
                         rm = 1;
@@ -515,42 +473,26 @@ public:
                     case 0b1110000:
                         switch (funct3) {
                             case 0b00000:
-                                std::cout << "fmv.x.w";
+                                operation = fmv_x_w;
                                 break;
                             case 0b00001:
-                                std::cout << "fclass.s";
+                                operation = fclass_s;
                                 break;
                         }
                         break;
                     case 0b1111000:
-                        std::cout << "fmv.w.x";
+                        operation = fmv_w_x;
                         break;
                     break;
                 }
-                std::cout << " rd = " << rd << ", rs1 = " << rs1 << ", rs2 = " << rs2 << "\n";
                 break;
             default:
                 std::cout << "Unknown instruction.\n";
                 std::cout << "Magic 8-ball says you suck, try again.\n";
                 break;
         }
-        std::cout << "regWrite = " << regWrite << "\n"
-            << "ALUop = " << ALUop << "\n"
-            << "ALUsrc = " << ALUsrc << "\n"
-            << "memWrite = " << memWrite << "\n"
-            << "memRead = " << memRead << "\n"
-            << "memToReg = " << memToReg << "\n"
-            << "branch = " << branch << "\n"
-            << "jump = " << jump << "\n"
-            << "PCtoReg = " << PCtoReg << "\n"
-            << "RegToPC = " << RegToPC << "\n"
-            << "rm = " << rm << "\n"; 
+        printInstruction();
     }
 };
 
 #endif //INSTRUCTION_H
-
-
-
-
-
