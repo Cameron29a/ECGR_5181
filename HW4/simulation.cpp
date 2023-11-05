@@ -70,7 +70,7 @@ inline void Simulation::runSimulation() {
     std::cout << "Begin System Initialization\n";
 
     std::cout << "Create Virtual Memory\n";
-    RAM memory(0x7FF);
+    RAM memory(0xBFF);
 
     // write instructions to addresses 0x0 – 0x093
     std::cout << "Write Instructions to Memory\n";
@@ -85,7 +85,7 @@ inline void Simulation::runSimulation() {
     std::cout << "Fill ranges 0x400-0xBFF with random values\n";
     fillRandomData(memory, 0x400, 0xBFF);
     
-    std::cout << "Memory Contents Before beginning Simulation\n";
+    std::cout << "Memory contents before start of Simulation\n";
     memory.PrintMemoryContents();
 
     std::cout << "Create CPU\n";
@@ -101,8 +101,8 @@ inline void Simulation::runSimulation() {
 
     // }
 
-
-    
+    std::cout << "Memory contents after end of Simulation\n";
+    memory.PrintMemoryContents();
     
     std::cout.rdbuf(coutBuffer); // Restore the original cout buffer
     outputFile.close();

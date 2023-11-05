@@ -38,6 +38,7 @@ public:
             // Decrementing for loop = little endiness
             // Incrementing for loop = big endiness
             for (int i = 7; i >= 0; i--) {
+            // for (int i = 0; i <= 7; i++) {
                 std::cout << std::hex << ((data >> i) & 0b1);
             }
             std::cout << "\n";

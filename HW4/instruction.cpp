@@ -1,7 +1,5 @@
 #include "instruction.h"
 
-
-
 int32_t Instruction::getImmediate(uint32_t instruction) {
     switch (instruction & 0x7F) {
         case LOAD:

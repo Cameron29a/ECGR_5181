@@ -2,7 +2,7 @@
 #define INSTRUCTION_H
 
 #include <iostream>
-#include <stdint.h>
+// #include <stdint.h>
 
 // Define RISC-V opcodes and instruction formats
 #define LOAD         0b0000011
