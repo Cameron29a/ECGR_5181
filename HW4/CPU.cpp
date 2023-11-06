@@ -6,18 +6,10 @@ inline void CPU::Fetch() {
     for(int i = 0; i <= 3; i++) {
         uint32_t byte = ram.Read(pc++);
         nextInstruction = nextInstruction | (byte << (i * 8));
-
-        std::bitset<8> byteBinary(byte);
-        std::cout << "Byte " << i << ": 0b" << byteBinary << "\n";
+        // Print out to check instructions are compiled correctly
+        // std::bitset<8> byteBinary(byte);
+        // std::cout << "Byte " << i << ": 0b" << byteBinary << "\n";
     }
-
-    // uint32_t byte0 = ram.Read(pc);
-    // uint32_t byte1 = ram.Read(pc+1) << 8;
-    // uint32_t byte2 = ram.Read(pc+2) << 16;
-    // uint32_t byte3 = ram.Read(pc+3) << 24;
-    // nextInstruction = byte0 | byte1 | byte2 | byte3;
-
-
     instructionMemory.push(nextInstruction);
 
     // // Adjust PC if there is a branch or jump
