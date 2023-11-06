@@ -19,23 +19,29 @@ struct Registers {
 
 // Define the CPU class
 class CPU {
-    std::queue<Event> events;  // Event queue for CPU
-    RAM& ram;
-    Registers registers;
-    std::queue<Instruction> instructionMemory;
-    uint32_t pc;
     bool reset;
+    uint32_t pc;
+    uint32_t sp;  // Stack pointer
+    uint32_t stackStart;  // Start of the stack
+    RAM& ram;
+
+    Registers registers;
+    std::queue<Event> events;  // Event queue for CPU
+    std::queue<Instruction> fetchStage;
+    std::queue<Instruction> decodeStage;
+    std::queue<Instruction> executeStage;
+    std::queue<Instruction> writeBackStage;
 
 public:
-    CPU (RAM& ram) : ram(ram), pc(0), reset(false) { };
+    CPU(RAM& ram, uint32_t stackStart) : reset(false), pc(0), sp(stackStart), stackStart(stackStart), ram(ram) { };
 
     bool checkReset() { return reset; }
 
-    // Functions for fetch, decode, execute, and store stages
+    // Functions for fetch, decode, execute, and write back stages
     void Fetch();
     void Decode();
     void Execute();
-    void Store();
+    void WriteBack();
 
     // Function to print the event queue
     void printEvents();

@@ -14,8 +14,8 @@ class Simulation {
 public:
     // Function to run the simulation
     void printEvents();
-    void loadInstructionsToMemory(const std::string& filename, RAM &memory, uint32_t startAddress);
-    void fillRandomData(RAM &memory, uint32_t startAddress, uint32_t endAddress);
+    void loadInstructionsToMemory(const std::string&, RAM&, uint32_t, uint32_t);
+    void fillRandomData(RAM&, uint32_t, uint32_t);
     void runSimulation();
     
 };

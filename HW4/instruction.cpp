@@ -1,8 +1,8 @@
 #include "instruction.h"
 #include <bitset>
 
-int32_t Instruction::getImmediate(uint32_t instruction) {
-    switch (instruction & 0x7F) {
+int32_t Instruction::getImmediate(uint32_t opcode) {
+    switch (opcode) {
         case LOAD:
         case LOAD_FP:
         case I_TYPE:
@@ -12,7 +12,7 @@ int32_t Instruction::getImmediate(uint32_t instruction) {
         case S_TYPE_FP:
             return ((static_cast<int32_t>(instruction) >> 20) & 0xFE0) | ((instruction >> 7) & 0x1F); // Sign-extend and combine imm[11:5] and imm[4:0]
         case SB_TYPE:
-            return (static_cast<int32_t>(instruction) >> 19) | ((instruction >> 7) & 0x1E) | ((instruction << 4) & 0x800); // Sign-extend and combine bits
+            return static_cast<int32_t>(((instruction >> 7) & 0x1E) | (((instruction >> 25) & 0x3F) << 5) | (((instruction >> 7) & 0x1) << 11) | ((instruction >> 31) << 12)); // Sign-extend and combine bits
         case AUIPC:
         case LUI:
             return instruction & 0xFFFFF000; // Zero-extend the immediate field
@@ -20,6 +20,259 @@ int32_t Instruction::getImmediate(uint32_t instruction) {
             return ((static_cast<int32_t>(instruction) >> 11) & 0xFFE) | ((instruction >> 20) & 0x7FE) | ((instruction >> 9) & 0x1000) | (instruction & 0xFF000); // Sign-extend and combine bits
         default:
             return 0;
+    }
+}
+
+void Instruction::setregWrite(uint32_t opcode) {
+    switch (opcode) {
+        case LOAD:
+        case LOAD_FP:
+        case I_TYPE:
+        case AUIPC:
+        case R_TYPE:
+        case LUI:
+        case JALR:
+        case JAL:
+        case FP_TYPE:
+            regWrite = 1;
+            break;
+        case S_TYPE:
+        case S_TYPE_FP:
+        case SB_TYPE:
+            regWrite = 0;
+            break;
+        default:
+            regWrite = 0;
+    }
+}
+
+void Instruction::setALUsrc(uint32_t opcode) {
+    switch (opcode) {
+        case LOAD:
+        case LOAD_FP:
+        case I_TYPE:
+        case AUIPC:
+        case S_TYPE:
+        case S_TYPE_FP:
+        case LUI:
+        case JALR:
+        case JAL:
+        case FP_TYPE:
+            ALUsrc = 1;
+            break;
+        case R_TYPE:
+        case SB_TYPE:
+            ALUsrc = 0;
+            break;
+        default:
+            ALUsrc = 0;
+    }
+}
+
+void Instruction::setmemWrite(uint32_t opcode) {
+    switch (opcode) {
+        case S_TYPE:
+        case S_TYPE_FP:
+            memWrite = 1;
+            break;
+        case LOAD:
+        case LOAD_FP:
+        case I_TYPE:
+        case AUIPC:
+        case R_TYPE:
+        case LUI:
+        case SB_TYPE:
+        case JALR:
+        case JAL:
+        case FP_TYPE:
+            memWrite = 0;
+            break;
+        default:
+            memWrite = 0;
+    }
+}
+
+void Instruction::setmemRead(uint32_t opcode) {
+    switch (opcode) {
+        case LOAD:
+        case LOAD_FP:
+            memRead = 1;
+            break;
+        case I_TYPE:
+        case AUIPC:
+        case S_TYPE:
+        case S_TYPE_FP:
+        case R_TYPE:
+        case LUI:
+        case SB_TYPE:
+        case JALR:
+        case JAL:
+        case FP_TYPE:
+            memRead = 0;
+            break;
+        default:
+            memRead = 0;
+    }
+}
+
+void Instruction::setmemToReg(uint32_t opcode) {
+    switch (opcode) {
+        case LOAD:
+        case LOAD_FP:
+            memToReg = 1;
+            break;
+        case I_TYPE:
+        case AUIPC:
+        case S_TYPE:
+        case S_TYPE_FP:
+        case R_TYPE:
+        case LUI:
+        case SB_TYPE:
+        case JALR:
+        case JAL:
+        case FP_TYPE:
+            memToReg = 0;
+            break;
+        default:
+            memToReg = 0;
+    }
+}
+
+void Instruction::setBranch(uint32_t opcode) {
+    switch (opcode) {
+        case SB_TYPE:
+            branch = 1;
+            break;
+        case LOAD:
+        case LOAD_FP:
+        case I_TYPE:
+        case AUIPC:
+        case S_TYPE:
+        case S_TYPE_FP:
+        case R_TYPE:
+        case LUI:
+        case JALR:
+        case JAL:
+        case FP_TYPE:
+            branch = 0;
+            break;
+        default:
+            branch = 0;
+    }
+}
+
+void Instruction::setJump(uint32_t opcode) {
+    switch (opcode) {
+        case JALR:
+        case JAL:
+            jump = 1;
+            break;
+        case LOAD:
+        case LOAD_FP:
+        case I_TYPE:
+        case AUIPC:
+        case S_TYPE:
+        case S_TYPE_FP:
+        case R_TYPE:
+        case LUI:
+        case SB_TYPE:
+        case FP_TYPE:
+            jump = 0;
+            break;
+        default:
+            jump = 0;
+    }
+}
+
+void Instruction::setPCtoReg(uint32_t opcode) {
+    switch (opcode) {
+        case JALR:
+        case JAL:
+            PCtoReg = 1;
+            break;
+        case LOAD:
+        case LOAD_FP:
+        case I_TYPE:
+        case AUIPC:
+        case S_TYPE:
+        case S_TYPE_FP:
+        case R_TYPE:
+        case LUI:
+        case SB_TYPE:
+        case FP_TYPE:
+            PCtoReg = 0;
+            break;
+        default:
+            PCtoReg = 0;
+    }
+}
+
+void Instruction::setRegtoPC(uint32_t opcode) {
+    switch (opcode) {
+        case JALR:
+            RegToPC = 1;
+            break;
+        case LOAD:
+        case LOAD_FP:
+        case I_TYPE:
+        case AUIPC:
+        case S_TYPE:
+        case S_TYPE_FP:
+        case R_TYPE:
+        case LUI:
+        case SB_TYPE:
+        case JAL:
+        case FP_TYPE:
+            RegToPC = 0;
+            break;
+        default:
+            RegToPC = 0;
+    }
+}
+
+void Instruction::setRM(uint32_t opcode, uint32_t funct7) {
+    switch (opcode) {
+        case LOAD:
+        case LOAD_FP:
+        case I_TYPE:
+        case AUIPC:
+        case S_TYPE:
+        case S_TYPE_FP:
+        case R_TYPE:
+        case LUI:
+        case SB_TYPE:
+        case JALR:
+        case JAL:
+        case FP_TYPE:
+            rm = 1;
+            break;
+        default:
+            return;
+    }
+}
+
+void Instruction::setALUop(uint32_t opcode) {
+    switch (opcode) {
+        case LOAD:
+        case LOAD_FP:
+        case S_TYPE:
+        case S_TYPE_FP:
+            ALUop = 0;
+            break;
+        case SB_TYPE:
+            ALUop = 1;
+            break;
+        case I_TYPE:
+        case AUIPC:
+        case R_TYPE:
+        case LUI:
+        case JALR:
+        case JAL:
+        case FP_TYPE:
+            ALUop = 3;
+            break;
+        default:
+            ALUop = 0;
     }
 }
 
@@ -125,11 +378,11 @@ void Instruction::printAssembly() {
                     std::cout << "sw";
                     break;
             }
-            std::cout << " x" << rs2 << ", " << std::dec << imm << "(x" << rs1 << ")\n";
+            std::cout << " x" << rs1 << ", " << std::dec << imm << "(x" << rs2 << ")\n";
             break;
         case S_TYPE_FP:
             if(funct3 != 0b010) break;
-            std::cout << "fsw f" << rs2 << ", " << std::dec << imm << "(x" << rs1 << ")\n";
+            std::cout << "fsw f" << rs1 << ", " << std::dec << imm << "(x" << rs2 << ")\n";
             break;
         case R_TYPE:
             switch (funct3) {

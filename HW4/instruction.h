@@ -4,6 +4,8 @@
 #include <iostream>
 #include <stdint.h>
 
+typedef uint64_t tick_t;
+
 // Define RISC-V opcodes and instruction formats
 #define LOAD         0b0000011
 #define LOAD_FP      0b0000111
@@ -41,12 +43,16 @@ public:
     uint32_t opcode, rs1, rs2, rd, funct3, funct7;
     int32_t imm = 0;
 
+    uint32_t getrd() { return rd; }
+    uint32_t getrs1() { return rs1; }
+    uint32_t getrs2() { return rs2; }
     int32_t getImm() { return imm; }
 
     // Control Signals
     bool regWrite, ALUsrc, memWrite, memRead, memToReg, branch, jump, PCtoReg, RegToPC, rm;
     int ALUop;
 
+    // Check Control Signals
     bool checkregWrite() { return regWrite; }
     bool checkALUsrc() { return ALUsrc; }
     bool checkmemWrite() { return memWrite; }
@@ -60,11 +66,24 @@ public:
     int checkALUop() { return ALUop; }
 
     // Decode functions
-    int32_t getImmediate(uint32_t instruction);
+    int32_t getImmediate(uint32_t);
+    void setregWrite(uint32_t);
+    void setALUsrc(uint32_t);
+    void setmemWrite(uint32_t);
+    void setmemRead(uint32_t);
+    void setmemToReg(uint32_t);
+    void setBranch(uint32_t);
+    void setJump(uint32_t);
+    void setPCtoReg(uint32_t);
+    void setRegtoPC(uint32_t);
+    void setRM(uint32_t, uint32_t);
+    void setALUop(uint32_t);
+
     void printInstruction();
     void printAssembly();
 
     Instruction(uint32_t instruction) {
+        // Get Values
         this->instruction = instruction;
         opcode = (instruction & 0x7F);
         rs1 = (instruction >> 15) & 0x1F;
@@ -72,7 +91,20 @@ public:
         rd = (instruction >> 7) & 0x1F;
         funct3 = (instruction >> 12) & 0x7;
         funct7 = (instruction >> 25) & 0x7F;
-        imm = getImmediate(instruction);
+        imm = getImmediate(opcode);
+
+        // Set Control Signals
+        setregWrite(opcode);
+        setALUsrc(opcode);
+        setmemWrite(opcode);
+        setmemRead(opcode);
+        setmemToReg(opcode);
+        setBranch(opcode);
+        setJump(opcode);
+        setPCtoReg(opcode);
+        setRegtoPC(opcode);
+        setRM(opcode, funct7);
+        setALUop(opcode);
 
         switch (opcode) {
             case LOAD:

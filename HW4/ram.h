@@ -12,17 +12,13 @@ public:
 
     // Read data from memory at the specified address (2 CPU cycles)
     uint32_t Read(uint32_t address) {
-
         // std::cout << "Memory Read from Address 0x" << std::hex << address << std::dec << "\n";
-
         return memory[address];
     }
 
     // Write data to memory at the specified address (2 CPU cycles)
     void Write(uint32_t address, uint8_t data) {
-
         // std::cout << "Memory Write to Address 0x" << std::hex << address << std::dec << "\n";
-        
         memory[address] = data;
     }
 

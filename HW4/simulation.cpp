@@ -9,7 +9,7 @@ inline void Simulation::printEvents() {
     }
 }
 
-inline void Simulation::loadInstructionsToMemory(const std::string& filename, RAM &memory, uint32_t startAddress) {
+inline void Simulation::loadInstructionsToMemory(const std::string& filename, RAM &memory, uint32_t startAddress, uint32_t stopAddress) {
     std::ifstream file(filename);
     // if (!file.is_open()) {
     //     std::cerr << "Error: Unable to open the file: " << filename << "\n";
@@ -19,21 +19,22 @@ inline void Simulation::loadInstructionsToMemory(const std::string& filename, RA
     std::string line;
     int address = startAddress;
 
-    while (std::getline(file, line)) {
-        try {
-            // Convert the binary string to an integer (assuming the line contains binary machine code)
-            uint32_t instruction = std::stoi(line, nullptr, 2);
+    while (std::getline(file, line) && address <= stopAddress) {
+        if (line.size() != 32) {
+            std::cerr << "Error: Invalid binary format in the file (not 32 bits).\n";
+            break; // Exit the loop
+        }
 
-            // Ensure that the instruction is within the valid range (32 bits)
-            if (instruction < 0 || instruction > 0xFFFFFFFF) {
-                std::cerr << "Error: Invalid binary instruction value in the file.\n";
-                break; // Exit the loop
+        try {
+            uint32_t instruction = 0;
+            // Convert the binary string directly into a 32-bit integer
+            for (int i = 0; i < 32; i++) {
+                instruction = (instruction << 1) | (line[i] - '0');
             }
 
             // Store the instruction in memory at the specified address
-            uint32_t byte;
             for (int i = 0; i <= 3; i++) {
-                byte = (instruction >> (i*8)) & 0xFF;
+                uint32_t byte = (instruction >> (i*8)) & 0xFF;
                 memory.Write(address++, byte);
             }
 
@@ -70,37 +71,31 @@ inline void Simulation::runSimulation() {
     std::cout << "Begin System Initialization\n";
 
     std::cout << "Create Virtual Memory\n";
-    RAM memory(0x99);
+    RAM memory(0xFFF);
 
     // write instructions to addresses 0x0 – 0x093
     std::cout << "Write Instructions to Memory\n";
     std::string filename = "instructions.txt";
     uint32_t startAddress = 0x0;
-    loadInstructionsToMemory(filename, memory, startAddress);
+    uint32_t stopAddress = 0x94;
+    loadInstructionsToMemory(filename, memory, startAddress, stopAddress);
     
     // Allocate addresses 0x200 - 0x2FF for the stack
+    uint32_t startStack = 0x200;
+    // uint32_t endStack = 0x2FF;
 
     // Initialize addresses 0x400 - 0xbFF (ARRAY_A & ARRAY_B) with random FP32 values.
-    // std::cout << "Fill ranges 0x400-0xBFF with random values\n";
-    // fillRandomData(memory, 0x400, 0xBFF);
+    std::cout << "Fill ranges 0x400-0xBFF with random values\n";
+    fillRandomData(memory, 0x400, 0xBFF);
     
     std::cout << "=====Memory contents before start of Simulation=====\n";
     memory.PrintMemoryContents();
 
     std::cout << "=================Create CPU=================\n";
-    CPU cpu1{ memory };
+    CPU cpu1{ memory, startStack };
 
-    // Start CPU and start running until reset signal is recieved
-    while (cpu1.checkReset() == false) {
-        
-        // cpu1.runCPU();
-        cpu1.Fetch();
-        cpu1.Decode();
-
-        // Uncomment to print ram contents every cycle
-        // memory.PrintMemoryContents();
-
-    }
+    // Start CPU and start running until it resets
+    // cpu1.runCPU();
 
     std::cout << "=====Memory contents after end of Simulation=====\n";
     // memory.PrintMemoryContents();

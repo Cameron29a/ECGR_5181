@@ -11,31 +11,42 @@ inline void CPU::Fetch() {
         std::bitset<8> byteBinary(byte);
         std::cout << "Byte " << pc-1 << ": 0b" << byteBinary << "\n";
     }
-    instructionMemory.push(nextInstruction);
+    fetchStage.push(nextInstruction);
 
     // // Adjust PC if there is a branch or jump
-    // if (checkBranch() == 1 || checkJump() == 1) {
-    //     pc = getImm();
-    // }
+    // if (.checkBranch() == 1) {
+    //     pc = .getImm();
+    // } else if (.checkJump() == 1){
+    //     if (.checkRegtoPC() == 1){
+    //         pc = .getImm + .getrs2();
+    //     } else{
+    //         pc += .getImm;
+    //     }
+    // }    
 }
 
 inline void CPU::Decode() {
     // Decode the fetched instruction and extract opcode, registers, and immediate values
-    instructionMemory.front().printAssembly();
-    instructionMemory.front().printInstruction();
-    instructionMemory.pop();
-    if (instructionMemory.empty()) reset = true;
+    decodeStage.push(fetchStage.front());
+    fetchStage.pop();
+    decodeStage.front().printAssembly();
+    decodeStage.front().printInstruction();
+
 
 }
 
 inline void CPU::Execute() {
     // Execute the instruction based on its opcode and operands
-
+    executeStage.push(decodeStage.front());
+    decodeStage.pop();
 }
 
-inline void CPU::Store() {
+inline void CPU::WriteBack() {
     // Perform memory store operation if required
+    writeBackStage.push(executeStage.front());
+    executeStage.pop();
 
+    writeBackStage.pop();
 }
 
 // Function to print the events
@@ -49,10 +60,13 @@ inline void CPU::printEvents() {
 
 inline void CPU::runCPU() {
     // Main simulation loop
-    while (pc < instructionMemory.size()) {
+    while (reset == false) {
         Fetch();
         Decode();
         Execute();
-        Store();
+        WriteBack();
+
+        // Uncomment to print ram contents every cycle
+        // memory.PrintMemoryContents();
     }
 }
