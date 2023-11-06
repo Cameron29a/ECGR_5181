@@ -66,7 +66,17 @@ inline void CPU::runCPU() {
         Execute();
         WriteBack();
 
+        // Create event log for each cycle
+        events.push(Event(currentTick));
+
+        // Uncomment to print event queue every cycle
+        // events.front().print();
+
         // Uncomment to print ram contents every cycle
         // memory.PrintMemoryContents();
     }
+    // Uncomment to print event queue at the end of the program
+    // std::cout << "**********Completed CPU Event Queue**********\n";
+    // printEvents();
 }
+

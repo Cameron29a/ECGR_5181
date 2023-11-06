@@ -20,20 +20,21 @@ struct Registers {
 // Define the CPU class
 class CPU {
     bool reset;
-    uint32_t pc;
-    uint32_t sp;  // Stack pointer
-    uint32_t stackStart;  // Start of the stack
+    tick_t currentTick;
+    uint32_t pc;            // Program Counter
+    uint32_t sp;            // Stack pointer
+    uint32_t stackStart;    // Start of the stack
     RAM& ram;
 
     Registers registers;
-    std::queue<Event> events;  // Event queue for CPU
+    std::queue<Event> events;
     std::queue<Instruction> fetchStage;
     std::queue<Instruction> decodeStage;
     std::queue<Instruction> executeStage;
     std::queue<Instruction> writeBackStage;
 
 public:
-    CPU(RAM& ram, uint32_t stackStart) : reset(false), pc(0), sp(stackStart), stackStart(stackStart), ram(ram) { };
+    CPU(RAM& ram, uint32_t stackStart) : reset(false), currentTick(0), pc(0), sp(stackStart), stackStart(stackStart), ram(ram) { };
 
     bool checkReset() { return reset; }
 

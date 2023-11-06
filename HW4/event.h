@@ -11,7 +11,7 @@ class Event {
     bool scheduled;
     
 public:
-    Event(void) : simTick(0), scheduled(false) { }
+    Event(tick_t clk) : simTick(clk), scheduled(false) { }
     void schedule(tick_t newTime) {
 		simTick = newTime;
 		scheduled = true;

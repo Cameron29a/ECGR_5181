@@ -108,17 +108,6 @@ public:
 
         switch (opcode) {
             case LOAD:
-                regWrite = 1;
-                ALUop = 0;
-                ALUsrc = 1;
-                memWrite = 0;
-                memRead = 1;
-                memToReg = 1;
-                branch = 0;
-                jump = 0;
-                PCtoReg = 0;
-                RegToPC = 0;
-                rm = 0;
                 switch (funct3) {
                     case 0b000:
                         operation = lb;
@@ -138,32 +127,10 @@ public:
                 }
                 break;
             case LOAD_FP:
-                regWrite = 1;
-                ALUop = 0;
-                ALUsrc = 1;
-                memWrite = 0;
-                memRead = 1;
-                memToReg = 1;
-                branch = 0;
-                jump = 0;
-                PCtoReg = 0;
-                RegToPC = 0;
-                rm = 0;
                 if(funct3 != 0b010) break;
                 operation = flw;
                 break;
             case I_TYPE:
-                regWrite = 1;
-                ALUop = 2;
-                ALUsrc = 1;
-                memWrite = 0;
-                memRead = 0;
-                memToReg = 0;
-                branch = 0;
-                jump = 0;
-                PCtoReg = 0;
-                RegToPC = 0;
-                rm = 0;
                 switch (funct3) {
                     case 0b000:
                         operation = addi;
@@ -196,31 +163,9 @@ public:
                 }
                 break;
             case AUIPC:
-                regWrite = 1;
-                ALUop = 2;
-                ALUsrc = 1;
-                memWrite = 0;
-                memRead = 0;
-                memToReg = 0;
-                branch = 0;
-                jump = 0;
-                PCtoReg = 0;
-                RegToPC = 0;
-                rm = 0;
                 operation = auipc;
                 break;
             case S_TYPE:
-                regWrite = 0;
-                ALUop = 0;
-                ALUsrc = 1;
-                memWrite = 1;
-                memRead = 0;
-                memToReg = 0;
-                branch = 0;
-                jump = 0;
-                PCtoReg = 0;
-                RegToPC = 0;
-                rm = 0;
                 switch (funct3) {
                     case 0b000:
                         operation = sb;
@@ -234,32 +179,10 @@ public:
                 }
                 break;
             case S_TYPE_FP:
-                regWrite = 0;
-                ALUop = 0;
-                ALUsrc = 1;
-                memWrite = 1;
-                memRead = 0;
-                memToReg = 0;
-                branch = 0;
-                jump = 0;
-                PCtoReg = 0;
-                RegToPC = 0;
-                rm = 0;
                 if(funct3 != 0b010) break;
                 operation = fsw;
                 break;
             case R_TYPE:
-                regWrite = 1;
-                ALUop = 2;
-                ALUsrc = 0;
-                memWrite = 0;
-                memRead = 0;
-                memToReg = 0;
-                branch = 0;
-                jump = 0;
-                PCtoReg = 0;
-                RegToPC = 0;
-                rm = 0;
                 switch (funct3) {
                     case 0b000:
                         switch (funct7) {
@@ -351,31 +274,9 @@ public:
                 }
                 break;
             case LUI:
-                regWrite = 1;
-                ALUop = 2;
-                ALUsrc = 1;
-                memWrite = 0;
-                memRead = 0;
-                memToReg = 0;
-                branch = 0;
-                jump = 0;
-                PCtoReg = 0;
-                RegToPC = 0;
-                rm = 0;
                 operation = lui;
                 break;
             case SB_TYPE:
-                regWrite = 0;
-                ALUop = 1;
-                ALUsrc = 0;
-                memWrite = 0;
-                memRead = 0;
-                memToReg = 0;
-                branch = 1;
-                jump = 0;
-                PCtoReg = 0;
-                RegToPC = 0;
-                rm = 0;
                 switch (funct3) {
                     case 0b000:
                         operation = beq;
@@ -398,60 +299,23 @@ public:
                 }
                 break;
             case JALR:
-                regWrite = 1;
-                ALUop = 2;
-                ALUsrc = 1;
-                memWrite = 0;
-                memRead = 0;
-                memToReg = 0;
-                branch = 0;
-                jump = 1;
-                PCtoReg = 1;
-                RegToPC = 1;
-                rm = 0;
                 operation = jalr;
                 break;
             case JAL:
-                regWrite = 1;
-                ALUop = 2;
-                ALUsrc = 1;
-                memWrite = 0;
-                memRead = 0;
-                memToReg = 0;
-                branch = 0;
-                jump = 1;
-                PCtoReg = 1;
-                RegToPC = 0;
-                rm = 0;
                 operation = jal;
                 break;
             case FP_TYPE:
-                regWrite = 1;
-                ALUop = 2;
-                ALUsrc = 0;
-                memWrite = 0;
-                memRead = 0;
-                memToReg = 0;
-                branch = 0;
-                jump = 0;
-                PCtoReg = 0;
-                RegToPC = 1;
-                rm = 0;
                 switch (funct7) {
                     case 0b0000000:
-                        rm = 1;
                         operation = fadd_s;
                         break;
                     case 0b0000100:
-                        rm = 1;
                         operation = fsub_s;
                         break;
                     case 0b0001000:
-                        rm = 1;
                         operation = fmul_s;
                         break;
                     case 0b0001100:
-                        rm = 1;
                         operation = fdiv_s;
                         break;
                     case 0b0010000:
@@ -478,7 +342,6 @@ public:
                         }
                         break;
                     case 0b0101100:
-                        rm = 1;
                         operation = fsqrt_s;
                         break;
                     case 0b1010000:
@@ -503,7 +366,6 @@ public:
                                 operation = fcvt_wu_s;
                                 break;
                         }
-                        rm = 1;
                         break;
                     case 0b1101000:
                         switch (rs2) {
@@ -514,7 +376,6 @@ public:
                                 operation = fcvt_s_wu;
                                 break;
                         }
-                        rm = 1;
                         break;
                     case 0b1110000:
                         switch (funct3) {

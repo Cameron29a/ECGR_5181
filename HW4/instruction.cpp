@@ -232,6 +232,21 @@ void Instruction::setRegtoPC(uint32_t opcode) {
 
 void Instruction::setRM(uint32_t opcode, uint32_t funct7) {
     switch (opcode) {
+        case FP_TYPE:
+            switch (funct7) {
+                case 0b0000000:
+                case 0b0000100:
+                case 0b0001000:
+                case 0b0001100:
+                case 0b0101100:
+                case 0b1100000:
+                case 0b1101000:
+                    rm = 1;
+                    break;
+                default:
+                    rm = 0;
+            }
+            break;
         case LOAD:
         case LOAD_FP:
         case I_TYPE:
@@ -243,11 +258,10 @@ void Instruction::setRM(uint32_t opcode, uint32_t funct7) {
         case SB_TYPE:
         case JALR:
         case JAL:
-        case FP_TYPE:
-            rm = 1;
+            rm = 0;
             break;
         default:
-            return;
+            rm = 0;
     }
 }
 
@@ -617,3 +631,9 @@ void Instruction::printAssembly() {
             break;
     }
 }
+
+
+
+
+
+                    
