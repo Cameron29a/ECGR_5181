@@ -32,7 +32,7 @@ inline void Simulation::loadInstructionsToMemory(const std::string& filename, RA
 
             // Store the instruction in memory at the specified address
             uint32_t byte;
-            for (int i = 3; i >= 0; i--) {
+            for (int i = 0; i <= 3; i++) {
                 byte = (instruction >> (i*8)) & 0xFF;
                 memory.Write(address++, byte);
             }
@@ -70,7 +70,7 @@ inline void Simulation::runSimulation() {
     std::cout << "Begin System Initialization\n";
 
     std::cout << "Create Virtual Memory\n";
-    RAM memory(0xBFF);
+    RAM memory(0xF);
 
     // write instructions to addresses 0x0 – 0x093
     std::cout << "Write Instructions to Memory\n";
@@ -82,27 +82,29 @@ inline void Simulation::runSimulation() {
 
     // address ranges 0x400 - 0x7FF (ARRAY_A) and 0x800 - 0xBFF (ARRAY_B) 
     // will be initialized as arrays of random FP32 values.
-    std::cout << "Fill ranges 0x400-0xBFF with random values\n";
-    fillRandomData(memory, 0x400, 0xBFF);
+    // std::cout << "Fill ranges 0x400-0xBFF with random values\n";
+    // fillRandomData(memory, 0x400, 0xBFF);
     
     std::cout << "Memory contents before start of Simulation\n";
     memory.PrintMemoryContents();
 
     std::cout << "Create CPU\n";
-    CPU cpu1;
+    CPU cpu1{ memory };
 
-    // // Start CPU and start running instructions from memory
-    // while (1) {             // change end condition later
+    // Start CPU and start running instructions from memory
+    // while (cpu1.getPC() < 0x94) {
+        
+        // cpu1.runCPU();
+        cpu1.Fetch();
+        cpu1.Decode();
 
-    //     cpu1.runCPU();
-
-    //     // Uncomment to print ram contents every cycle
-    //     // memory.PrintMemoryContents();
+        // Uncomment to print ram contents every cycle
+        // memory.PrintMemoryContents();
 
     // }
 
     std::cout << "Memory contents after end of Simulation\n";
-    memory.PrintMemoryContents();
+    // memory.PrintMemoryContents();
     
     std::cout.rdbuf(coutBuffer); // Restore the original cout buffer
     outputFile.close();

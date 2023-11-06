@@ -1,4 +1,5 @@
 #include "instruction.h"
+#include <bitset>
 
 int32_t Instruction::getImmediate(uint32_t instruction) {
     switch (instruction & 0x7F) {
@@ -23,7 +24,7 @@ int32_t Instruction::getImmediate(uint32_t instruction) {
 }
 
 void Instruction::printInstruction() {
-    std::cout << "Instruction: " << std::hex << instruction << std::dec << "\n";
+    std::cout << "Instruction: " << std::bitset<32>(instruction) << "\n";
     std::cout << "Decoded Instruction:\n";
     std::cout << "Opcode: " << opcode << "\n";
     std::cout << "RS1: " << rs1 << "\n";
@@ -357,8 +358,7 @@ void Instruction::printAssembly() {
             }
             break;
         default:
-            std::cout << "Unknown instruction.\n";
-            std::cout << "Magic 8-ball says you suck, try again.\n";
+            std::cout << "Invalid instruction.\n";
             break;
     }
 }

@@ -41,9 +41,23 @@ public:
     uint32_t opcode, rs1, rs2, rd, funct3, funct7;
     int32_t imm;
 
+    int32_t getImm() { return imm; }
+
     // Control Signals
     bool regWrite, ALUsrc, memWrite, memRead, memToReg, branch, jump, PCtoReg, RegToPC, rm;
     int ALUop;
+
+    bool checkregWrite() { return regWrite; }
+    bool checkALUsrc() { return ALUsrc; }
+    bool checkmemWrite() { return memWrite; }
+    bool checkmemRead() { return memRead; }
+    bool checkmemToReg() { return memToReg; }
+    bool checkBranch() { return branch; }
+    bool checkJump() { return jump; }
+    bool checkPCtoReg() { return PCtoReg; }
+    bool checkRegToPC() { return RegToPC; }
+    bool checkRM() { return rm; }
+    int checkALUop() { return ALUop; }
 
     // Decode functions
     int32_t getImmediate(uint32_t instruction);
@@ -491,7 +505,7 @@ public:
                 std::cout << "Magic 8-ball says you suck, try again.\n";
                 break;
         }
-        printInstruction();
+        // printInstruction();
     }
 };
 

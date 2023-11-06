@@ -2,13 +2,37 @@
 
 inline void CPU::Fetch() {
     // Fetch an instruction from memory based on the current PC
-    // Increment the PC
+    uint32_t nextInstruction = 0;
+    for(int i = 0; i <= 3; i++) {
+        uint32_t byte = ram.Read(pc++);
+        nextInstruction = nextInstruction | (byte << (i * 8));
 
+        std::bitset<8> byteBinary(byte);
+        std::cout << "Byte " << i << ": 0b" << byteBinary << "\n";
+    }
+
+    // uint32_t byte0 = ram.Read(pc);
+    // uint32_t byte1 = ram.Read(pc+1) << 8;
+    // uint32_t byte2 = ram.Read(pc+2) << 16;
+    // uint32_t byte3 = ram.Read(pc+3) << 24;
+    // nextInstruction = byte0 | byte1 | byte2 | byte3;
+
+
+    instructionMemory.push(nextInstruction);
+
+    // // Adjust PC if there is a branch or jump
+    // if (checkBranch() == 1 || checkJump() == 1) {
+    //     pc = getImm();
+    // }
 }
 
 inline void CPU::Decode() {
     // Decode the fetched instruction and extract opcode, registers, and immediate values
-
+    // Instruction currentInstruction = instructionMemory.front();
+    // currentInstruction.printAssembly();
+    // currentInstruction.printInstruction();
+    instructionMemory.front().printAssembly();
+    instructionMemory.front().printInstruction();
 }
 
 inline void CPU::Execute() {
@@ -42,7 +66,7 @@ inline void CPU::printEvents() {
 
 inline void CPU::runCPU() {
     // Main simulation loop
-    while (pc < instruction_memory.size()) {
+    while (pc < instructionMemory.size()) {
         Fetch();
         Decode();
         Execute();

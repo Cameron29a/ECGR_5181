@@ -4,8 +4,11 @@
 #include <queue>
 #include <vector>
 
+#include <bitset>
+
 #include "event.h"
 #include "instruction.h"
+#include "ram.h"
 
 
 // Define RISC-V registers
@@ -17,11 +20,15 @@ struct Registers {
 // Define the CPU class
 class CPU {
     std::queue<Event> events;  // Event queue for CPU
+    RAM& ram;
+    Registers registers;
+    std::queue<Instruction> instructionMemory;
+    uint32_t pc;
 
 public:
-    Registers registers;
-    std::vector<Instruction> instruction_memory;
-    uint32_t pc;
+    CPU (RAM& ram) : ram(ram), pc(0) {};
+
+    uint32_t getPC() { return pc; }
 
     // Methods for fetch, decode, execute, and store stages
     void Fetch();
