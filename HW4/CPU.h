@@ -24,21 +24,18 @@ class CPU {
     Registers registers;
     std::queue<Instruction> instructionMemory;
     uint32_t pc;
+    bool reset;
 
 public:
-    CPU (RAM& ram) : ram(ram), pc(0) {};
+    CPU (RAM& ram) : ram(ram), pc(0), reset(false) { };
 
-    uint32_t getPC() { return pc; }
+    bool checkReset() { return reset; }
 
-    // Methods for fetch, decode, execute, and store stages
+    // Functions for fetch, decode, execute, and store stages
     void Fetch();
     void Decode();
     void Execute();
     void Store();
-
-    // Additional methods for memory operations
-    void memLoad(uint32_t address, uint32_t& data);
-    void memStore(uint32_t address, uint32_t data);
 
     // Function to print the event queue
     void printEvents();

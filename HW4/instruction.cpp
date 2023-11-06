@@ -24,6 +24,7 @@ int32_t Instruction::getImmediate(uint32_t instruction) {
 }
 
 void Instruction::printInstruction() {
+    std::cout << "***************Fetched Instruction***************\n";
     std::cout << "Instruction: " << std::bitset<32>(instruction) << "\n";
     std::cout << "Decoded Instruction:\n";
     std::cout << "Opcode: " << opcode << "\n";
@@ -32,7 +33,7 @@ void Instruction::printInstruction() {
     std::cout << "RD: " << rd << "\n";
     std::cout << "Funct3: " << funct3 << "\n";
     std::cout << "Funct7: " << funct7 << "\n";
-    std::cout << "Immediate: " << imm << "\n";
+    std::cout << "Immediate: " << std::dec << "\n";
 
     // Control Signals
     std::cout << "Control Signals:\n";
@@ -50,6 +51,7 @@ void Instruction::printInstruction() {
 }
 
 void Instruction::printAssembly() {
+    std::cout << "***************Fetched Assembly Instruction***************\n";
     switch (opcode) {
         case LOAD:
             switch (funct3) {
@@ -69,11 +71,11 @@ void Instruction::printAssembly() {
                     std::cout << "lhu";
                     break;
             }
-            std::cout << " x" << rd << ", " << imm << "(x" << rs1 << ")\n";
+            std::cout << " x" << rd << ", " << std::dec << imm << "(x" << rs1 << ")\n";
             break;
         case LOAD_FP:
             if(funct3 != 0b010) break;
-            std::cout << "flw f" << rd << ", " << imm << "(x" << rs1 << ")\n";
+            std::cout << "flw f" << rd << ", " << std::dec << imm << "(x" << rs1 << ")\n";
             break;
         case I_TYPE:
             switch (funct3) {
@@ -106,10 +108,10 @@ void Instruction::printAssembly() {
                     std::cout << "andi";
                     break;
             }
-            std::cout << " x" << rd << ", x" << rs1 << ", " << imm << "\n";
+            std::cout << " x" << rd << ", x" << rs1 << ", " << std::dec << imm << "\n";
             break;
         case AUIPC:
-            std::cout << "auipc x" << rd << ", " << imm << "\n";
+            std::cout << "auipc x" << rd << ", " << std::dec << imm << "\n";
             break;
         case S_TYPE:
             switch (funct3) {
@@ -123,11 +125,11 @@ void Instruction::printAssembly() {
                     std::cout << "sw";
                     break;
             }
-            std::cout << " x" << rs2 << ", " << imm << "(x" << rs1 << ")\n";
+            std::cout << " x" << rs2 << ", " << std::dec << imm << "(x" << rs1 << ")\n";
             break;
         case S_TYPE_FP:
             if(funct3 != 0b010) break;
-            std::cout << "fsw f" << rs2 << ", " << imm << "(x" << rs1 << ")\n";
+            std::cout << "fsw f" << rs2 << ", " << std::dec << imm << "(x" << rs1 << ")\n";
             break;
         case R_TYPE:
             switch (funct3) {
@@ -222,7 +224,7 @@ void Instruction::printAssembly() {
             std::cout << " x" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
             break;
         case LUI:
-            std::cout << "lui x" << rd << ", " << imm << "\n";
+            std::cout << "lui x" << rd << ", " << std::dec << imm << "\n";
             break;
         case SB_TYPE:
             switch (funct3) {
@@ -245,13 +247,13 @@ void Instruction::printAssembly() {
                     std::cout << "bgeu";
                     break;
             }
-            std::cout << " x" << rs1 << ", x" << rs2 << ", " << imm << "\n";
+            std::cout << " x" << rs1 << ", x" << rs2 << ", " << std::dec << imm << "\n";
             break;
         case JALR:
-            std::cout << "jalr x" << rd << ", x" << rs1 << ", " << imm << "\n";
+            std::cout << "jalr x" << rd << ", x" << rs1 << ", " << std::dec << imm << "\n";
             break;
         case JAL:
-            std::cout << "jal x" << rd << ", " << imm << "\n";
+            std::cout << "jal x" << rd << ", " << std::dec << imm << "\n";
             break;
         case FP_TYPE:
             switch (funct7) {

@@ -38,7 +38,7 @@ inline void Simulation::loadInstructionsToMemory(const std::string& filename, RA
             }
 
         } catch (const std::invalid_argument& e) {
-            std::cerr << "Error: Invalid binary format in the file." << std::endl;
+            std::cerr << "Error: Invalid binary format in the file.\n";
             break; // Exit the loop
         }
     }
@@ -70,7 +70,7 @@ inline void Simulation::runSimulation() {
     std::cout << "Begin System Initialization\n";
 
     std::cout << "Create Virtual Memory\n";
-    RAM memory(0xF);
+    RAM memory(0x99);
 
     // write instructions to addresses 0x0 – 0x093
     std::cout << "Write Instructions to Memory\n";
@@ -78,21 +78,20 @@ inline void Simulation::runSimulation() {
     uint32_t startAddress = 0x0;
     loadInstructionsToMemory(filename, memory, startAddress);
     
-    // addresses 0x200 - 0x2FF will allocated for the stack
+    // Allocate addresses 0x200 - 0x2FF for the stack
 
-    // address ranges 0x400 - 0x7FF (ARRAY_A) and 0x800 - 0xBFF (ARRAY_B) 
-    // will be initialized as arrays of random FP32 values.
+    // Initialize addresses 0x400 - 0xbFF (ARRAY_A & ARRAY_B) with random FP32 values.
     // std::cout << "Fill ranges 0x400-0xBFF with random values\n";
     // fillRandomData(memory, 0x400, 0xBFF);
     
-    std::cout << "Memory contents before start of Simulation\n";
+    std::cout << "=====Memory contents before start of Simulation=====\n";
     memory.PrintMemoryContents();
 
-    std::cout << "Create CPU\n";
+    std::cout << "=================Create CPU=================\n";
     CPU cpu1{ memory };
 
-    // Start CPU and start running instructions from memory
-    // while (cpu1.getPC() < 0x94) {
+    // Start CPU and start running until reset signal is recieved
+    while (cpu1.checkReset() == false) {
         
         // cpu1.runCPU();
         cpu1.Fetch();
@@ -101,9 +100,9 @@ inline void Simulation::runSimulation() {
         // Uncomment to print ram contents every cycle
         // memory.PrintMemoryContents();
 
-    // }
+    }
 
-    std::cout << "Memory contents after end of Simulation\n";
+    std::cout << "=====Memory contents after end of Simulation=====\n";
     // memory.PrintMemoryContents();
     
     std::cout.rdbuf(coutBuffer); // Restore the original cout buffer

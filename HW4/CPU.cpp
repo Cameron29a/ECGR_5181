@@ -3,12 +3,13 @@
 inline void CPU::Fetch() {
     // Fetch an instruction from memory based on the current PC
     uint32_t nextInstruction = 0;
+    std::cout << "***************Instruction Fetch***************\n";
     for(int i = 0; i <= 3; i++) {
         uint32_t byte = ram.Read(pc++);
         nextInstruction = nextInstruction | (byte << (i * 8));
         // Print out to check instructions are compiled correctly
-        // std::bitset<8> byteBinary(byte);
-        // std::cout << "Byte " << i << ": 0b" << byteBinary << "\n";
+        std::bitset<8> byteBinary(byte);
+        std::cout << "Byte " << pc-1 << ": 0b" << byteBinary << "\n";
     }
     instructionMemory.push(nextInstruction);
 
@@ -20,11 +21,11 @@ inline void CPU::Fetch() {
 
 inline void CPU::Decode() {
     // Decode the fetched instruction and extract opcode, registers, and immediate values
-    // Instruction currentInstruction = instructionMemory.front();
-    // currentInstruction.printAssembly();
-    // currentInstruction.printInstruction();
     instructionMemory.front().printAssembly();
     instructionMemory.front().printInstruction();
+    instructionMemory.pop();
+    if (instructionMemory.empty()) reset = true;
+
 }
 
 inline void CPU::Execute() {
@@ -34,16 +35,6 @@ inline void CPU::Execute() {
 
 inline void CPU::Store() {
     // Perform memory store operation if required
-
-}
-
-inline void CPU::memLoad(uint32_t address, uint32_t& data) {
-    // Read data from memory at the specified address
-
-}
-
-inline void CPU::memStore(uint32_t address, uint32_t data) {
-    // Store data into memory at the specified address
 
 }
 

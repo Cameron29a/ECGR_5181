@@ -28,7 +28,7 @@ public:
 
     // Print the contents of the memory map
     void PrintMemoryContents() {
-        std::cout << "Memory Contents:\n";
+        std::cout << "***********************Memory Contents:***********************\n";
         uint32_t address = 0;
         uint8_t data;
         while (address <= memory.size()) {

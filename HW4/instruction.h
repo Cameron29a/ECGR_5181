@@ -2,7 +2,7 @@
 #define INSTRUCTION_H
 
 #include <iostream>
-// #include <stdint.h>
+#include <stdint.h>
 
 // Define RISC-V opcodes and instruction formats
 #define LOAD         0b0000011
@@ -39,7 +39,7 @@ public:
 
     // Instruction Variables
     uint32_t opcode, rs1, rs2, rd, funct3, funct7;
-    int32_t imm;
+    int32_t imm = 0;
 
     int32_t getImm() { return imm; }
 
@@ -501,7 +501,7 @@ public:
                 }
                 break;
             default:
-                std::cout << "Unknown instruction.\n";
+                std::cout << "***************Unknown instruction.***************\n";
                 std::cout << "Magic 8-ball says you suck, try again.\n";
                 break;
         }
