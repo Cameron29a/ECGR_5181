@@ -17,7 +17,7 @@ inline void Simulation::loadInstructionsToMemory(const std::string& filename, RA
     // }
 
     std::string line;
-    int address = startAddress;
+    uint32_t address = startAddress;
 
     while (std::getline(file, line) && address <= stopAddress) {
         if (line.size() != 32) {
@@ -96,8 +96,14 @@ inline void Simulation::runSimulation() {
 
     // Start CPU and start running until it resets
     // cpu1.runCPU();
+    int i = 0;
+    while(i < 5){
+        cpu1.Fetch();
+        cpu1.Decode();
+        i++;
+    }
 
-    std::cout << "=====Memory contents after end of Simulation=====\n";
+    // std::cout << "=====Memory contents after end of Simulation=====\n";
     // memory.PrintMemoryContents();
     
     std::cout.rdbuf(coutBuffer); // Restore the original cout buffer

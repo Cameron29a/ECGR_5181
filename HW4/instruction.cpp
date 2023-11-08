@@ -46,7 +46,30 @@ void Instruction::setregWrite(uint32_t opcode) {
     }
 }
 
-void Instruction::setALUsrc(uint32_t opcode) {
+void Instruction::setALUsrc1(uint32_t opcode) {
+    switch (opcode) {
+        case AUIPC:
+        case SB_TYPE:
+        case JAL:
+            ALUsrc1 = 1;
+            break;
+        case LOAD:
+        case LOAD_FP:
+        case I_TYPE:
+        case S_TYPE:
+        case S_TYPE_FP:
+        case R_TYPE:
+        case LUI:
+        case JALR:
+        case FP_TYPE:
+            ALUsrc1 = 0;
+            break;
+        default:
+            ALUsrc1 = 0;
+    }
+}
+
+void Instruction::setALUsrc2(uint32_t opcode) {
     switch (opcode) {
         case LOAD:
         case LOAD_FP:
@@ -54,18 +77,18 @@ void Instruction::setALUsrc(uint32_t opcode) {
         case AUIPC:
         case S_TYPE:
         case S_TYPE_FP:
+        case SB_TYPE:
         case LUI:
         case JALR:
         case JAL:
-        case FP_TYPE:
-            ALUsrc = 1;
+            ALUsrc2 = 1;
             break;
         case R_TYPE:
-        case SB_TYPE:
-            ALUsrc = 0;
+        case FP_TYPE:
+            ALUsrc2 = 0;
             break;
         default:
-            ALUsrc = 0;
+            ALUsrc2 = 0;
     }
 }
 
@@ -115,26 +138,30 @@ void Instruction::setmemRead(uint32_t opcode) {
     }
 }
 
-void Instruction::setmemToReg(uint32_t opcode) {
+void Instruction::setWBsel(uint32_t opcode) {
     switch (opcode) {
         case LOAD:
         case LOAD_FP:
-            memToReg = 1;
+            WBsel = 0;
             break;
         case I_TYPE:
         case AUIPC:
-        case S_TYPE:
-        case S_TYPE_FP:
         case R_TYPE:
         case LUI:
-        case SB_TYPE:
+        case FP_TYPE:
+            WBsel = 1;
+            break;
         case JALR:
         case JAL:
-        case FP_TYPE:
-            memToReg = 0;
+            WBsel = 2;
+            break;
+        case S_TYPE:
+        case S_TYPE_FP:
+        case SB_TYPE:
+            WBsel = 3;
             break;
         default:
-            memToReg = 0;
+            WBsel = 3;
     }
 }
 
@@ -265,17 +292,44 @@ void Instruction::setRM(uint32_t opcode, uint32_t funct7) {
     }
 }
 
+void Instruction::setPCsel(uint32_t opcode, bool takeBranch) {
+    switch (opcode) {
+        case SB_TYPE:
+            switch (takeBranch) {
+                case true:
+                    PCsel = 1;
+                    break;
+                default:
+                    PCsel = 0;
+            }
+            break;
+        case JALR:
+        case JAL:
+            PCsel = 1;
+            break;
+        case LOAD:
+        case LOAD_FP:
+        case I_TYPE:
+        case AUIPC:
+        case S_TYPE:
+        case S_TYPE_FP:
+        case R_TYPE:
+        case LUI:
+        case FP_TYPE:
+            PCsel = 0;
+            break;
+        default:
+            PCsel = 0;
+    }
+}
+
 void Instruction::setALUop(uint32_t opcode) {
     switch (opcode) {
         case LOAD:
         case LOAD_FP:
         case S_TYPE:
         case S_TYPE_FP:
-            ALUop = 0;
-            break;
         case SB_TYPE:
-            ALUop = 1;
-            break;
         case I_TYPE:
         case AUIPC:
         case R_TYPE:
@@ -290,6 +344,10 @@ void Instruction::setALUop(uint32_t opcode) {
     }
 }
 
+void Instruction::setALUresult(uint32_t ALUresult) {
+    this->ALUresult = ALUresult;
+}
+
 void Instruction::printInstruction() {
     std::cout << "***************Fetched Instruction***************\n";
     std::cout << "Instruction: " << std::bitset<32>(instruction) << "\n";
@@ -300,16 +358,17 @@ void Instruction::printInstruction() {
     std::cout << "RD: " << rd << "\n";
     std::cout << "Funct3: " << funct3 << "\n";
     std::cout << "Funct7: " << funct7 << "\n";
-    std::cout << "Immediate: " << std::dec << "\n";
+    std::cout << "Immediate: " << std::dec << imm <<"\n";
 
     // Control Signals
     std::cout << "Control Signals:\n";
     std::cout << "regWrite = " << regWrite << "\n";
     std::cout << "ALUop = " << ALUop << "\n";
-    std::cout << "ALUsrc = " << ALUsrc << "\n";
+    std::cout << "ALUsrc1 = " << ALUsrc1 << "\n";
+    std::cout << "ALUsrc2 = " << ALUsrc2 << "\n";
     std::cout << "memWrite = " << memWrite << "\n";
     std::cout << "memRead = " << memRead << "\n";
-    std::cout << "memToReg = " << memToReg << "\n";
+    std::cout << "WBsel = " << WBsel << "\n";
     std::cout << "branch = " << branch << "\n";
     std::cout << "jump = " << jump << "\n";
     std::cout << "PCtoReg = " << PCtoReg << "\n";
@@ -631,9 +690,4 @@ void Instruction::printAssembly() {
             break;
     }
 }
-
-
-
-
-
-                    
+            

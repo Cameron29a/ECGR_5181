@@ -2,7 +2,7 @@
 #define INSTRUCTION_H
 
 #include <iostream>
-#include <stdint.h>
+// #include <stdint.h>
 
 typedef uint64_t tick_t;
 
@@ -44,43 +44,53 @@ public:
     int32_t imm = 0;
 
     uint32_t getrd() { return rd; }
+    uint32_t getOpcode() { return opcode; }
     uint32_t getrs1() { return rs1; }
     uint32_t getrs2() { return rs2; }
+    uint32_t getfunct3() { return funct3; }
     int32_t getImm() { return imm; }
 
     // Control Signals
-    bool regWrite, ALUsrc, memWrite, memRead, memToReg, branch, jump, PCtoReg, RegToPC, rm;
+    bool regWrite, ALUsrc1, ALUsrc2, memWrite, memRead, WBsel, branch, jump, PCtoReg, RegToPC, rm, PCsel;
     int ALUop;
 
     // Check Control Signals
     bool checkregWrite() { return regWrite; }
-    bool checkALUsrc() { return ALUsrc; }
+    bool checkALUsrc1() { return ALUsrc1; }
+    bool checkALUsrc2() { return ALUsrc2; }
     bool checkmemWrite() { return memWrite; }
     bool checkmemRead() { return memRead; }
-    bool checkmemToReg() { return memToReg; }
+    bool checkWBsel() { return WBsel; }
     bool checkBranch() { return branch; }
     bool checkJump() { return jump; }
     bool checkPCtoReg() { return PCtoReg; }
     bool checkRegToPC() { return RegToPC; }
     bool checkRM() { return rm; }
+    bool checkPCsel() { return PCsel; }
     int checkALUop() { return ALUop; }
 
     // Decode functions
     int32_t getImmediate(uint32_t);
     void setregWrite(uint32_t);
-    void setALUsrc(uint32_t);
+    void setALUsrc1(uint32_t);
+    void setALUsrc2(uint32_t);
     void setmemWrite(uint32_t);
     void setmemRead(uint32_t);
-    void setmemToReg(uint32_t);
+    void setWBsel(uint32_t);
     void setBranch(uint32_t);
     void setJump(uint32_t);
     void setPCtoReg(uint32_t);
     void setRegtoPC(uint32_t);
     void setRM(uint32_t, uint32_t);
+    void setPCsel(uint32_t, bool);
     void setALUop(uint32_t);
 
     void printInstruction();
     void printAssembly();
+    
+    uint32_t ALUresult;
+    void setALUresult(uint32_t);
+    uint32_t getALUresult() { return ALUresult; }
 
     Instruction(uint32_t instruction) {
         // Get Values
@@ -95,10 +105,11 @@ public:
 
         // Set Control Signals
         setregWrite(opcode);
-        setALUsrc(opcode);
+        setALUsrc1(opcode);
+        setALUsrc1(opcode);
         setmemWrite(opcode);
         setmemRead(opcode);
-        setmemToReg(opcode);
+        setWBsel(opcode);
         setBranch(opcode);
         setJump(opcode);
         setPCtoReg(opcode);

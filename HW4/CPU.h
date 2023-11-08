@@ -8,7 +8,10 @@
 
 #include "event.h"
 #include "instruction.h"
+#include "ALU.h"
+#include "branchCtl.h"
 #include "ram.h"
+
 
 
 // Define RISC-V registers
@@ -26,11 +29,14 @@ class CPU {
     uint32_t stackStart;    // Start of the stack
     RAM& ram;
 
+    ALU alu;
+    BranchCtl branchCtl;
     Registers registers;
     std::queue<Event> events;
     std::queue<Instruction> fetchStage;
     std::queue<Instruction> decodeStage;
     std::queue<Instruction> executeStage;
+    std::queue<Instruction> memoryStage;
     std::queue<Instruction> writeBackStage;
 
 public:
@@ -38,10 +44,13 @@ public:
 
     bool checkReset() { return reset; }
 
-    // Functions for fetch, decode, execute, and write back stages
+    void updatePipeline();
+
+    // Functions for fetch, decode, execute, memory, and write back stages
     void Fetch();
     void Decode();
     void Execute();
+    void Memory();
     void WriteBack();
 
     // Function to print the event queue
