@@ -32,11 +32,8 @@ inline void Simulation::loadInstructionsToMemory(const std::string& filename, RA
                 instruction = (instruction << 1) | (line[i] - '0');
             }
 
-            // Store the instruction in memory at the specified address
-            for (int i = 0; i <= 3; i++) {
-                uint32_t byte = (instruction >> (i*8)) & 0xFF;
-                memory.Write(address++, byte);
-            }
+            memory.Write(address, instruction);
+            address += 4;
 
         } catch (const std::invalid_argument& e) {
             std::cerr << "Error: Invalid binary format in the file.\n";

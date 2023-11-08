@@ -27,7 +27,13 @@ public:
 
     // Function to print the details of an event
     void print() const {
-        std::cout << "Clock: " << simTick << "\t" << fetchString << "\t" << decodeString << "\t" << executeString << "\t" << memoryString << "\t" << writeBackString << "\n";
+        std::cout << "====================Clock: " << simTick << "====================\n" 
+        << "Fetch Stage: " << fetchString << "\n" 
+        << "Decode Stage: " << decodeString << "\n" 
+        << "Execute Stage: " << executeString << "\n" 
+        << "Memory Stage: " << memoryString << "\n" 
+        << "Write Back Stage: " << writeBackString << "\n\n";
+
     }
 
 };

@@ -2,6 +2,7 @@
 #define INSTRUCTION_H
 
 #include <iostream>
+#include <sstream>
 // #include <stdint.h>
 
 typedef uint64_t tick_t;
@@ -38,6 +39,7 @@ class Instruction {
 public:
     uint32_t instruction;
     int operation;
+    std::string assemblyString;
 
     // Instruction Variables
     uint32_t opcode, rs1, rs2, rd, funct3, funct7;
@@ -51,7 +53,7 @@ public:
     int32_t getImm() { return imm; }
 
     // Control Signals
-    bool regWrite, ALUsrc1, ALUsrc2, memWrite, memRead, branch, jump, PCtoReg, RegToPC, rm, PCsel;
+    bool regWrite, ALUsrc1, ALUsrc2, memWrite, memRead, branch, jump, rm, PCsel;
     bool isFloat;
     int ALUop, WBsel;
 
@@ -61,14 +63,13 @@ public:
     bool checkALUsrc2() { return ALUsrc2; }
     bool checkmemWrite() { return memWrite; }
     bool checkmemRead() { return memRead; }
-    int checkWBsel() { return WBsel; }
     bool checkBranch() { return branch; }
     bool checkJump() { return jump; }
-    bool checkPCtoReg() { return PCtoReg; }
-    bool checkRegToPC() { return RegToPC; }
     bool checkRM() { return rm; }
     bool checkPCsel() { return PCsel; }
     int checkALUop() { return ALUop; }
+    int checkWBsel() { return WBsel; }
+
     bool checkFloat() { return isFloat; }
 
     // Decode functions
@@ -78,17 +79,16 @@ public:
     void setALUsrc2(uint32_t);
     void setmemWrite(uint32_t);
     void setmemRead(uint32_t);
-    void setWBsel(uint32_t);
     void setBranch(uint32_t);
     void setJump(uint32_t);
-    void setPCtoReg(uint32_t);
-    void setRegtoPC(uint32_t);
     void setRM(uint32_t, uint32_t);
     void setPCsel(uint32_t, bool);
     void setALUop(uint32_t);
+    void setWBsel(uint32_t);
 
-    void printInstruction();
-    std::string printAssembly();
+    void printSignals();
+    void assembleString();    
+    std::string getAssemblyString() { return assemblyString; }
     
     uint32_t ALUresult;
     void setALUresult(uint32_t);
@@ -111,20 +111,20 @@ public:
         setALUsrc1(opcode);
         setmemWrite(opcode);
         setmemRead(opcode);
-        setWBsel(opcode);
         setBranch(opcode);
         setJump(opcode);
-        setPCtoReg(opcode);
-        setRegtoPC(opcode);
         setRM(opcode, funct7);
         setALUop(opcode);
+        setWBsel(opcode);
+
+        assembleString();
 
         switch (opcode) {
             case LOAD_FP:
             case S_TYPE_FP:
             case FP_TYPE:
-                isFloat = true;
-                break;
+                // isFloat = true;
+                // break;
             default: 
                 isFloat = false;
         }
@@ -417,8 +417,8 @@ public:
                 }
                 break;
             default:
-                std::cout << "***************Unknown instruction.***************\n";
-                std::cout << "Magic 8-ball says you suck, try again.\n";
+                // std::cout << "***************Unknown instruction.***************\n";
+                // std::cout << "Magic 8-ball says you suck, try again.\n";
                 break;
         }
         // printInstruction();

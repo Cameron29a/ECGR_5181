@@ -4,16 +4,13 @@ inline void CPU::Fetch() {
     // Fetch an instruction from memory based on the current PC
     uint32_t nextInstruction = 0;
     std::cout << "***************Instruction Fetch***************\n";
-    for(int i = 0; i <= 3; i++) {
-        uint32_t byte = ram.Read(pc++);
-        nextInstruction = nextInstruction | (byte << (i * 8));
-        // Print out to check instructions are compiled correctly
-        std::bitset<8> byteBinary(byte);
-        std::cout << "Byte " << pc-1 << ": 0b" << byteBinary << "\n";
-    }
+    nextInstruction = ram.Read(pc);
+    pc +=4;
+
     fetchStage.push(nextInstruction);
     // PC is automatically incremented +4 when fetching an instruction.
     // In case if branch or jump, PC is adjusted in the execute stage during this cycle
+    std::cout << (fetchStage.front().getAssemblyString()) << "\n";
 }
 
 inline void CPU::Decode() {
@@ -22,8 +19,7 @@ inline void CPU::Decode() {
     }
     // Decode the fetched instruction and extract opcode, registers, and immediate values
     // decodeStage.front().printAssembly();
-    // decodeStage.front().printInstruction();
-
+    // decodeStage.front().printSignals();
 
 }
 
@@ -98,8 +94,6 @@ inline void CPU::Memory() {
         }
         ram.Write(memoryAddress, dataToStore);
     }
-
-
 }
 
 inline void CPU::WriteBack() {
@@ -135,35 +129,34 @@ inline void CPU::WriteBack() {
 }
 
 inline void CPU::updatePipeline() {
-    // Check and move instructions from Memory to WriteBack stage
-    if (!memoryStage.empty()) {
-        writeBackStage.push(memoryStage.front());
-        memoryStage.pop();
-    }
-
-    // Check and move instructions from Execute to Memory stage
-    if (!executeStage.empty()) {
-        memoryStage.push(executeStage.front());
-        executeStage.pop();
-    }
-
-    // Check and move instructions from Decode to Execute stage
-    if (!decodeStage.empty()) {
-        executeStage.push(decodeStage.front());
-        decodeStage.pop();
-    }
-
     // Check and move instructions from Fetch to Decode stage
-    if (!fetchStage.empty()) {
+    if (fetchStage.empty() && decodeStage.empty() && executeStage.empty()) {
         decodeStage.push(fetchStage.front());
         fetchStage.pop();
     }
 
+    // Check and move instructions from Decode to Execute stage
+    // if (!decodeStage.empty()) {
+    //     executeStage.push(decodeStage.front());
+    //     decodeStage.pop();
+    // }
+
+    // Check and move instructions from Execute to Memory stage
+    // if (!executeStage.empty()) {
+    //     memoryStage.push(executeStage.front());
+    //     executeStage.pop();
+    // }
+
+    // // Check and move instructions from Memory to WriteBack stage
+    // if (!memoryStage.empty()) {
+    //     writeBackStage.push(memoryStage.front());
+    //     memoryStage.pop();
+    // }
 }
 
 // Function to print the events
 inline void CPU::printEvents() {
-    std::cout << "\t\tFetch\tDecode\tExecute\tStore\t\n";
+    // std::cout << "Header\n";
     while (!events.empty()) {
         events.front().print();
         events.pop();
@@ -171,11 +164,11 @@ inline void CPU::printEvents() {
 }
 
 inline void CPU::updateEventQueue() {
-    std::string fetchString = fetchStage.front().printAssembly();
-    std::string decodeString = decodeStage.front().printAssembly();
-    std::string executeString = executeStage.front().printAssembly();
-    std::string memoryString = memoryStage.front().printAssembly();
-    std::string writeBackString = writeBackStage.front().printAssembly();
+    std::string fetchString = fetchStage.front().getAssemblyString();
+    std::string decodeString = decodeStage.front().getAssemblyString();
+    std::string executeString = executeStage.front().getAssemblyString();
+    std::string memoryString = memoryStage.front().getAssemblyString();
+    std::string writeBackString = writeBackStage.front().getAssemblyString();
 
     events.push(Event(currentTick, fetchString, decodeString, executeString, memoryString, writeBackString));
 }
@@ -187,8 +180,9 @@ inline void CPU::runCPU() {
     while (reset == false) {
         if(loopCnt >= loopMax){
             reset = 1;
+            break;
         }
-        std::cout << "CPU Clk cycle #" << loopCnt << "******************************\n";
+        std::cout << "********************************************CPU Clk cycle #" << std::dec << loopCnt << "********************************************\n";
         loopCnt++;
 
         // Save pc at start of cycle
@@ -197,7 +191,7 @@ inline void CPU::runCPU() {
         // Update pipeline
         updatePipeline();
 
-        // Run each stage every clock cycle
+        // Run each stage of the pipeline
         Fetch();
         Decode();
         Execute();
@@ -206,6 +200,9 @@ inline void CPU::runCPU() {
 
         // Update event log for each cycle
         updateEventQueue();
+
+        // Update System Clock
+        currentTick++;
 
         // Uncomment to print event queue every cycle
         // events.front().print();
@@ -216,7 +213,7 @@ inline void CPU::runCPU() {
     }
     // Uncomment to print event queue at the end of the program
     std::cout << "**********Completed CPU Event Queue**********\n";
-    // printEvents();
+    printEvents();
 
 }
 

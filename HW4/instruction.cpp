@@ -138,33 +138,6 @@ void Instruction::setmemRead(uint32_t opcode) {
     }
 }
 
-void Instruction::setWBsel(uint32_t opcode) {
-    switch (opcode) {
-        case LOAD:
-        case LOAD_FP:
-            WBsel = 0;
-            break;
-        case I_TYPE:
-        case AUIPC:
-        case R_TYPE:
-        case LUI:
-        case FP_TYPE:
-            WBsel = 1;
-            break;
-        case JALR:
-        case JAL:
-            WBsel = 2;
-            break;
-        case S_TYPE:
-        case S_TYPE_FP:
-        case SB_TYPE:
-            WBsel = 3;
-            break;
-        default:
-            WBsel = 3;
-    }
-}
-
 void Instruction::setBranch(uint32_t opcode) {
     switch (opcode) {
         case SB_TYPE:
@@ -208,52 +181,6 @@ void Instruction::setJump(uint32_t opcode) {
             break;
         default:
             jump = 0;
-    }
-}
-
-void Instruction::setPCtoReg(uint32_t opcode) {
-    switch (opcode) {
-        case JALR:
-        case JAL:
-            PCtoReg = 1;
-            break;
-        case LOAD:
-        case LOAD_FP:
-        case I_TYPE:
-        case AUIPC:
-        case S_TYPE:
-        case S_TYPE_FP:
-        case R_TYPE:
-        case LUI:
-        case SB_TYPE:
-        case FP_TYPE:
-            PCtoReg = 0;
-            break;
-        default:
-            PCtoReg = 0;
-    }
-}
-
-void Instruction::setRegtoPC(uint32_t opcode) {
-    switch (opcode) {
-        case JALR:
-            RegToPC = 1;
-            break;
-        case LOAD:
-        case LOAD_FP:
-        case I_TYPE:
-        case AUIPC:
-        case S_TYPE:
-        case S_TYPE_FP:
-        case R_TYPE:
-        case LUI:
-        case SB_TYPE:
-        case JAL:
-        case FP_TYPE:
-            RegToPC = 0;
-            break;
-        default:
-            RegToPC = 0;
     }
 }
 
@@ -346,11 +273,38 @@ void Instruction::setALUop(uint32_t opcode) {
     }
 }
 
+void Instruction::setWBsel(uint32_t opcode) {
+    switch (opcode) {
+        case LOAD:
+        case LOAD_FP:
+            WBsel = 0;
+            break;
+        case I_TYPE:
+        case AUIPC:
+        case R_TYPE:
+        case LUI:
+        case FP_TYPE:
+            WBsel = 1;
+            break;
+        case JALR:
+        case JAL:
+            WBsel = 2;
+            break;
+        case S_TYPE:
+        case S_TYPE_FP:
+        case SB_TYPE:
+            WBsel = 3;
+            break;
+        default:
+            WBsel = 3;
+    }
+}
+
 void Instruction::setALUresult(uint32_t ALUresult) {
     this->ALUresult = ALUresult;
 }
 
-void Instruction::printInstruction() {
+void Instruction::printSignals() {
     std::cout << "***************Fetched Instruction***************\n";
     std::cout << "Instruction: " << std::bitset<32>(instruction) << "\n";
     std::cout << "Decoded Instruction:\n";
@@ -373,301 +327,299 @@ void Instruction::printInstruction() {
     std::cout << "WBsel = " << WBsel << "\n";
     std::cout << "branch = " << branch << "\n";
     std::cout << "jump = " << jump << "\n";
-    std::cout << "PCtoReg = " << PCtoReg << "\n";
-    std::cout << "RegToPC = " << RegToPC << "\n";
     std::cout << "rm = " << rm << "\n";
 }
 
-std::string Instruction::printAssembly() {
-    std::string instruction;
+void Instruction::assembleString() {
+    std::stringstream instruction;
     switch (opcode) {
         case LOAD:
             switch (funct3) {
                 case 0b000:
-                    std::cout << "lb";
+                    instruction << "lb";
                     break;
                 case 0b001:
-                    std::cout << "lh";
+                    instruction << "lh";
                     break;
                 case 0b010:
-                    std::cout << "lw";
+                    instruction << "lw";
                     break;
                 case 0b100:
-                    std::cout << "lbu";
+                    instruction << "lbu";
                     break;
                 case 0b101:
-                    std::cout << "lhu";
+                    instruction << "lhu";
                     break;
             }
-            std::cout << " x" << rd << ", " << std::dec << imm << "(x" << rs1 << ")";
+            instruction << " x" << rd << ", " << std::dec << imm << "(x" << rs1 << ")";
             break;
         case LOAD_FP:
-            if(funct3 != 0b010) break;
-            std::cout << "flw f" << rd << ", " << std::dec << imm << "(x" << rs1 << ")";
+            // if(funct3 != 0b010) break;
+            instruction << "flw f" << rd << ", " << std::dec << imm << "(x" << rs1 << ")";
             break;
         case I_TYPE:
             switch (funct3) {
                 case 0b000:
-                    std::cout << "addi";
+                    instruction << "addi";
                     break;
                 case 0b001:
-                    std::cout << "slli";
+                    instruction << "slli";
                     break;
                 case 0b010:
-                    std::cout << "slti";
+                    instruction << "slti";
                     break;
                 case 0b011:
-                    std::cout << "sltui";
+                    instruction << "sltui";
                     break;
                 case 0b100:
-                    std::cout << "xori";
+                    instruction << "xori";
                     break;
                 case 0b101:
                     if (funct7 == 0b0000000) {
-                        std::cout << "srli";
+                        instruction << "srli";
                     } else {
-                        std::cout << "srai";
+                        instruction << "srai";
                     }
                     break;
                 case 0b110:
-                    std::cout << "ori";
+                    instruction << "ori";
                     break;
                 case 0b111:
-                    std::cout << "andi";
+                    instruction << "andi";
                     break;
             }
-            std::cout << " x" << rd << ", x" << rs1 << ", " << std::dec << imm << "";
+            instruction << " x" << rd << ", x" << rs1 << ", " << std::dec << imm << "";
             break;
         case AUIPC:
-            std::cout << "auipc x" << rd << ", " << std::dec << imm << "";
+            instruction << "auipc x" << rd << ", " << std::dec << imm << "";
             break;
         case S_TYPE:
             switch (funct3) {
                 case 0b000:
-                    std::cout << "sb";
+                    instruction << "sb";
                     break;
                 case 0b001:
-                    std::cout << "sh";
+                    instruction << "sh";
                     break;
                 case 0b010:
-                    std::cout << "sw";
+                    instruction << "sw";
                     break;
             }
-            std::cout << " x" << rs1 << ", " << std::dec << imm << "(x" << rs2 << ")";
+            instruction << " x" << rs1 << ", " << std::dec << imm << "(x" << rs2 << ")";
             break;
         case S_TYPE_FP:
-            if(funct3 != 0b010) break;
-            std::cout << "fsw f" << rs1 << ", " << std::dec << imm << "(x" << rs2 << ")";
+            // if(funct3 != 0b010) break;
+            instruction << "fsw f" << rs1 << ", " << std::dec << imm << "(x" << rs2 << ")";
             break;
         case R_TYPE:
             switch (funct3) {
                 case 0b000:
                     switch (funct7) {
                         case 0b0000000:
-                            std::cout << "add";
+                            instruction << "add";
                             break;
                         case 0b0000001:
-                            std::cout << "mul";
+                            instruction << "mul";
                             break;
                         case 0b0100000:
-                            std::cout << "sub";
+                            instruction << "sub";
                             break;
                     }
                     break;
                 case 0b001:
                     switch (funct7) {
                         case 0b0000000:
-                            std::cout << "sll";
+                            instruction << "sll";
                             break;
                         case 0b0000001:
-                            std::cout << "mulh";
+                            instruction << "mulh";
                             break;
                     }
                     break;
                 case 0b010:
                     switch (funct7) {
                         case 0b0000000:
-                            std::cout << "slt";
+                            instruction << "slt";
                             break;
                         case 0b0000001:
-                            std::cout << "mulhsu";
+                            instruction << "mulhsu";
                             break;
                     }
                     break;
                 case 0b011:
                     switch (funct7) {
                         case 0b0000000:
-                            std::cout << "sltu";
+                            instruction << "sltu";
                             break;
                         case 0b0000001:
-                            std::cout << "mulhu";
+                            instruction << "mulhu";
                             break;
                     }
                     break;
                 case 0b100:
                     switch (funct7) {
                         case 0b0000000:
-                            std::cout << "xor";
+                            instruction << "xor";
                             break;
                         case 0b0000001:
-                            std::cout << "div";
+                            instruction << "div";
                             break;
                     }
                     break;
                 case 0b101:
                     switch (funct7) {
                         case 0b0000000:
-                            std::cout << "srl";
+                            instruction << "srl";
                             break;
                         case 0b0000001:
-                            std::cout << "divu";
+                            instruction << "divu";
                             break;
                         case 0b0100000:
-                            std::cout << "sra";
+                            instruction << "sra";
                             break;
                     }
                     break;
                 case 0b110:
                     switch (funct7) {
                         case 0b0000000:
-                            std::cout << "or";
+                            instruction << "or";
                             break;
                         case 0b0000001:
-                            std::cout << "rem";
+                            instruction << "rem";
                             break;
                     }
                     break;
                 case 0b111:
                     switch (funct7) {
                         case 0b0000000:
-                            std::cout << "and";
+                            instruction << "and";
                             break;
                         case 0b0000001:
-                            std::cout << "remu";
+                            instruction << "remu";
                             break;
                     }
                     break;
                 break;
             }
-            std::cout << " x" << rd << ", x" << rs1 << ", x" << rs2 << "";
+            instruction << " x" << rd << ", x" << rs1 << ", x" << rs2 << "";
             break;
         case LUI:
-            std::cout << "lui x" << rd << ", " << std::dec << imm << "";
+            instruction << "lui x" << rd << ", " << std::dec << imm << "";
             break;
         case SB_TYPE:
             switch (funct3) {
                 case 0b000:
-                    std::cout << "beq";
+                    instruction << "beq";
                     break;
                 case 0b001:
-                    std::cout << "bne";
+                    instruction << "bne";
                     break;
                 case 0b100:
-                    std::cout << "blt";
+                    instruction << "blt";
                     break;
                 case 0b101:
-                    std::cout << "bge";
+                    instruction << "bge";
                     break;
                 case 0b110:
-                    std::cout << "bltu";
+                    instruction << "bltu";
                     break;
                 case 0b111:
-                    std::cout << "bgeu";
+                    instruction << "bgeu";
                     break;
             }
-            std::cout << " x" << rs1 << ", x" << rs2 << ", " << std::dec << imm << "";
+            instruction << " x" << rs1 << ", x" << rs2 << ", " << std::dec << imm << "";
             break;
         case JALR:
-            std::cout << "jalr x" << rd << ", x" << rs1 << ", " << std::dec << imm << "";
+            instruction << "jalr x" << rd << ", x" << rs1 << ", " << std::dec << imm << "";
             break;
         case JAL:
-            std::cout << "jal x" << rd << ", " << std::dec << imm << "";
+            instruction << "jal x" << rd << ", " << std::dec << imm << "";
             break;
         case FP_TYPE:
             switch (funct7) {
                 case 0b0000000:
-                    std::cout << "fadd.s";
+                    instruction << "fadd.s";
                     break;
                 case 0b0000100:
-                    std::cout << "fsub.s";
+                    instruction << "fsub.s";
                     break;
                 case 0b0001000:
-                    std::cout << "fmul.s";
+                    instruction << "fmul.s";
                     break;
                 case 0b0001100:
-                    std::cout << "fdiv.s";
+                    instruction << "fdiv.s";
                     break;
                 case 0b0010000:
                     switch (funct3) {
                         case 0b000:
-                            std::cout << "fsgnj.s";
+                            instruction << "fsgnj.s";
                             break;
                         case 0b001:
-                            std::cout << "fsgnjn.s";
+                            instruction << "fsgnjn.s";
                             break;
                         case 0b010:
-                            std::cout << "fsgnjx.s";
+                            instruction << "fsgnjx.s";
                             break;
                     }
                     break;
                 case 0b0010100:
                     switch (funct3) {
                         case 0b000:
-                            std::cout << "fmin.s";
+                            instruction << "fmin.s";
                             break;
                         case 0b001:
-                            std::cout << "fmax.s";
+                            instruction << "fmax.s";
                             break;
                     }
                     break;
                 case 0b0101100:
-                    std::cout << "fsqrt.s";
+                    instruction << "fsqrt.s";
                     break;
                 case 0b1010000:
                     switch (funct3) {
                         case 0b000:
-                            std::cout << "feq.s";
+                            instruction << "feq.s";
                             break;
                         case 0b001:
-                            std::cout << "flt.s";
+                            instruction << "flt.s";
                             break;
                         case 0b010:
-                            std::cout << "fle.s";
+                            instruction << "fle.s";
                             break;
                     }
                     break;
                 case 0b1100000:
                     switch (rs2) {
                         case 0b00000:
-                            std::cout << "fcvt.w.s";
+                            instruction << "fcvt.w.s";
                             break;
                         case 0b00001:
-                            std::cout << "fcvt.wu.s";
+                            instruction << "fcvt.wu.s";
                             break;
                     }
                     break;
                 case 0b1101000:
                     switch (rs2) {
                         case 0b00000:
-                            std::cout << "fcvt.s.w";
+                            instruction << "fcvt.s.w";
                             break;
                         case 0b00001:
-                            std::cout << "fcvt.s.wu";
+                            instruction << "fcvt.s.wu";
                             break;
                     }
                     break;
                 case 0b1110000:
                     switch (funct3) {
                         case 0b00000:
-                            std::cout << "fmv.x.w";
+                            instruction << "fmv.x.w";
                             break;
                         case 0b00001:
-                            std::cout << "fclass.s";
+                            instruction << "fclass.s";
                             break;
                     }
                     break;
                 case 0b1111000:
-                    std::cout << "fmv.w.x";
+                    instruction << "fmv.w.x";
                     break;
                 break;
             }
@@ -680,16 +632,15 @@ std::string Instruction::printAssembly() {
                 case fmv_x_w:
                 case fclass_s:
                 case fmv_w_x:
-                    std::cout << " f" << rd << ", f" << rs1 << "";
+                    instruction << " f" << rd << ", f" << rs1 << "";
                     break;
                 default:
-                    std::cout << " f" << rd << ", f" << rs1 << ", f" << rs2 << "";
+                    instruction << " f" << rd << ", f" << rs1 << ", f" << rs2 << "";
                     break;
             }
             break;
         default:
-            std::cout << "Invalid instruction.\n";
+            instruction << "No-Op.";
     }
-    return instruction;
+    assemblyString = instruction.str();
 }
-            
