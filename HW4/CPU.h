@@ -38,6 +38,7 @@ class CPU {
     std::queue<Instruction> executeStage;
     std::queue<Instruction> memoryStage;
     std::queue<Instruction> writeBackStage;
+    uint32_t prevPC;
 
 public:
     CPU(RAM& ram, uint32_t stackStart) : reset(false), currentTick(0), pc(0), sp(stackStart), stackStart(stackStart), ram(ram) { };
@@ -55,6 +56,7 @@ public:
 
     // Function to print the event queue
     void printEvents();
+    void updateEventQueue();
 
     // Function to simulate the CPU for 1 cycle
     void runCPU();

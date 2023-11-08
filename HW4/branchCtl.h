@@ -9,27 +9,27 @@ public:
         // Implement branch control logic
         bool takeBranch = false;
         switch (funct3) {
-            case 0x63: // BEQ
+            case 0b000: // BEQ
                 takeBranch = (rs1Value == rs2Value);
                 break;
 
-            case 0x64: // BNE
+            case 0b001: // BNE
                 takeBranch = (rs1Value != rs2Value);
                 break;
 
-            case 0x69: // BLT
+            case 0b100: // BLT
                 takeBranch = (rs1Value < rs2Value);
                 break;
 
-            case 0x67: // BGE
+            case 0b101: // BGE
                 takeBranch = (rs1Value >= rs2Value);
                 break;
 
-            case 0x65: // BLTU
+            case 0b110: // BLTU
                 takeBranch = ((uint32_t)rs1Value < (uint32_t)rs2Value);
                 break;
             
-            case 0x66: // BGEU
+            case 0b111: // BGEU
                 takeBranch = ((uint32_t)rs1Value >= (uint32_t)rs2Value);
                 break;
 

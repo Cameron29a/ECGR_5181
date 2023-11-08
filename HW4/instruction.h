@@ -51,8 +51,9 @@ public:
     int32_t getImm() { return imm; }
 
     // Control Signals
-    bool regWrite, ALUsrc1, ALUsrc2, memWrite, memRead, WBsel, branch, jump, PCtoReg, RegToPC, rm, PCsel;
-    int ALUop;
+    bool regWrite, ALUsrc1, ALUsrc2, memWrite, memRead, branch, jump, PCtoReg, RegToPC, rm, PCsel;
+    bool isFloat;
+    int ALUop, WBsel;
 
     // Check Control Signals
     bool checkregWrite() { return regWrite; }
@@ -60,7 +61,7 @@ public:
     bool checkALUsrc2() { return ALUsrc2; }
     bool checkmemWrite() { return memWrite; }
     bool checkmemRead() { return memRead; }
-    bool checkWBsel() { return WBsel; }
+    int checkWBsel() { return WBsel; }
     bool checkBranch() { return branch; }
     bool checkJump() { return jump; }
     bool checkPCtoReg() { return PCtoReg; }
@@ -68,6 +69,7 @@ public:
     bool checkRM() { return rm; }
     bool checkPCsel() { return PCsel; }
     int checkALUop() { return ALUop; }
+    bool checkFloat() { return isFloat; }
 
     // Decode functions
     int32_t getImmediate(uint32_t);
@@ -86,7 +88,7 @@ public:
     void setALUop(uint32_t);
 
     void printInstruction();
-    void printAssembly();
+    std::string printAssembly();
     
     uint32_t ALUresult;
     void setALUresult(uint32_t);
@@ -116,6 +118,16 @@ public:
         setRegtoPC(opcode);
         setRM(opcode, funct7);
         setALUop(opcode);
+
+        switch (opcode) {
+            case LOAD_FP:
+            case S_TYPE_FP:
+            case FP_TYPE:
+                isFloat = true;
+                break;
+            default: 
+                isFloat = false;
+        }
 
         switch (opcode) {
             case LOAD:

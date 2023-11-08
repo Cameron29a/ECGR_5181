@@ -95,13 +95,7 @@ inline void Simulation::runSimulation() {
     CPU cpu1{ memory, startStack };
 
     // Start CPU and start running until it resets
-    // cpu1.runCPU();
-    int i = 0;
-    while(i < 5){
-        cpu1.Fetch();
-        cpu1.Decode();
-        i++;
-    }
+    cpu1.runCPU();
 
     // std::cout << "=====Memory contents after end of Simulation=====\n";
     // memory.PrintMemoryContents();

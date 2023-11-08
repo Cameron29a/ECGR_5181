@@ -21,8 +21,8 @@ inline void CPU::Decode() {
         return;
     }
     // Decode the fetched instruction and extract opcode, registers, and immediate values
-    decodeStage.front().printAssembly();
-    decodeStage.front().printInstruction();
+    // decodeStage.front().printAssembly();
+    // decodeStage.front().printInstruction();
 
 
 }
@@ -60,6 +60,7 @@ inline void CPU::Execute() {
             pc = executeStage.front().getALUresult();
             break;
         default:
+            return;
     }
 
 }
@@ -74,14 +75,13 @@ inline void CPU::Memory() {
         // Memory read operation
         uint32_t memoryAddress = memoryStage.front().getALUresult();
         uint32_t loadedData = ram.Read(memoryAddress);
-        uint32_t opcode = memoryStage.front().getOpcode();
 
         // Set the loaded data to the destination register
-        switch (opcode) {
-            case LOAD_FP:
+        switch (memoryStage.front().checkFloat()) {
+            case true:
                 registers.fp_regs[memoryStage.front().getrd()] = loadedData;
                 break;
-            default: 
+            default:
                 registers.int_regs[memoryStage.front().getrd()] = loadedData;
         }
 
@@ -89,8 +89,8 @@ inline void CPU::Memory() {
         // Memory write operation
         uint32_t memoryAddress = memoryStage.front().getALUresult();
         uint32_t dataToStore;
-        switch (memoryStage.front().getOpcode()) {
-            case S_TYPE_FP:
+        switch (memoryStage.front().checkFloat()) {
+            case true:
                 dataToStore = registers.fp_regs[ram.Read(memoryStage.front().getrs2())];
                 break;
             default: 
@@ -109,21 +109,36 @@ inline void CPU::WriteBack() {
     }
 
     switch(writeBackStage.front().checkWBsel()){
-
+        case 0:
+            switch (writeBackStage.front().checkFloat()) {
+                case true:
+                    registers.fp_regs[writeBackStage.front().getrd()] = ram.Read(writeBackStage.front().getALUresult());
+                    break;
+                default: 
+                    registers.int_regs[writeBackStage.front().getrd()] = ram.Read(writeBackStage.front().getALUresult());
+            }
+            break;
+        case 1:
+            switch (writeBackStage.front().checkFloat()) {
+                case true:
+                    registers.fp_regs[writeBackStage.front().getrd()] = writeBackStage.front().getALUresult();
+                    break;
+                default: 
+                    registers.int_regs[writeBackStage.front().getrd()] = writeBackStage.front().getALUresult();
+                }
+        case 2:
+            registers.int_regs[writeBackStage.front().getrd()] = prevPC+4;
+            break;
+        default:
+            return;
     }
 }
 
 inline void CPU::updatePipeline() {
-    // Check and move instructions from Fetch to Decode stage
-    if (!fetchStage.empty()) {
-        decodeStage.push(fetchStage.front());
-        fetchStage.pop();
-    }
-
-    // Check and move instructions from Decode to Execute stage
-    if (!decodeStage.empty()) {
-        executeStage.push(decodeStage.front());
-        decodeStage.pop();
+    // Check and move instructions from Memory to WriteBack stage
+    if (!memoryStage.empty()) {
+        writeBackStage.push(memoryStage.front());
+        memoryStage.pop();
     }
 
     // Check and move instructions from Execute to Memory stage
@@ -132,26 +147,53 @@ inline void CPU::updatePipeline() {
         executeStage.pop();
     }
 
-    // Check and move instructions from Memory to WriteBack stage
-    if (!memoryStage.empty()) {
-        writeBackStage.push(memoryStage.front());
-        memoryStage.pop();
+    // Check and move instructions from Decode to Execute stage
+    if (!decodeStage.empty()) {
+        executeStage.push(decodeStage.front());
+        decodeStage.pop();
+    }
+
+    // Check and move instructions from Fetch to Decode stage
+    if (!fetchStage.empty()) {
+        decodeStage.push(fetchStage.front());
+        fetchStage.pop();
     }
 
 }
 
 // Function to print the events
 inline void CPU::printEvents() {
-    // std::cout << "Header";
+    std::cout << "\t\tFetch\tDecode\tExecute\tStore\t\n";
     while (!events.empty()) {
         events.front().print();
         events.pop();
     }
 }
 
+inline void CPU::updateEventQueue() {
+    std::string fetchString = fetchStage.front().printAssembly();
+    std::string decodeString = decodeStage.front().printAssembly();
+    std::string executeString = executeStage.front().printAssembly();
+    std::string memoryString = memoryStage.front().printAssembly();
+    std::string writeBackString = writeBackStage.front().printAssembly();
+
+    events.push(Event(currentTick, fetchString, decodeString, executeString, memoryString, writeBackString));
+}
+
 inline void CPU::runCPU() {
     // Main simulation loop
+    int loopCnt = 0;
+    int loopMax = 20;
     while (reset == false) {
+        if(loopCnt >= loopMax){
+            reset = 1;
+        }
+        std::cout << "CPU Clk cycle #" << loopCnt << "******************************\n";
+        loopCnt++;
+
+        // Save pc at start of cycle
+        prevPC = pc;
+
         // Update pipeline
         updatePipeline();
 
@@ -159,19 +201,22 @@ inline void CPU::runCPU() {
         Fetch();
         Decode();
         Execute();
+        Memory();
         WriteBack();
 
-        // Create event log for each cycle
-        events.push(Event(currentTick));
+        // Update event log for each cycle
+        updateEventQueue();
 
         // Uncomment to print event queue every cycle
         // events.front().print();
 
         // Uncomment to print ram contents every cycle
         // memory.PrintMemoryContents();
+
     }
     // Uncomment to print event queue at the end of the program
-    // std::cout << "**********Completed CPU Event Queue**********\n";
+    std::cout << "**********Completed CPU Event Queue**********\n";
     // printEvents();
+
 }
 
