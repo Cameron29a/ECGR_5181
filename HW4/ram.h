@@ -32,28 +32,28 @@ public:
     }
 
     // Print the contents of the memory map
-    // void PrintMemoryContents() {
-    //     std::cout << "***********************Memory Contents:***********************\n";
-    //     uint32_t address = 0;
-    //     uint8_t data;
-    //     while (address <= memory.size()) {
-    //         std::cout << "Address 0x" << std::hex << address << ": 0b";
-    //         data = static_cast<int>(memory[address]);
-    //         // Print the single byte stored in each address
-    //         // Decrementing for loop = little endiness
-    //         for (int i = 7; i >= 0; i--) {
-    //             std::cout << std::hex << ((data >> i) & 0b1);
-    //         }
-    //         std::cout << "\n";
-    //         address++;
-    //     }
-    // }
     void PrintMemoryContents() {
         std::cout << "***********************Memory Contents:***********************\n";
-        for (uint32_t address = 0; address < memory.size(); ++address) {
-            std::cout << "Address 0x" << std::hex << address << ": 0x" << std::setw(2) << std::setfill('0') << static_cast<int>(memory[address]) << "\n";
+        uint32_t address = 0;
+        uint8_t data;
+        while (address <= memory.size()) {
+            std::cout << "Address 0x" << std::hex << address << ": 0b";
+            data = static_cast<int>(memory[address]);
+            // Print the single byte stored in each address
+            // Decrementing for loop = little endiness
+            for (int i = 7; i >= 0; i--) {
+                std::cout << std::hex << ((data >> i) & 0b1);
+            }
+            std::cout << "\n";
+            address++;
         }
     }
+    // void PrintMemoryContents() {
+    //     std::cout << "***********************Memory Contents:***********************\n";
+    //     for (uint32_t address = 0; address < memory.size(); ++address) {
+    //         std::cout << "Address 0x" << std::hex << address << ": 0x" << std::setw(2) << std::setfill('0') << static_cast<int>(memory[address]) << "\n";
+    //     }
+    // }
 
 };
 

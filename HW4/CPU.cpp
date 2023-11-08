@@ -1,6 +1,9 @@
 #include "CPU.h"
 
 inline void CPU::Fetch() {
+    if (!fetchStage.empty()) {
+        return;
+    }
     // Fetch an instruction from memory based on the current PC
     uint32_t nextInstruction = 0;
     std::cout << "***************Instruction Fetch***************\n";
@@ -33,17 +36,17 @@ inline void CPU::Execute() {
     uint32_t rs2 = ram.Read(executeStage.front().getrs2());
 
     bool takeBranch = false;
-    if (executeStage.front().checkBranch() == 1) {
+    if (executeStage.front().checkBranch()) {
         takeBranch = branchCtl.shouldTakeBranch(executeStage.front().getfunct3(), rs1, rs2);
     }
     // set PCsel after branch check
     executeStage.front().setPCsel(executeStage.front().getOpcode(), takeBranch);
 
     // Check ALU input control signals
-    if (executeStage.front().checkALUsrc1() == 1) {
+    if (executeStage.front().checkALUsrc1()) {
         rs1 = pc;
     }
-    if (executeStage.front().checkALUsrc2() == 1) {
+    if (executeStage.front().checkALUsrc2()) {
         rs2 = executeStage.front().getImm();
     }
     
@@ -70,29 +73,30 @@ inline void CPU::Memory() {
     if (memoryStage.front().checkmemRead()) {
         // Memory read operation
         uint32_t memoryAddress = memoryStage.front().getALUresult();
+        std::cout << "ALU Result = " << memoryAddress << "\n";
         uint32_t loadedData = ram.Read(memoryAddress);
 
-        // Set the loaded data to the destination register
-        switch (memoryStage.front().checkFloat()) {
-            case true:
-                registers.fp_regs[memoryStage.front().getrd()] = loadedData;
-                break;
-            default:
-                registers.int_regs[memoryStage.front().getrd()] = loadedData;
-        }
+        // // Set the loaded data to the destination register
+        // switch (memoryStage.front().checkFloat()) {
+        //     case true:
+        //         registers.fp_regs[memoryStage.front().getrd()] = loadedData;
+        //         break;
+        //     default:
+        //         registers.int_regs[memoryStage.front().getrd()] = loadedData;
+        // }
 
     } else if (memoryStage.front().checkmemWrite()) {
-        // Memory write operation
-        uint32_t memoryAddress = memoryStage.front().getALUresult();
-        uint32_t dataToStore;
-        switch (memoryStage.front().checkFloat()) {
-            case true:
-                dataToStore = registers.fp_regs[ram.Read(memoryStage.front().getrs2())];
-                break;
-            default: 
-                dataToStore = registers.int_regs[ram.Read(memoryStage.front().getrs2())];
-        }
-        ram.Write(memoryAddress, dataToStore);
+        // // Memory write operation
+        // uint32_t memoryAddress = memoryStage.front().getALUresult();
+        // uint32_t dataToStore;
+        // switch (memoryStage.front().checkFloat()) {
+        //     case true:
+        //         dataToStore = registers.fp_regs[ram.Read(memoryStage.front().getrs2())];
+        //         break;
+        //     default: 
+        //         dataToStore = registers.int_regs[ram.Read(memoryStage.front().getrs2())];
+        // }
+        // ram.Write(memoryAddress, dataToStore);
     }
 }
 
@@ -102,56 +106,61 @@ inline void CPU::WriteBack() {
         return;
     }
 
-    switch(writeBackStage.front().checkWBsel()){
-        case 0:
-            switch (writeBackStage.front().checkFloat()) {
-                case true:
-                    registers.fp_regs[writeBackStage.front().getrd()] = ram.Read(writeBackStage.front().getALUresult());
-                    break;
-                default: 
-                    registers.int_regs[writeBackStage.front().getrd()] = ram.Read(writeBackStage.front().getALUresult());
-            }
-            break;
-        case 1:
-            switch (writeBackStage.front().checkFloat()) {
-                case true:
-                    registers.fp_regs[writeBackStage.front().getrd()] = writeBackStage.front().getALUresult();
-                    break;
-                default: 
-                    registers.int_regs[writeBackStage.front().getrd()] = writeBackStage.front().getALUresult();
-                }
-        case 2:
-            registers.int_regs[writeBackStage.front().getrd()] = prevPC+4;
-            break;
-        default:
-            return;
-    }
+    // switch(writeBackStage.front().checkWBsel()){
+    //     case 0:
+    //         switch (writeBackStage.front().checkFloat()) {
+    //             case true:
+    //                 registers.fp_regs[writeBackStage.front().getrd()] = ram.Read(writeBackStage.front().getALUresult());
+    //                 break;
+    //             default: 
+    //                 registers.int_regs[writeBackStage.front().getrd()] = ram.Read(writeBackStage.front().getALUresult());
+    //         }
+    //         break;
+    //     case 1:
+    //         switch (writeBackStage.front().checkFloat()) {
+    //             case true:
+    //                 registers.fp_regs[writeBackStage.front().getrd()] = writeBackStage.front().getALUresult();
+    //                 break;
+    //             default: 
+    //                 registers.int_regs[writeBackStage.front().getrd()] = writeBackStage.front().getALUresult();
+    //             }
+    //     case 2:
+    //         registers.int_regs[writeBackStage.front().getrd()] = prevPC+4;
+    //         break;
+    //     default:
+    // }
+    
 }
 
 inline void CPU::updatePipeline() {
     // Check and move instructions from Fetch to Decode stage
-    if (fetchStage.empty() && decodeStage.empty() && executeStage.empty()) {
+    if (!fetchStage.empty() && decodeStage.empty() && executeStage.empty() && memoryStage.empty() && writeBackStage.empty()) {
         decodeStage.push(fetchStage.front());
         fetchStage.pop();
     }
 
     // Check and move instructions from Decode to Execute stage
-    // if (!decodeStage.empty()) {
-    //     executeStage.push(decodeStage.front());
-    //     decodeStage.pop();
-    // }
+    else if (!fetchStage.empty() && !decodeStage.empty() && executeStage.empty() && memoryStage.empty() && writeBackStage.empty()) {
+        executeStage.push(decodeStage.front());
+        decodeStage.pop();
+    }
 
     // Check and move instructions from Execute to Memory stage
-    // if (!executeStage.empty()) {
-    //     memoryStage.push(executeStage.front());
-    //     executeStage.pop();
-    // }
+    else if (!fetchStage.empty() && decodeStage.empty() && !executeStage.empty() && memoryStage.empty() && writeBackStage.empty()) {
+        memoryStage.push(executeStage.front());
+        executeStage.pop();
+    }
 
-    // // Check and move instructions from Memory to WriteBack stage
-    // if (!memoryStage.empty()) {
-    //     writeBackStage.push(memoryStage.front());
-    //     memoryStage.pop();
-    // }
+    // Check and move instructions from Memory to WriteBack stage
+    else if (!fetchStage.empty() && decodeStage.empty() && executeStage.empty() && !memoryStage.empty() && writeBackStage.empty()) {
+        writeBackStage.push(memoryStage.front());
+        memoryStage.pop();
+    }
+
+    else if (!fetchStage.empty() && decodeStage.empty() && executeStage.empty() && memoryStage.empty() && !writeBackStage.empty()) {
+        writeBackStage.pop();
+    }
+
 }
 
 // Function to print the events
@@ -174,9 +183,10 @@ inline void CPU::updateEventQueue() {
 }
 
 inline void CPU::runCPU() {
-    // Main simulation loop
+    // Main simulation loop.
     int loopCnt = 0;
     int loopMax = 20;
+    
     while (reset == false) {
         if(loopCnt >= loopMax){
             reset = 1;
@@ -188,18 +198,18 @@ inline void CPU::runCPU() {
         // Save pc at start of cycle
         prevPC = pc;
 
-        // Update pipeline
-        updatePipeline();
-
         // Run each stage of the pipeline
         Fetch();
         Decode();
         Execute();
-        Memory();
+        // Memory();
         WriteBack();
 
         // Update event log for each cycle
         updateEventQueue();
+
+        // Update pipeline
+        updatePipeline();
 
         // Update System Clock
         currentTick++;
