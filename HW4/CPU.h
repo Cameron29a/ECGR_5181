@@ -18,6 +18,31 @@
 struct Registers {
     int32_t int_regs[32];
     float fp_regs[32];
+
+    uint32_t readIntRegister(uint32_t address) {
+        if (address >= 0 && address < 32)
+            return int_regs[address];
+        else
+            return 0;
+    }
+
+    void writeIntRegister(uint32_t address, uint32_t data) {
+        if (address >= 0 && address < 32)
+            int_regs[address] = data;
+    }
+
+    float readFPRegister(uint32_t address) {
+        if (address >= 0 && address < 32)
+            return fp_regs[address];
+        else 
+            return 0;
+    }
+
+    void writeFPRegister(uint32_t address, float data) {
+        if (address >= 0 && address < 32)
+            fp_regs[address] = data;
+    }
+
 };
 
 // Define the CPU class
@@ -41,7 +66,13 @@ class CPU {
     uint32_t prevPC;
 
 public:
-    CPU(RAM& ram, uint32_t stackStart) : reset(false), currentTick(0), pc(0), sp(stackStart), stackStart(stackStart), ram(ram) { };
+    CPU(RAM& ram, uint32_t stackStart) : reset(false), currentTick(0), pc(0), sp(stackStart), stackStart(stackStart), ram(ram) { 
+        // Initialize registers to 0
+        for (int i = 0; i < 32; ++i) {
+            registers.int_regs[i] = 0;
+            registers.fp_regs[i] = 0.0f;
+        }
+    };
 
     bool checkReset() { return reset; }
 

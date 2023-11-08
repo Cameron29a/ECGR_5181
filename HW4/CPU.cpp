@@ -9,10 +9,7 @@ inline void CPU::Fetch() {
     std::cout << "***************Instruction Fetch***************\n";
     nextInstruction = ram.Read(pc);
     pc +=4;
-
     fetchStage.push(nextInstruction);
-    // PC is automatically incremented +4 when fetching an instruction.
-    // In case if branch or jump, PC is adjusted in the execute stage during this cycle
     std::cout << (fetchStage.front().getAssemblyString()) << "\n";
 }
 
@@ -31,9 +28,15 @@ inline void CPU::Execute() {
     if (executeStage.empty()) {
         return;
     }
-    
-    uint32_t rs1 = ram.Read(executeStage.front().getrs1());
-    uint32_t rs2 = ram.Read(executeStage.front().getrs2());
+
+    uint32_t rs1, rs2;
+    if (executeStage.front().checkFloat()) {
+        rs1 = registers.readFPRegister(executeStage.front().getrs1());
+        rs2 = registers.readFPRegister(executeStage.front().getrs2());
+    } else {
+        rs1 = registers.readIntRegister(executeStage.front().getrs1());
+        rs2 = registers.readIntRegister(executeStage.front().getrs2());
+    }
 
     bool takeBranch = false;
     if (executeStage.front().checkBranch()) {
@@ -52,6 +55,9 @@ inline void CPU::Execute() {
     
     // Have ALU execute the instruction
     executeStage.front().setALUresult(alu.doTheThing(executeStage.front().checkALUop(), rs1, rs2));
+        uint32_t memoryAddress = executeStage.front().getALUresult();
+        std::cout << "ALU Result = " << memoryAddress << "\n";
+        
 
     // Adjust PC if there is a branch or jump
     switch (executeStage.front().checkPCsel()) {
@@ -76,27 +82,27 @@ inline void CPU::Memory() {
         std::cout << "ALU Result = " << memoryAddress << "\n";
         uint32_t loadedData = ram.Read(memoryAddress);
 
-        // // Set the loaded data to the destination register
-        // switch (memoryStage.front().checkFloat()) {
-        //     case true:
-        //         registers.fp_regs[memoryStage.front().getrd()] = loadedData;
-        //         break;
-        //     default:
-        //         registers.int_regs[memoryStage.front().getrd()] = loadedData;
-        // }
+        // Set the loaded data to the destination register
+        switch (memoryStage.front().checkFloat()) {
+            case true:
+                registers.fp_regs[memoryStage.front().getrd()] = loadedData;
+                break;
+            default:
+                registers.int_regs[memoryStage.front().getrd()] = loadedData;
+        }
 
     } else if (memoryStage.front().checkmemWrite()) {
-        // // Memory write operation
-        // uint32_t memoryAddress = memoryStage.front().getALUresult();
-        // uint32_t dataToStore;
-        // switch (memoryStage.front().checkFloat()) {
-        //     case true:
-        //         dataToStore = registers.fp_regs[ram.Read(memoryStage.front().getrs2())];
-        //         break;
-        //     default: 
-        //         dataToStore = registers.int_regs[ram.Read(memoryStage.front().getrs2())];
-        // }
-        // ram.Write(memoryAddress, dataToStore);
+        // Memory write operation
+        uint32_t memoryAddress = memoryStage.front().getALUresult();
+        uint32_t dataToStore;
+        switch (memoryStage.front().checkFloat()) {
+            case true:
+                dataToStore = registers.fp_regs[ram.Read(memoryStage.front().getrs2())];
+                break;
+            default: 
+                dataToStore = registers.int_regs[ram.Read(memoryStage.front().getrs2())];
+        }
+        ram.Write(memoryAddress, dataToStore);
     }
 }
 
@@ -106,29 +112,30 @@ inline void CPU::WriteBack() {
         return;
     }
 
-    // switch(writeBackStage.front().checkWBsel()){
-    //     case 0:
-    //         switch (writeBackStage.front().checkFloat()) {
-    //             case true:
-    //                 registers.fp_regs[writeBackStage.front().getrd()] = ram.Read(writeBackStage.front().getALUresult());
-    //                 break;
-    //             default: 
-    //                 registers.int_regs[writeBackStage.front().getrd()] = ram.Read(writeBackStage.front().getALUresult());
-    //         }
-    //         break;
-    //     case 1:
-    //         switch (writeBackStage.front().checkFloat()) {
-    //             case true:
-    //                 registers.fp_regs[writeBackStage.front().getrd()] = writeBackStage.front().getALUresult();
-    //                 break;
-    //             default: 
-    //                 registers.int_regs[writeBackStage.front().getrd()] = writeBackStage.front().getALUresult();
-    //             }
-    //     case 2:
-    //         registers.int_regs[writeBackStage.front().getrd()] = prevPC+4;
-    //         break;
-    //     default:
-    // }
+    switch(writeBackStage.front().checkWBsel()){
+        case 0:
+            switch (writeBackStage.front().checkFloat()) {
+                case true:
+                    registers.fp_regs[writeBackStage.front().getrd()] = ram.Read(writeBackStage.front().getALUresult());
+                    break;
+                default: 
+                    registers.int_regs[writeBackStage.front().getrd()] = ram.Read(writeBackStage.front().getALUresult());
+            }
+            break;
+        case 1:
+            switch (writeBackStage.front().checkFloat()) {
+                case true:
+                    registers.fp_regs[writeBackStage.front().getrd()] = writeBackStage.front().getALUresult();
+                    break;
+                default: 
+                    registers.int_regs[writeBackStage.front().getrd()] = writeBackStage.front().getALUresult();
+                }
+        case 2:
+            registers.int_regs[writeBackStage.front().getrd()] = prevPC+4;
+            break;
+        default:
+            return;
+    }
     
 }
 
