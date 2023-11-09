@@ -12,31 +12,29 @@
 #include "branchCtl.h"
 #include "ram.h"
 
-
-
 // Define RISC-V registers
 struct Registers {
     int32_t int_regs[32];
     float fp_regs[32];
 
-    uint32_t readIntRegister(uint32_t address) {
-        if (address >= 0 && address < 32)
-            return int_regs[address];
-        else
-            return 0;
-    }
+    // uint32_t readIntRegister(uint32_t address) {
+    //     if (address >= 0 && address < 32)
+    //         return int_regs[address];
+    //     else
+    //         return 0;
+    // }
 
     void writeIntRegister(uint32_t address, uint32_t data) {
         if (address >= 0 && address < 32)
             int_regs[address] = data;
     }
 
-    float readFPRegister(uint32_t address) {
-        if (address >= 0 && address < 32)
-            return fp_regs[address];
-        else 
-            return 0;
-    }
+    // float readFPRegister(uint32_t address) {
+    //     if (address >= 0 && address < 32)
+    //         return fp_regs[address];
+    //     else 
+    //         return 0;
+    // }
 
     void writeFPRegister(uint32_t address, float data) {
         if (address >= 0 && address < 32)
@@ -88,6 +86,9 @@ public:
     // Function to print the event queue
     void printEvents();
     void updateEventQueue();
+
+
+    void printRegisters();
 
     // Function to simulate the CPU for 1 cycle
     void runCPU();

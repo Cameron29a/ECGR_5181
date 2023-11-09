@@ -68,7 +68,7 @@ inline void Simulation::runSimulation() {
     std::cout << "Begin System Initialization\n";
 
     std::cout << "Create Virtual Memory\n";
-    RAM memory(0xFFF);
+    RAM memory(0x77);
 
     // write instructions to addresses 0x0 – 0x093
     std::cout << "Write Instructions to Memory\n";
@@ -82,8 +82,8 @@ inline void Simulation::runSimulation() {
     // uint32_t endStack = 0x2FF;
 
     // Initialize addresses 0x400 - 0xbFF (ARRAY_A & ARRAY_B) with random FP32 values.
-    std::cout << "Fill ranges 0x400-0xBFF with random values\n";
-    fillRandomData(memory, 0x400, 0xBFF);
+    // std::cout << "Fill ranges 0x400-0xBFF with random values\n";
+    // fillRandomData(memory, 0x400, 0xBFF);
     
     std::cout << "=====Memory contents before start of Simulation=====\n";
     memory.PrintMemoryContents();

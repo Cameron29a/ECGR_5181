@@ -388,10 +388,10 @@ void Instruction::assembleString() {
                     instruction << "andi";
                     break;
             }
-            instruction << " x" << rd << ", x" << rs1 << ", " << std::dec << imm << "";
+            instruction << " x" << rd << ", x" << rs1 << ", " << std::dec << imm;
             break;
         case AUIPC:
-            instruction << "auipc x" << rd << ", " << std::dec << imm << "";
+            instruction << "auipc x" << rd << ", " << std::dec << imm;
             break;
         case S_TYPE:
             switch (funct3) {
@@ -501,10 +501,10 @@ void Instruction::assembleString() {
                     break;
                 break;
             }
-            instruction << " x" << rd << ", x" << rs1 << ", x" << rs2 << "";
+            instruction << " x" << rd << ", x" << rs1 << ", x" << rs2;
             break;
         case LUI:
-            instruction << "lui x" << rd << ", " << std::dec << imm << "";
+            instruction << "lui x" << rd << ", " << std::dec << imm;
             break;
         case SB_TYPE:
             switch (funct3) {
@@ -527,13 +527,13 @@ void Instruction::assembleString() {
                     instruction << "bgeu";
                     break;
             }
-            instruction << " x" << rs1 << ", x" << rs2 << ", " << std::dec << imm << "";
+            instruction << " x" << rs1 << ", x" << rs2 << ", " << std::dec << imm;
             break;
         case JALR:
-            instruction << "jalr x" << rd << ", x" << rs1 << ", " << std::dec << imm << "";
+            instruction << "jalr x" << rd << ", x" << rs1 << ", " << std::dec << imm;
             break;
         case JAL:
-            instruction << "jal x" << rd << ", " << std::dec << imm << "";
+            instruction << "jal x" << rd << ", " << std::dec << imm;
             break;
         case FP_TYPE:
             switch (funct7) {
@@ -632,10 +632,10 @@ void Instruction::assembleString() {
                 case fmv_x_w:
                 case fclass_s:
                 case fmv_w_x:
-                    instruction << " f" << rd << ", f" << rs1 << "";
+                    instruction << " f" << rd << ", f" << rs1;
                     break;
                 default:
-                    instruction << " f" << rd << ", f" << rs1 << ", f" << rs2 << "";
+                    instruction << " f" << rd << ", f" << rs1 << ", f" << rs2;
                     break;
             }
             break;

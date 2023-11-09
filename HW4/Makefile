@@ -7,7 +7,7 @@ EXECUTABLE := test
 
 # Source files
 SRC := $(wildcard *.cpp)
-DEPS := $(wildcard *.cpp)
+DEPS := $(wildcard *.h)
 
 # Object files
 OBJ := $(SRC:.cpp=.o)

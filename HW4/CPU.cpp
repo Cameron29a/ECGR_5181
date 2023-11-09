@@ -31,11 +31,11 @@ inline void CPU::Execute() {
 
     uint32_t rs1, rs2;
     if (executeStage.front().checkFloat()) {
-        rs1 = registers.readFPRegister(executeStage.front().getrs1());
-        rs2 = registers.readFPRegister(executeStage.front().getrs2());
+        rs1 = registers.fp_regs[executeStage.front().getrs1()];
+        rs2 = registers.fp_regs[executeStage.front().getrs2()];
     } else {
-        rs1 = registers.readIntRegister(executeStage.front().getrs1());
-        rs2 = registers.readIntRegister(executeStage.front().getrs2());
+        rs1 = registers.int_regs[executeStage.front().getrs1()];
+        rs2 = registers.int_regs[executeStage.front().getrs2()];
     }
 
     bool takeBranch = false;
@@ -55,9 +55,6 @@ inline void CPU::Execute() {
     
     // Have ALU execute the instruction
     executeStage.front().setALUresult(alu.doTheThing(executeStage.front().checkALUop(), rs1, rs2));
-        uint32_t memoryAddress = executeStage.front().getALUresult();
-        std::cout << "ALU Result = " << memoryAddress << "\n";
-        
 
     // Adjust PC if there is a branch or jump
     switch (executeStage.front().checkPCsel()) {
@@ -91,16 +88,17 @@ inline void CPU::Memory() {
                 registers.int_regs[memoryStage.front().getrd()] = loadedData;
         }
 
-    } else if (memoryStage.front().checkmemWrite()) {
+    } 
+    else if (memoryStage.front().checkmemWrite()) {
         // Memory write operation
         uint32_t memoryAddress = memoryStage.front().getALUresult();
         uint32_t dataToStore;
         switch (memoryStage.front().checkFloat()) {
             case true:
-                dataToStore = registers.fp_regs[ram.Read(memoryStage.front().getrs2())];
+                dataToStore = registers.fp_regs[memoryStage.front().getrs2()];
                 break;
             default: 
-                dataToStore = registers.int_regs[ram.Read(memoryStage.front().getrs2())];
+                dataToStore = registers.int_regs[memoryStage.front().getrs2()];
         }
         ram.Write(memoryAddress, dataToStore);
     }
@@ -136,7 +134,7 @@ inline void CPU::WriteBack() {
         default:
             return;
     }
-    
+
 }
 
 inline void CPU::updatePipeline() {
@@ -168,6 +166,18 @@ inline void CPU::updatePipeline() {
         writeBackStage.pop();
     }
 
+}
+
+inline void CPU::printRegisters() {
+    std::cout << "Integer Registers:\n";
+    for (int i = 0; i < 32; ++i) {
+        std::cout << "x" << i << " (" << std::bitset<5>(i) << "): " << std::bitset<32>(registers.int_regs[i]) << "\n";
+    }
+
+    std::cout << "Floating-Point Registers:\n";
+    for (int i = 0; i < 32; ++i) {
+        std::cout << "f" << i << " (" << std::bitset<5>(i) << "): " << std::bitset<32>(*(reinterpret_cast<uint32_t*>(&registers.fp_regs[i])) ) << "\n";
+    }
 }
 
 // Function to print the events
@@ -209,7 +219,7 @@ inline void CPU::runCPU() {
         Fetch();
         Decode();
         Execute();
-        // Memory();
+        Memory();
         WriteBack();
 
         // Update event log for each cycle
@@ -223,6 +233,9 @@ inline void CPU::runCPU() {
 
         // Uncomment to print event queue every cycle
         // events.front().print();
+
+        // Uncomment to print registers every cycle
+        printRegisters();
 
         // Uncomment to print ram contents every cycle
         // memory.PrintMemoryContents();
