@@ -8,7 +8,6 @@ typedef uint64_t tick_t;
 
 class Event {
     tick_t simTick;
-    bool scheduled;
     std::string fetchString;
     std::string decodeString;
     std::string executeString;
@@ -27,7 +26,7 @@ public:
 
     // Function to print the details of an event
     void print() const {
-        std::cout << "====================Clock: " << simTick << "====================\n" 
+        std::cout << "Clock: " << simTick << "\n" 
         << "Fetch Stage: " << fetchString << "\n" 
         << "Decode Stage: " << decodeString << "\n" 
         << "Execute Stage: " << executeString << "\n" 

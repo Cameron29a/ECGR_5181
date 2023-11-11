@@ -54,7 +54,6 @@ public:
 
     // Control Signals
     bool regWrite, ALUsrc1, ALUsrc2, memWrite, memRead, branch, jump, rm, PCsel;
-    bool isFloat;
     int ALUop, WBsel;
 
     // Check Control Signals
@@ -70,10 +69,12 @@ public:
     int checkALUop() { return ALUop; }
     int checkWBsel() { return WBsel; }
 
+    // Float
+    bool isFloat;
     bool checkFloat() { return isFloat; }
 
     // Decode functions
-    int32_t getImmediate(uint32_t);
+    int32_t setImmediate(uint32_t);
     void setregWrite(uint32_t);
     void setALUsrc1(uint32_t);
     void setALUsrc2(uint32_t);
@@ -103,7 +104,7 @@ public:
         rd = (instruction >> 7) & 0x1F;
         funct3 = (instruction >> 12) & 0x7;
         funct7 = (instruction >> 25) & 0x7F;
-        imm = getImmediate(opcode);
+        imm = setImmediate(opcode);
 
         // Set Control Signals
         setregWrite(opcode);

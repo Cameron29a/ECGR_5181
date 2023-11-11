@@ -76,7 +76,18 @@ inline void Simulation::runSimulation() {
     uint32_t startAddress = 0x0;
     uint32_t stopAddress = 0x94;
     loadInstructionsToMemory(filename, memory, startAddress, stopAddress);
+
+    std::cout << "Check Instructions after writing to memory\n";
     
+    uint32_t pc = startAddress;
+    while (pc <= stopAddress && memory.Read(pc) != 0) {
+        Instruction i = memory.Read(pc);
+        std::cout << "Instruction #" << pc/4 << ": " << i.getAssemblyString() << "\n";
+        pc += 4;
+    }
+    uint32_t lastAddress = pc;
+    std::cout << "Last address :" << lastAddress << "\n";
+
     // Allocate addresses 0x200 - 0x2FF for the stack
     uint32_t startStack = 0x200;
     // uint32_t endStack = 0x2FF;
@@ -85,14 +96,47 @@ inline void Simulation::runSimulation() {
     // std::cout << "Fill ranges 0x400-0xBFF with random values\n";
     // fillRandomData(memory, 0x400, 0xBFF);
     
-    std::cout << "=====Memory contents before start of Simulation=====\n";
-    memory.PrintMemoryContents();
+    // std::cout << "=====Memory contents before start of Simulation=====\n";
+    // memory.PrintMemoryContents();
 
+    bool pipeline = false;
     std::cout << "=================Create CPU=================\n";
-    CPU cpu1{ memory, startStack };
+    CPU cpu1{ memory, startAddress, startStack, pipeline };
+
+    
+    // Main simulation loop.
+    int loopCnt = 0;
+    int loopMax = 30;
+
+    // for testing lab 2
+    cpu1.writeIntRegister(1, 160);
 
     // Start CPU and start running until it resets
-    cpu1.runCPU();
+    std::cout << "==============================Simulation Begin==============================\n";
+    while (cpu1.checkReset() == false) {
+        if(loopCnt >= loopMax){
+            break;
+        }
+        std::cout << "=====================Simulation Loop #" << std::dec << loopCnt << "=====================\n";
+        loopCnt++;
+
+        cpu1.runCPUcycle();
+
+        // Uncomment to print event queue every cycle
+        // cpu1.printCurrentEvent();
+
+        // Uncomment to print registers every cycle
+        // cpu1.printRegisters();
+
+        // Uncomment to print ram contents every cycle
+        // memory.PrintMemoryContents();
+    }
+    
+    // std::cout << "=====Event Queue for Simulation=====\n";
+    cpu1.printEventQueue();
+
+    // std::cout << "=====Registers after end of Simulation=====\n";
+    // cpu1.printRegisters();
 
     // std::cout << "=====Memory contents after end of Simulation=====\n";
     // memory.PrintMemoryContents();

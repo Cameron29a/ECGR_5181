@@ -1,7 +1,7 @@
 #include "instruction.h"
 #include <bitset>
 
-int32_t Instruction::getImmediate(uint32_t opcode) {
+int32_t Instruction::setImmediate(uint32_t opcode) {
     switch (opcode) {
         case LOAD:
         case LOAD_FP:
@@ -354,7 +354,7 @@ void Instruction::assembleString() {
             instruction << " x" << rd << ", " << std::dec << imm << "(x" << rs1 << ")";
             break;
         case LOAD_FP:
-            // if(funct3 != 0b010) break;
+            if(funct3 != 0b010) break;
             instruction << "flw f" << rd << ", " << std::dec << imm << "(x" << rs1 << ")";
             break;
         case I_TYPE:
@@ -408,7 +408,7 @@ void Instruction::assembleString() {
             instruction << " x" << rs1 << ", " << std::dec << imm << "(x" << rs2 << ")";
             break;
         case S_TYPE_FP:
-            // if(funct3 != 0b010) break;
+            if(funct3 != 0b100) break;
             instruction << "fsw f" << rs1 << ", " << std::dec << imm << "(x" << rs2 << ")";
             break;
         case R_TYPE:
@@ -640,7 +640,7 @@ void Instruction::assembleString() {
             }
             break;
         default:
-            instruction << "No-Op.";
+            instruction << "Invalid Op.";
     }
     assemblyString = instruction.str();
 }

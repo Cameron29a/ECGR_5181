@@ -6,11 +6,11 @@ inline void CPU::Fetch() {
     }
     // Fetch an instruction from memory based on the current PC
     uint32_t nextInstruction = 0;
-    std::cout << "***************Instruction Fetch***************\n";
+    // std::cout << "***************Instruction Fetch***************\n";
     nextInstruction = ram.Read(pc);
     pc +=4;
     fetchStage.push(nextInstruction);
-    std::cout << (fetchStage.front().getAssemblyString()) << "\n";
+    // std::cout << (fetchStage.front().getAssemblyString()) << "\n";
 }
 
 inline void CPU::Decode() {
@@ -29,13 +29,13 @@ inline void CPU::Execute() {
         return;
     }
 
-    uint32_t rs1, rs2;
+    uint32_t rs1 = registers.int_regs[executeStage.front().getrs1()];
+    uint32_t rs2 = registers.int_regs[executeStage.front().getrs2()];
+
+    float rs1_fp, rs2_fp;    
     if (executeStage.front().checkFloat()) {
-        rs1 = registers.fp_regs[executeStage.front().getrs1()];
-        rs2 = registers.fp_regs[executeStage.front().getrs2()];
-    } else {
-        rs1 = registers.int_regs[executeStage.front().getrs1()];
-        rs2 = registers.int_regs[executeStage.front().getrs2()];
+        rs1_fp = registers.fp_regs[executeStage.front().getrs1()];
+        rs2_fp = registers.fp_regs[executeStage.front().getrs2()];
     }
 
     bool takeBranch = false;
@@ -54,7 +54,7 @@ inline void CPU::Execute() {
     }
     
     // Have ALU execute the instruction
-    executeStage.front().setALUresult(alu.doTheThing(executeStage.front().checkALUop(), rs1, rs2));
+    executeStage.front().setALUresult(alu.doTheThing(executeStage.front().checkALUop(), rs1, rs2, rs1_fp, rs2_fp));
 
     // Adjust PC if there is a branch or jump
     switch (executeStage.front().checkPCsel()) {
@@ -76,7 +76,7 @@ inline void CPU::Memory() {
     if (memoryStage.front().checkmemRead()) {
         // Memory read operation
         uint32_t memoryAddress = memoryStage.front().getALUresult();
-        std::cout << "ALU Result = " << memoryAddress << "\n";
+        // std::cout << "ALU Result = " << memoryAddress << "\n";
         uint32_t loadedData = ram.Read(memoryAddress);
 
         // Set the loaded data to the destination register
@@ -137,7 +137,7 @@ inline void CPU::WriteBack() {
 
 }
 
-inline void CPU::updatePipeline() {
+inline void CPU::updateDataPath() {
     // Check and move instructions from Fetch to Decode stage
     if (!fetchStage.empty() && decodeStage.empty() && executeStage.empty() && memoryStage.empty() && writeBackStage.empty()) {
         decodeStage.push(fetchStage.front());
@@ -168,6 +168,10 @@ inline void CPU::updatePipeline() {
 
 }
 
+inline void CPU::updatePipeLine() {
+
+}
+
 inline void CPU::printRegisters() {
     std::cout << "Integer Registers:\n";
     for (int i = 0; i < 32; ++i) {
@@ -180,38 +184,45 @@ inline void CPU::printRegisters() {
     }
 }
 
-// Function to print the events
-inline void CPU::printEvents() {
-    // std::cout << "Header\n";
+// Function to print the event queue
+inline void CPU::printEventQueue() {
+    std::cout << "Event Queue:\n";
     while (!events.empty()) {
         events.front().print();
         events.pop();
     }
 }
 
-inline void CPU::updateEventQueue() {
-    std::string fetchString = fetchStage.front().getAssemblyString();
-    std::string decodeString = decodeStage.front().getAssemblyString();
-    std::string executeString = executeStage.front().getAssemblyString();
-    std::string memoryString = memoryStage.front().getAssemblyString();
-    std::string writeBackString = writeBackStage.front().getAssemblyString();
+// Function to print the current event
+inline void CPU::printCurrentEvent() {
+    std::cout << "Current Event:\n";
+    events.front().print();
+}
 
+inline void CPU::updateEventQueue() {
+    std::string fetchString, decodeString, executeString, memoryString, writeBackString;
+
+    if (fetchStage.empty()) fetchString = "No_Op";
+    else fetchString = fetchStage.front().getAssemblyString();
+    
+    if (decodeStage.empty()) decodeString = "No_Op";
+    else decodeString = decodeStage.front().getAssemblyString();
+    
+    if (executeStage.empty()) executeString = "No_Op";
+    else executeString = executeStage.front().getAssemblyString();
+    
+    if (memoryStage.empty()) memoryString = "No_Op";
+    else memoryString = memoryStage.front().getAssemblyString();
+    
+    if (writeBackStage.empty()) writeBackString = "No_Op";
+    else writeBackString = writeBackStage.front().getAssemblyString();
+
+    
     events.push(Event(currentTick, fetchString, decodeString, executeString, memoryString, writeBackString));
 }
 
-inline void CPU::runCPU() {
-    // Main simulation loop.
-    int loopCnt = 0;
-    int loopMax = 20;
-    
-    while (reset == false) {
-        if(loopCnt >= loopMax){
-            reset = 1;
-            break;
-        }
-        std::cout << "********************************************CPU Clk cycle #" << std::dec << loopCnt << "********************************************\n";
-        loopCnt++;
-
+inline void CPU::runCPUcycle() {
+    if (reset == false) {
         // Save pc at start of cycle
         prevPC = pc;
 
@@ -225,25 +236,16 @@ inline void CPU::runCPU() {
         // Update event log for each cycle
         updateEventQueue();
 
-        // Update pipeline
-        updatePipeline();
+        // Update datapath
+        switch (pipeline) {
+            case true:
+                updatePipeLine();
+            case false:
+                updateDataPath();
+        }
 
         // Update System Clock
         currentTick++;
-
-        // Uncomment to print event queue every cycle
-        // events.front().print();
-
-        // Uncomment to print registers every cycle
-        printRegisters();
-
-        // Uncomment to print ram contents every cycle
-        // memory.PrintMemoryContents();
-
     }
-    // Uncomment to print event queue at the end of the program
-    std::cout << "**********Completed CPU Event Queue**********\n";
-    printEvents();
-
 }
 

@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <vector>
-#include <iomanip> // Include the <iomanip> header for setw and setfill
+// #include <iomanip> // Include the <iomanip> header for setw and setfill
 
 class RAM {
     std::vector<uint8_t> memory;
@@ -33,7 +33,7 @@ public:
 
     // Print the contents of the memory map
     void PrintMemoryContents() {
-        std::cout << "***********************Memory Contents:***********************\n";
+        std::cout << "MMMMMMMMMMMMMMMMMMMMM-Memory Contents:-MMMMMMMMMMMMMMMMMMMMM\n";
         uint32_t address = 0;
         uint8_t data;
         while (address <= memory.size()) {
