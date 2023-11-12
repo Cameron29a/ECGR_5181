@@ -31,23 +31,36 @@ public:
         }
     }
 
+    // Read float from memory at the specified address
+    float ReadFloat(uint32_t address) {
+        uint32_t floatData = Read(address);
+        float result;
+        std::memcpy(&result, &floatData, sizeof(float));
+        return result;
+    }
+
+    // Write float to memory at the specified address
+    void WriteFloat(uint32_t address, float data) {
+        uint32_t floatData;
+        std::memcpy(&floatData, &data, sizeof(uint32_t));
+        Write(address, floatData);
+    }
+
     // Print the contents of the memory map
     void PrintMemoryContents() {
-        std::cout << "MMMMMMMMMMMMMMMMMMMMM-Memory Contents:-MMMMMMMMMMMMMMMMMMMMM\n";
-        uint32_t address = 0;
-        uint8_t data;
-        while (address <= memory.size()) {
+        std::cout << "MMMMMMMMMMMMMMMMMMMMMM-Memory Contents:-MMMMMMMMMMMMMMMMMMMMMM\n";
+        for (uint32_t address = 0; address <= memory.size(); address++) {
             std::cout << "Address 0x" << std::hex << address << ": 0b";
-            data = static_cast<int>(memory[address]);
+            uint8_t data = static_cast<int>(memory[address]);
             // Print the single byte stored in each address
             // Decrementing for loop = little endiness
             for (int i = 7; i >= 0; i--) {
                 std::cout << std::hex << ((data >> i) & 0b1);
             }
             std::cout << "\n";
-            address++;
         }
     }
+
     // void PrintMemoryContents() {
     //     std::cout << "***********************Memory Contents:***********************\n";
     //     for (uint32_t address = 0; address < memory.size(); ++address) {

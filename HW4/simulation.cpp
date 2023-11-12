@@ -133,7 +133,7 @@ inline void Simulation::runSimulation() {
     // cpu1.printRegisters();
 
     // std::cout << "=====Memory contents after end of Simulation=====\n";
-    // memory.PrintMemoryContents();
+    memory.PrintMemoryContents();
     
     std::cout.rdbuf(coutBuffer); // Restore the original cout buffer
     outputFile.close();

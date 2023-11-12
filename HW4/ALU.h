@@ -1,14 +1,16 @@
 #ifndef ALU_H
 #define ALU_H
 
+#include "instruction.cpp"
+
 // #include <cstdint>
-#include <cstring>
+// #include <cstring>
 
 class ALU {
 
 public:
 
-    int32_t doTheThing(uint32_t operation, int32_t rs1, int32_t rs2, float rs1_fp, float rs2_fp) {
+    int32_t doTheThing(Instruction& instruction, uint32_t operation, int32_t rs1, int32_t rs2, float rs1_fp, float rs2_fp) {
         int32_t signedRS1;
         int64_t result;
 
@@ -77,9 +79,9 @@ public:
                 return 0;
         }
         // Convert the floating-point result to uint32_t
-        uint32_t uintResult;
-        std::memcpy(&uintResult, &floatResult, sizeof(uint32_t));
-        return uintResult;
+        // uint32_t uintResult;
+        // std::memcpy(&uintResult, &floatResult, sizeof(uint32_t));
+        // return uintResult;
     }
 
 };
