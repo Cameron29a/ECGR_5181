@@ -74,26 +74,32 @@ public:
     bool checkFloat() { return isFloat; }
 
     // Decode functions
-    int32_t setImmediate(uint32_t);
-    void setregWrite(uint32_t);
-    void setALUsrc1(uint32_t);
-    void setALUsrc2(uint32_t);
-    void setmemWrite(uint32_t);
-    void setmemRead(uint32_t);
-    void setBranch(uint32_t);
-    void setJump(uint32_t);
-    void setRM(uint32_t, uint32_t);
-    void setPCsel(uint32_t, bool);
-    void setALUop(uint32_t);
-    void setWBsel(uint32_t);
+    int32_t setImmediate();
+    void setregWrite();
+    void setALUsrc1();
+    void setALUsrc2();
+    void setmemWrite();
+    void setmemRead();
+    void setBranch();
+    void setJump();
+    void setRM();
+    void setPCsel(bool);
+    void setALUop();
+    void setWBsel();
 
     void printSignals();
+    void printInstruction();
+    void printAssembly();
     void assembleString();    
     std::string getAssemblyString() { return assemblyString; }
     
-    uint32_t ALUresult;
-    void setALUresult(uint32_t);
-    uint32_t getALUresult() { return ALUresult; }
+    int32_t ALUresult;
+    void setALUresult(int32_t ALUresult) { this->ALUresult = ALUresult; }
+    int32_t getALUresult() { return ALUresult; }
+
+    float ALUresultFP;
+    void setALUresultFP(float ALUresultFP) { this->ALUresultFP = ALUresultFP; }
+    float getALUresultFP() { return ALUresultFP; }
 
     Instruction(uint32_t instruction) {
         // Get Values
@@ -104,19 +110,19 @@ public:
         rd = (instruction >> 7) & 0x1F;
         funct3 = (instruction >> 12) & 0x7;
         funct7 = (instruction >> 25) & 0x7F;
-        imm = setImmediate(opcode);
+        imm = setImmediate();
 
         // Set Control Signals
-        setregWrite(opcode);
-        setALUsrc1(opcode);
-        setALUsrc1(opcode);
-        setmemWrite(opcode);
-        setmemRead(opcode);
-        setBranch(opcode);
-        setJump(opcode);
-        setRM(opcode, funct7);
-        setALUop(opcode);
-        setWBsel(opcode);
+        setregWrite();
+        setALUsrc1();
+        setALUsrc2();
+        setmemWrite();
+        setmemRead();
+        setBranch();
+        setJump();
+        setRM();
+        setALUop();
+        setWBsel();
 
         assembleString();
 
@@ -124,8 +130,8 @@ public:
             case LOAD_FP:
             case S_TYPE_FP:
             case FP_TYPE:
-                // isFloat = true;
-                // break;
+                isFloat = true;
+                break;
             default: 
                 isFloat = false;
         }
@@ -418,11 +424,10 @@ public:
                 }
                 break;
             default:
-                // std::cout << "***************Unknown instruction.***************\n";
+                // std::cout << "Unknown instruction.\n";
                 // std::cout << "Magic 8-ball says you suck, try again.\n";
                 break;
         }
-        // printInstruction();
     }
 };
 

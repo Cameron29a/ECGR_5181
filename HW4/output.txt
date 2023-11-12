@@ -5,249 +5,462 @@ Check Instructions after writing to memory
 Instruction #0: flw f0, 0(x1)
 Instruction #1: fadd.s f4, f0, f2
 Instruction #2: fsw f4, 0(x1)
-Instruction #3: addi x1, x1, -4
-Instruction #4: bne x1, x2, 0
-Last address :20
-=================Create CPU=================
-==============================Simulation Begin==============================
+Instruction #3: addi x1, x1, -8
+Instruction #4: bne x1, x2, -16
+First Empty Address: 0x14
+=========================Create CPU=========================
+======================Simulation Begin======================
+
 =====================Simulation Loop #0=====================
-=====================Simulation Loop #1=====================
-=====================Simulation Loop #2=====================
-=====================Simulation Loop #3=====================
-=====================Simulation Loop #4=====================
-=====================Simulation Loop #5=====================
-=====================Simulation Loop #6=====================
-=====================Simulation Loop #7=====================
-=====================Simulation Loop #8=====================
-=====================Simulation Loop #9=====================
-=====================Simulation Loop #10=====================
-=====================Simulation Loop #11=====================
-=====================Simulation Loop #12=====================
-=====================Simulation Loop #13=====================
-=====================Simulation Loop #14=====================
-=====================Simulation Loop #15=====================
-=====================Simulation Loop #16=====================
-=====================Simulation Loop #17=====================
-=====================Simulation Loop #18=====================
-=====================Simulation Loop #19=====================
-=====================Simulation Loop #20=====================
-=====================Simulation Loop #21=====================
-=====================Simulation Loop #22=====================
-=====================Simulation Loop #23=====================
-=====================Simulation Loop #24=====================
-=====================Simulation Loop #25=====================
-=====================Simulation Loop #26=====================
-=====================Simulation Loop #27=====================
-=====================Simulation Loop #28=====================
-=====================Simulation Loop #29=====================
-Event Queue:
-Clock: 0
+Fetch Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 0
+Current PC: 0x0
+**Instruction Count: 1
 Fetch Stage: flw f0, 0(x1)
 Decode Stage: No_Op
 Execute Stage: No_Op
 Memory Stage: No_Op
 Write Back Stage: No_Op
+****************************************
 
-Clock: 1
-Fetch Stage: fadd.s f4, f0, f2
+=====================Simulation Loop #1=====================
+Decode Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 10
+Current PC: 0x0
+**Instruction Count: 1
+Fetch Stage: No_Op
 Decode Stage: flw f0, 0(x1)
 Execute Stage: No_Op
 Memory Stage: No_Op
 Write Back Stage: No_Op
+****************************************
 
-Clock: 2
-Fetch Stage: fadd.s f4, f0, f2
+=====================Simulation Loop #2=====================
+Execute Stage
+ALU source 2 switched 
+Next Instruction: PC += 4
+data in rs1: 160
+data in rs2: 0
+data in rs1_fp: 0
+data in rs2_fp: 0
+ALU result: 160
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 20
+Current PC: 0x4
+**Instruction Count: 1
+Fetch Stage: No_Op
 Decode Stage: No_Op
 Execute Stage: flw f0, 0(x1)
 Memory Stage: No_Op
 Write Back Stage: No_Op
+****************************************
 
-Clock: 3
-Fetch Stage: fadd.s f4, f0, f2
+=====================Simulation Loop #3=====================
+Memory Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 30
+Current PC: 0x4
+**Instruction Count: 1
+Fetch Stage: No_Op
 Decode Stage: No_Op
 Execute Stage: No_Op
 Memory Stage: flw f0, 0(x1)
 Write Back Stage: No_Op
+****************************************
 
-Clock: 4
-Fetch Stage: fadd.s f4, f0, f2
+=====================Simulation Loop #4=====================
+WriteBack Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 40
+Current PC: 0x4
+**Instruction Count: 1
+Fetch Stage: No_Op
 Decode Stage: No_Op
 Execute Stage: No_Op
 Memory Stage: No_Op
 Write Back Stage: flw f0, 0(x1)
+****************************************
 
-Clock: 5
+=====================Simulation Loop #5=====================
+Fetch Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 50
+Current PC: 0x4
+**Instruction Count: 2
 Fetch Stage: fadd.s f4, f0, f2
 Decode Stage: No_Op
 Execute Stage: No_Op
 Memory Stage: No_Op
 Write Back Stage: No_Op
+****************************************
 
-Clock: 6
-Fetch Stage: fsw f4, 0(x1)
+=====================Simulation Loop #6=====================
+Decode Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 60
+Current PC: 0x4
+**Instruction Count: 2
+Fetch Stage: No_Op
 Decode Stage: fadd.s f4, f0, f2
 Execute Stage: No_Op
 Memory Stage: No_Op
 Write Back Stage: No_Op
+****************************************
 
-Clock: 7
-Fetch Stage: fsw f4, 0(x1)
+=====================Simulation Loop #7=====================
+Execute Stage
+Next Instruction: PC += 4
+data in rs1: 0
+data in rs2: 0
+data in rs1_fp: 1.45906e+09
+data in rs2_fp: 0
+ALU result: 1320021768
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 70
+Current PC: 0x8
+**Instruction Count: 2
+Fetch Stage: No_Op
 Decode Stage: No_Op
 Execute Stage: fadd.s f4, f0, f2
 Memory Stage: No_Op
 Write Back Stage: No_Op
+****************************************
 
-Clock: 8
-Fetch Stage: fsw f4, 0(x1)
+=====================Simulation Loop #8=====================
+Memory Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 80
+Current PC: 0x8
+**Instruction Count: 2
+Fetch Stage: No_Op
 Decode Stage: No_Op
 Execute Stage: No_Op
 Memory Stage: fadd.s f4, f0, f2
 Write Back Stage: No_Op
+****************************************
 
-Clock: 9
-Fetch Stage: fsw f4, 0(x1)
+=====================Simulation Loop #9=====================
+WriteBack Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 90
+Current PC: 0x8
+**Instruction Count: 2
+Fetch Stage: No_Op
 Decode Stage: No_Op
 Execute Stage: No_Op
 Memory Stage: No_Op
 Write Back Stage: fadd.s f4, f0, f2
+****************************************
 
-Clock: 10
+=====================Simulation Loop #10=====================
+Fetch Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 100
+Current PC: 0x8
+**Instruction Count: 3
 Fetch Stage: fsw f4, 0(x1)
 Decode Stage: No_Op
 Execute Stage: No_Op
 Memory Stage: No_Op
 Write Back Stage: No_Op
+****************************************
 
-Clock: 11
-Fetch Stage: addi x1, x1, -4
+=====================Simulation Loop #11=====================
+Decode Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 110
+Current PC: 0x8
+**Instruction Count: 3
+Fetch Stage: No_Op
 Decode Stage: fsw f4, 0(x1)
 Execute Stage: No_Op
 Memory Stage: No_Op
 Write Back Stage: No_Op
+****************************************
 
-Clock: 12
-Fetch Stage: addi x1, x1, -4
+=====================Simulation Loop #12=====================
+Execute Stage
+ALU source 2 switched 
+Next Instruction: PC += 4
+data in rs1: 0
+data in rs2: 0
+data in rs1_fp: 0
+data in rs2_fp: 0
+ALU result: 0
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 120
+Current PC: 0xc
+**Instruction Count: 3
+Fetch Stage: No_Op
 Decode Stage: No_Op
 Execute Stage: fsw f4, 0(x1)
 Memory Stage: No_Op
 Write Back Stage: No_Op
+****************************************
 
-Clock: 13
-Fetch Stage: addi x1, x1, -4
+=====================Simulation Loop #13=====================
+Memory Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 130
+Current PC: 0xc
+**Instruction Count: 3
+Fetch Stage: No_Op
 Decode Stage: No_Op
 Execute Stage: No_Op
 Memory Stage: fsw f4, 0(x1)
 Write Back Stage: No_Op
+****************************************
 
-Clock: 14
-Fetch Stage: addi x1, x1, -4
+=====================Simulation Loop #14=====================
+WriteBack Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 140
+Current PC: 0xc
+**Instruction Count: 3
+Fetch Stage: No_Op
 Decode Stage: No_Op
 Execute Stage: No_Op
 Memory Stage: No_Op
 Write Back Stage: fsw f4, 0(x1)
+****************************************
 
-Clock: 15
-Fetch Stage: addi x1, x1, -4
+=====================Simulation Loop #15=====================
+Fetch Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 150
+Current PC: 0xc
+**Instruction Count: 4
+Fetch Stage: addi x1, x1, -8
 Decode Stage: No_Op
 Execute Stage: No_Op
 Memory Stage: No_Op
 Write Back Stage: No_Op
+****************************************
 
-Clock: 16
-Fetch Stage: bne x1, x2, 0
-Decode Stage: addi x1, x1, -4
+=====================Simulation Loop #16=====================
+Decode Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 160
+Current PC: 0xc
+**Instruction Count: 4
+Fetch Stage: No_Op
+Decode Stage: addi x1, x1, -8
 Execute Stage: No_Op
 Memory Stage: No_Op
 Write Back Stage: No_Op
+****************************************
 
-Clock: 17
-Fetch Stage: bne x1, x2, 0
+=====================Simulation Loop #17=====================
+Execute Stage
+ALU source 2 switched 
+Next Instruction: PC += 4
+data in rs1: 160
+data in rs2: -8
+data in rs1_fp: 0
+data in rs2_fp: 0
+ALU result: 152
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 170
+Current PC: 0x10
+**Instruction Count: 4
+Fetch Stage: No_Op
 Decode Stage: No_Op
-Execute Stage: addi x1, x1, -4
+Execute Stage: addi x1, x1, -8
 Memory Stage: No_Op
 Write Back Stage: No_Op
+****************************************
 
-Clock: 18
-Fetch Stage: bne x1, x2, 0
+=====================Simulation Loop #18=====================
+Memory Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 180
+Current PC: 0x10
+**Instruction Count: 4
+Fetch Stage: No_Op
 Decode Stage: No_Op
 Execute Stage: No_Op
-Memory Stage: addi x1, x1, -4
+Memory Stage: addi x1, x1, -8
 Write Back Stage: No_Op
+****************************************
 
-Clock: 19
-Fetch Stage: bne x1, x2, 0
-Decode Stage: No_Op
-Execute Stage: No_Op
-Memory Stage: No_Op
-Write Back Stage: addi x1, x1, -4
-
-Clock: 20
-Fetch Stage: bne x1, x2, 0
-Decode Stage: No_Op
-Execute Stage: No_Op
-Memory Stage: No_Op
-Write Back Stage: No_Op
-
-Clock: 21
-Fetch Stage: Invalid Op.
-Decode Stage: bne x1, x2, 0
-Execute Stage: No_Op
-Memory Stage: No_Op
-Write Back Stage: No_Op
-
-Clock: 22
-Fetch Stage: Invalid Op.
-Decode Stage: No_Op
-Execute Stage: bne x1, x2, 0
-Memory Stage: No_Op
-Write Back Stage: No_Op
-
-Clock: 23
-Fetch Stage: Invalid Op.
-Decode Stage: No_Op
-Execute Stage: No_Op
-Memory Stage: bne x1, x2, 0
-Write Back Stage: No_Op
-
-Clock: 24
-Fetch Stage: Invalid Op.
-Decode Stage: No_Op
-Execute Stage: No_Op
-Memory Stage: No_Op
-Write Back Stage: bne x1, x2, 0
-
-Clock: 25
-Fetch Stage: Invalid Op.
+=====================Simulation Loop #19=====================
+WriteBack Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 190
+Current PC: 0x10
+**Instruction Count: 4
+Fetch Stage: No_Op
 Decode Stage: No_Op
 Execute Stage: No_Op
 Memory Stage: No_Op
-Write Back Stage: No_Op
+Write Back Stage: addi x1, x1, -8
+****************************************
 
-Clock: 26
-Fetch Stage: Invalid Op.
-Decode Stage: Invalid Op.
-Execute Stage: No_Op
-Memory Stage: No_Op
-Write Back Stage: No_Op
-
-Clock: 27
-Fetch Stage: Invalid Op.
-Decode Stage: No_Op
-Execute Stage: Invalid Op.
-Memory Stage: No_Op
-Write Back Stage: No_Op
-
-Clock: 28
-Fetch Stage: Invalid Op.
-Decode Stage: No_Op
-Execute Stage: No_Op
-Memory Stage: Invalid Op.
-Write Back Stage: No_Op
-
-Clock: 29
-Fetch Stage: Invalid Op.
+=====================Simulation Loop #20=====================
+Fetch Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 200
+Current PC: 0x10
+**Instruction Count: 5
+Fetch Stage: bne x1, x2, -16
 Decode Stage: No_Op
 Execute Stage: No_Op
 Memory Stage: No_Op
-Write Back Stage: Invalid Op.
+Write Back Stage: No_Op
+****************************************
 
+=====================Simulation Loop #21=====================
+Decode Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 210
+Current PC: 0x10
+**Instruction Count: 5
+Fetch Stage: No_Op
+Decode Stage: bne x1, x2, -16
+Execute Stage: No_Op
+Memory Stage: No_Op
+Write Back Stage: No_Op
+****************************************
+
+=====================Simulation Loop #22=====================
+Execute Stage
+Branch check: True
+ALU source 1 switched 
+ALU source 2 switched 
+Next Instruction: PC = ALU result
+data in rs1: 16
+data in rs2: -16
+data in rs1_fp: 0
+data in rs2_fp: 0
+ALU result: 0
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 220
+Current PC: 0x0
+**Instruction Count: 5
+Fetch Stage: No_Op
+Decode Stage: No_Op
+Execute Stage: bne x1, x2, -16
+Memory Stage: No_Op
+Write Back Stage: No_Op
+****************************************
+
+=====================Simulation Loop #23=====================
+Memory Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 230
+Current PC: 0x0
+**Instruction Count: 5
+Fetch Stage: No_Op
+Decode Stage: No_Op
+Execute Stage: No_Op
+Memory Stage: bne x1, x2, -16
+Write Back Stage: No_Op
+****************************************
+
+=====================Simulation Loop #24=====================
+WriteBack Stage
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 240
+Current PC: 0x0
+**Instruction Count: 5
+Fetch Stage: No_Op
+Decode Stage: No_Op
+Execute Stage: No_Op
+Memory Stage: No_Op
+Write Back Stage: bne x1, x2, -16
+****************************************
+
+=====================Simulation Loop #25=====================
+All Stages of the data path are empty. Resetting CPU.
+Cpu Cycle Debug Statements
+X1 value: 160
+*************Current Event**************
+****************************************
+Clock ticks: 250
+Current PC: 0x0
+**Instruction Count: 5
+Fetch Stage: No_Op
+Decode Stage: No_Op
+Execute Stage: No_Op
+Memory Stage: No_Op
+Write Back Stage: No_Op
+****************************************
+
+=======================Simulation Ended=======================

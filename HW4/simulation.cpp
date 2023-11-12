@@ -78,15 +78,13 @@ inline void Simulation::runSimulation() {
     loadInstructionsToMemory(filename, memory, startAddress, stopAddress);
 
     std::cout << "Check Instructions after writing to memory\n";
-    
-    uint32_t pc = startAddress;
-    while (pc <= stopAddress && memory.Read(pc) != 0) {
-        Instruction i = memory.Read(pc);
-        std::cout << "Instruction #" << pc/4 << ": " << i.getAssemblyString() << "\n";
-        pc += 4;
+    uint32_t i = startAddress;
+    while (i <= stopAddress && memory.Read(i) != 0) {
+        Instruction temp = memory.Read(i);
+        std::cout << "Instruction #" << i/4 << ": " << temp.getAssemblyString() << "\n";
+        i += 4;
     }
-    uint32_t lastAddress = pc;
-    std::cout << "Last address :" << lastAddress << "\n";
+    std::cout << "First Empty Address: 0x" << std::hex << i << std::dec << "\n";
 
     // Allocate addresses 0x200 - 0x2FF for the stack
     uint32_t startStack = 0x200;
@@ -100,30 +98,26 @@ inline void Simulation::runSimulation() {
     // memory.PrintMemoryContents();
 
     bool pipeline = false;
-    std::cout << "=================Create CPU=================\n";
+    std::cout << "=========================Create CPU=========================\n";
     CPU cpu1{ memory, startAddress, startStack, pipeline };
 
     
     // Main simulation loop.
     int loopCnt = 0;
-    int loopMax = 30;
+    int loopMax = 40;
 
     // for testing lab 2
     cpu1.writeIntRegister(1, 160);
 
     // Start CPU and start running until it resets
-    std::cout << "==============================Simulation Begin==============================\n";
-    while (cpu1.checkReset() == false) {
-        if(loopCnt >= loopMax){
-            break;
-        }
-        std::cout << "=====================Simulation Loop #" << std::dec << loopCnt << "=====================\n";
-        loopCnt++;
+    std::cout << "======================Simulation Begin======================\n";
+    while (cpu1.checkReset() == false && loopCnt <= loopMax) {
+        std::cout << "\n=====================Simulation Loop #" << std::dec << loopCnt++ << "=====================\n";
 
         cpu1.runCPUcycle();
 
         // Uncomment to print event queue every cycle
-        // cpu1.printCurrentEvent();
+        cpu1.printCurrentEvent();
 
         // Uncomment to print registers every cycle
         // cpu1.printRegisters();
@@ -131,9 +125,9 @@ inline void Simulation::runSimulation() {
         // Uncomment to print ram contents every cycle
         // memory.PrintMemoryContents();
     }
-    
+    std::cout << "\n=======================Simulation Ended=======================\n";
     // std::cout << "=====Event Queue for Simulation=====\n";
-    cpu1.printEventQueue();
+    // cpu1.printEventQueue();
 
     // std::cout << "=====Registers after end of Simulation=====\n";
     // cpu1.printRegisters();

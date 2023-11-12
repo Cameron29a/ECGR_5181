@@ -38,7 +38,8 @@ class CPU {
     std::queue<Instruction> executeStage;
     std::queue<Instruction> memoryStage;
     std::queue<Instruction> writeBackStage;
-    
+    uint32_t instructionCnt;
+
     uint32_t prevPC;
 
 public:
@@ -54,6 +55,7 @@ public:
             pcEnd += 4;
         }
 
+        instructionCnt = 0;
     };
 
     bool checkReset() { return reset; }
@@ -87,6 +89,26 @@ public:
     void writeFPRegister(uint32_t address, float data) {
         if (address >= 0 && address < 32)
             registers.fp_regs[address] = data;
+    }
+
+    int32_t readIntRegister(int regIndex) {
+        if (regIndex >= 0 && regIndex < 32) {
+            return registers.int_regs[regIndex];
+        } else {
+            // Handle out-of-bounds error
+            std::cerr << "Error: Integer register index out of bounds." << std::endl;
+            return 0; // You can choose to return an error value
+        }
+    }
+
+    float readFloatRegister(int regIndex) {
+        if (regIndex >= 0 && regIndex < 32) {
+            return registers.fp_regs[regIndex];
+        } else {
+            // Handle out-of-bounds error
+            std::cerr << "Error: Float register index out of bounds." << std::endl;
+            return 0; // You can choose to return an error value
+        }
     }
  
 };

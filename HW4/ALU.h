@@ -1,16 +1,17 @@
 #ifndef ALU_H
 #define ALU_H
 
+// #include <cstdint>
+#include <cstring>
+
 class ALU {
 
 public:
 
-    uint32_t doTheThing(uint32_t operation, uint32_t rs1, uint32_t rs2, float rs1_fp, float rs2_fp) {
+    int32_t doTheThing(uint32_t operation, int32_t rs1, int32_t rs2, float rs1_fp, float rs2_fp) {
         int32_t signedRS1;
-        uint64_t result;
+        int64_t result;
 
-        float floatRS1 = *reinterpret_cast<float*>(&rs1);
-        float floatRS2 = *reinterpret_cast<float*>(&rs2);
         float floatResult;
 
         switch (operation) {
@@ -52,30 +53,33 @@ public:
             // Floating-point operations
             case 0b1010:
                 // Floating-point addition
-                floatResult = floatRS1 + floatRS2;
+                floatResult = rs1_fp + rs2_fp;
                 return *reinterpret_cast<uint32_t*>(&floatResult);
 
             case 0b1011:
                 // Floating-point subtraction
-                floatResult = floatRS1 - floatRS2;
+                floatResult = rs1_fp - rs2_fp;
                 return *reinterpret_cast<uint32_t*>(&floatResult);
 
             case 0b1100:
                 // Floating-point multiplication
-                floatResult = floatRS1 * floatRS2;
+                floatResult = rs1_fp * rs2_fp;
                 return *reinterpret_cast<uint32_t*>(&floatResult);
 
             case 0b1101:
                 // Floating-point division
-                if (floatRS2 == 0.0f) {
+                if (rs2_fp == 0.0f) {
                     return 0;
                 }
-                floatResult = floatRS1 / floatRS2;
+                floatResult = rs1_fp / rs2_fp;
                 return *reinterpret_cast<uint32_t*>(&floatResult);
-
             default:
                 return 0;
         }
+        // Convert the floating-point result to uint32_t
+        uint32_t uintResult;
+        std::memcpy(&uintResult, &floatResult, sizeof(uint32_t));
+        return uintResult;
     }
 
 };

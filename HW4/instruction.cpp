@@ -1,7 +1,7 @@
 #include "instruction.h"
 #include <bitset>
 
-int32_t Instruction::setImmediate(uint32_t opcode) {
+int32_t Instruction::setImmediate() {
     switch (opcode) {
         case LOAD:
         case LOAD_FP:
@@ -12,7 +12,7 @@ int32_t Instruction::setImmediate(uint32_t opcode) {
         case S_TYPE_FP:
             return ((static_cast<int32_t>(instruction) >> 20) & 0xFE0) | ((instruction >> 7) & 0x1F); // Sign-extend and combine imm[11:5] and imm[4:0]
         case SB_TYPE:
-            return static_cast<int32_t>(((instruction >> 7) & 0x1E) | (((instruction >> 25) & 0x3F) << 5) | (((instruction >> 7) & 0x1) << 11) | ((instruction >> 31) << 12)); // Sign-extend and combine bits
+            return static_cast<int32_t>((((instruction >> 7) & 0x1E) | (((instruction >> 25) & 0x3F) << 5) | (((instruction >> 7) & 0x1) << 11) | ((instruction >> 31) << 12)) << 19) >> 19; // Sign-extend and combine bits
         case AUIPC:
         case LUI:
             return instruction & 0xFFFFF000; // Zero-extend the immediate field
@@ -23,7 +23,7 @@ int32_t Instruction::setImmediate(uint32_t opcode) {
     }
 }
 
-void Instruction::setregWrite(uint32_t opcode) {
+void Instruction::setregWrite() {
     switch (opcode) {
         case LOAD:
         case LOAD_FP:
@@ -39,14 +39,12 @@ void Instruction::setregWrite(uint32_t opcode) {
         case S_TYPE:
         case S_TYPE_FP:
         case SB_TYPE:
-            regWrite = 0;
-            break;
         default:
             regWrite = 0;
     }
 }
 
-void Instruction::setALUsrc1(uint32_t opcode) {
+void Instruction::setALUsrc1() {
     switch (opcode) {
         case AUIPC:
         case SB_TYPE:
@@ -62,14 +60,12 @@ void Instruction::setALUsrc1(uint32_t opcode) {
         case LUI:
         case JALR:
         case FP_TYPE:
-            ALUsrc1 = 0;
-            break;
         default:
             ALUsrc1 = 0;
     }
 }
 
-void Instruction::setALUsrc2(uint32_t opcode) {
+void Instruction::setALUsrc2() {
     switch (opcode) {
         case LOAD:
         case LOAD_FP:
@@ -85,14 +81,12 @@ void Instruction::setALUsrc2(uint32_t opcode) {
             break;
         case R_TYPE:
         case FP_TYPE:
-            ALUsrc2 = 0;
-            break;
         default:
             ALUsrc2 = 0;
     }
 }
 
-void Instruction::setmemWrite(uint32_t opcode) {
+void Instruction::setmemWrite() {
     switch (opcode) {
         case S_TYPE:
         case S_TYPE_FP:
@@ -108,14 +102,12 @@ void Instruction::setmemWrite(uint32_t opcode) {
         case JALR:
         case JAL:
         case FP_TYPE:
-            memWrite = 0;
-            break;
         default:
             memWrite = 0;
     }
 }
 
-void Instruction::setmemRead(uint32_t opcode) {
+void Instruction::setmemRead() {
     switch (opcode) {
         case LOAD:
         case LOAD_FP:
@@ -131,14 +123,12 @@ void Instruction::setmemRead(uint32_t opcode) {
         case JALR:
         case JAL:
         case FP_TYPE:
-            memRead = 0;
-            break;
         default:
             memRead = 0;
     }
 }
 
-void Instruction::setBranch(uint32_t opcode) {
+void Instruction::setBranch() {
     switch (opcode) {
         case SB_TYPE:
             branch = 1;
@@ -154,14 +144,12 @@ void Instruction::setBranch(uint32_t opcode) {
         case JALR:
         case JAL:
         case FP_TYPE:
-            branch = 0;
-            break;
         default:
             branch = 0;
     }
 }
 
-void Instruction::setJump(uint32_t opcode) {
+void Instruction::setJump() {
     switch (opcode) {
         case JALR:
         case JAL:
@@ -177,14 +165,12 @@ void Instruction::setJump(uint32_t opcode) {
         case LUI:
         case SB_TYPE:
         case FP_TYPE:
-            jump = 0;
-            break;
         default:
             jump = 0;
     }
 }
 
-void Instruction::setRM(uint32_t opcode, uint32_t funct7) {
+void Instruction::setRM() {
     switch (opcode) {
         case FP_TYPE:
             switch (funct7) {
@@ -212,14 +198,12 @@ void Instruction::setRM(uint32_t opcode, uint32_t funct7) {
         case SB_TYPE:
         case JALR:
         case JAL:
-            rm = 0;
-            break;
         default:
             rm = 0;
     }
 }
 
-void Instruction::setPCsel(uint32_t opcode, bool takeBranch) {
+void Instruction::setPCsel(bool takeBranch) {
     switch (opcode) {
         case SB_TYPE:
             switch (takeBranch) {
@@ -243,19 +227,19 @@ void Instruction::setPCsel(uint32_t opcode, bool takeBranch) {
         case R_TYPE:
         case LUI:
         case FP_TYPE:
-            PCsel = 0;
-            break;
         default:
             PCsel = 0;
     }
 }
 
-void Instruction::setALUop(uint32_t opcode) {
+void Instruction::setALUop() {
     switch (opcode) {
         case I_TYPE:
         case R_TYPE:
-        case FP_TYPE:
             ALUop = 0b0;
+            break;
+        case FP_TYPE:
+            ALUop = 0b1010;
             break;
         case LOAD:
         case LOAD_FP:
@@ -273,7 +257,7 @@ void Instruction::setALUop(uint32_t opcode) {
     }
 }
 
-void Instruction::setWBsel(uint32_t opcode) {
+void Instruction::setWBsel() {
     switch (opcode) {
         case LOAD:
         case LOAD_FP:
@@ -293,15 +277,9 @@ void Instruction::setWBsel(uint32_t opcode) {
         case S_TYPE:
         case S_TYPE_FP:
         case SB_TYPE:
-            WBsel = 3;
-            break;
         default:
             WBsel = 3;
     }
-}
-
-void Instruction::setALUresult(uint32_t ALUresult) {
-    this->ALUresult = ALUresult;
 }
 
 void Instruction::printSignals() {
@@ -328,6 +306,14 @@ void Instruction::printSignals() {
     std::cout << "branch = " << branch << "\n";
     std::cout << "jump = " << jump << "\n";
     std::cout << "rm = " << rm << "\n";
+}
+
+void Instruction::printInstruction() {
+    std::cout << "Instruction: 0b" << std::bitset<32>(instruction) << "\n";
+}
+
+void Instruction::printAssembly() {
+    std::cout << "Assembly Instruction: " << assemblyString << "\n";
 }
 
 void Instruction::assembleString() {
