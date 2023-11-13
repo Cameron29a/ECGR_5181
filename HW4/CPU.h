@@ -24,9 +24,8 @@ class CPU {
     bool pipeline;
     tick_t currentTick;
     uint32_t pc;            // Program Counter
-    uint32_t pcEnd;         // Address of last instruction
     uint32_t sp;            // Stack pointer
-    uint32_t stackStart;    // Start of the stack
+    uint32_t stackAddress;    // Start of the stack
     RAM& ram;
 
     ALU alu;
@@ -40,13 +39,16 @@ class CPU {
     std::queue<Instruction> writeBackStage;
     std::queue<Instruction> executedInstructions;
     std::queue<Instruction> discardedInstructions;
-    uint32_t instructionCnt;
+    
+    uint32_t fpDelay;
+    bool memDelay;
 
+    // uint32_t pcEnd;         // Address of last instruction
     // uint32_t prevPC;
 
 public:
-    CPU(RAM& ram, uint32_t pc, uint32_t stackStart, bool pipeline) 
-    : reset(false), pipeline(pipeline), currentTick(0), pc(pc), sp(stackStart), stackStart(stackStart), ram(ram){ 
+    CPU(RAM& ram, uint32_t pc, uint32_t stackAddress, bool pipeline) 
+    : reset(false), pipeline(pipeline), currentTick(0), pc(pc), sp(stackAddress), stackAddress(stackAddress), ram(ram){ 
         // Initialize registers to 0
         for (int i = 0; i < 32; ++i) {
             registers.int_regs[i] = 0;
@@ -58,7 +60,9 @@ public:
         //     pcEnd += 4;
         // }
 
-        instructionCnt = 0;
+        fpDelay = 0;
+        memDelay = 0;
+
     };
 
     bool checkReset() { return reset; }
@@ -82,8 +86,7 @@ public:
     void printCurrentEvent();
     void updateEventQueue();
 
-    void printInstructions();
-
+    void printExecutedInstructions();
     void printRegisters();
 
     // the register functions are only used outside of the cpu class (i.e. set up x1 for running lab 2)

@@ -232,14 +232,117 @@ void Instruction::setPCsel(bool takeBranch) {
     }
 }
 
+void Instruction::setIsFloat() {
+    switch (opcode) {
+        case LOAD_FP:
+        case S_TYPE_FP:
+        case FP_TYPE:
+            isFloat = true;
+            break;
+        default: 
+            isFloat = false;
+    }
+}
+
 void Instruction::setALUop() {
     switch (opcode) {
         case I_TYPE:
+            if (funct3 == 0) {
+                ALUop = ADD;
+                break;
+            }
         case R_TYPE:
-            ALUop = ADD;
+            switch (funct7) {
+                case 0b0000000:
+                    switch (funct3) {
+                        case 0b000:
+                            switch(funct7) { 
+                                case 0b0000000: 
+                                    ALUop = ADD;
+                                    break;
+                                case 0b0100000: 
+                                    ALUop = SUB;
+                                    break;
+                            }
+                            break;
+                        case 0b001:
+                            ALUop = SLL;
+                            break;
+                        case 0b010:
+                            ALUop = SLT;
+                            break;
+                        case 0b011:
+                            ALUop = SLTU;
+                            break;
+                        case 0b100:
+                            ALUop = XOR;
+                            break;
+                        case 0b101:
+                            switch(funct7) { 
+                                case 0b0000000: 
+                                    ALUop = SRL;
+                                    break;
+                                case 0b0100000: 
+                                    ALUop = SRA;
+                                    break;
+                            }
+                            break;
+                        case 0b110:
+                            ALUop = OR;
+                            break;
+                        case 0b111:
+                            ALUop = AND;
+                            break;
+                    }
+                    break;
+                case 0b0000001:
+                    switch (funct3) {
+                        case 0b000:
+                            ALUop = MUL;
+                            break;
+                        case 0b001:
+                            ALUop = MULH;
+                            break;
+                        case 0b010:
+                            ALUop = MULHSU;
+                            break;
+                        case 0b011:
+                            ALUop = MULHU;
+                            break;
+                        case 0b100:
+                            ALUop = DIV;
+                            break;
+                        case 0b101:
+                            ALUop = DIVU;
+                            break;
+                        case 0b110:
+                            ALUop = REM;
+                            break;
+                        case 0b111:
+                            ALUop = REMU;
+                            break;
+                    }
+                    break;
+            }
             break;
         case FP_TYPE:
-            ALUop = ADD_FP;
+            switch (funct7) {
+                case 0b0000000:
+                    ALUop = ADD_FP;
+                    break;
+                case 0b0000100:
+                    ALUop = SUB_FP;
+                    break;
+                case 0b0001000:
+                    ALUop = MUL_FP;
+                    break;
+                case 0b0001100:
+                    ALUop = DIV_FP;
+                    break;
+                default:        // delete this if/when i add the rest of the fp operations
+                    ALUop = ADD_FP;
+                    break;
+            }
             break;
         case LOAD:
         case LOAD_FP:
@@ -361,11 +464,10 @@ void Instruction::assembleString() {
                     instruction << "xori";
                     break;
                 case 0b101:
-                    if (funct7 == 0b0000000) {
+                    if (funct7 == 0b0000000) 
                         instruction << "srli";
-                    } else {
+                    else 
                         instruction << "srai";
-                    }
                     break;
                 case 0b110:
                     instruction << "ori";
@@ -609,15 +711,12 @@ void Instruction::assembleString() {
                     break;
                 break;
             }
-            switch(operation){
-                case fsqrt_s:
-                case fcvt_w_s:
-                case fcvt_wu_s:
-                case fcvt_s_w:
-                case fcvt_s_wu:
-                case fmv_x_w:
-                case fclass_s:
-                case fmv_w_x:
+            switch(funct7){
+                case 0b0101100:
+                case 0b1100000:
+                case 0b1110000:
+                case 0b1101000:
+                case 0b1111000:
                     instruction << " f" << rd << ", f" << rs1;
                     break;
                 default:

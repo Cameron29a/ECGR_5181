@@ -4,7 +4,6 @@
 #include <iostream>
 #include <vector>
 #include <cstring>
-// #include <iomanip> // Include the <iomanip> header for setw and setfill
 
 class RAM {
     std::vector<uint8_t> memory;
@@ -61,13 +60,6 @@ public:
             std::cout << "\n";
         }
     }
-
-    // void PrintMemoryContents() {
-    //     std::cout << "***********************Memory Contents:***********************\n";
-    //     for (uint32_t address = 0; address < memory.size(); ++address) {
-    //         std::cout << "Address 0x" << std::hex << address << ": 0x" << std::setw(2) << std::setfill('0') << static_cast<int>(memory[address]) << "\n";
-    //     }
-    // }
 
 };
 

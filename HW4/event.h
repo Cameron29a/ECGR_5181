@@ -9,7 +9,6 @@ typedef uint64_t tick_t;
 class Event {
     tick_t simTick;
     uint32_t pc;
-    uint32_t instructionCnt;
     std::string fetchString;
     std::string decodeString;
     std::string executeString;
@@ -17,10 +16,10 @@ class Event {
     std::string writeBackString;
     
 public:
-    Event(tick_t clk, uint32_t pc, uint32_t instructionCnt, const std::string& fetchString, const std::string& decodeString,
+    Event(tick_t clk, uint32_t pc, const std::string& fetchString, const std::string& decodeString,
     const std::string& executeString, const std::string& memoryString,
     const std::string& writeBackString)
-    : simTick(clk), pc(pc), instructionCnt(instructionCnt), fetchString(fetchString), decodeString(decodeString),
+    : simTick(clk), pc(pc), fetchString(fetchString), decodeString(decodeString),
       executeString(executeString), memoryString(memoryString),
       writeBackString(writeBackString) {}
 
@@ -31,7 +30,6 @@ public:
         std::cout << "****************************************\n" 
         << "Clock ticks: " << simTick << "\n" 
         << "Current PC: 0x" << std::hex << pc << std::dec << "\n"
-        << "**Instruction Count: " << instructionCnt << "\n"    //change to executed instructions later; move from fetch to execute
         << "Fetch Stage: " << fetchString << "\n" 
         << "Decode Stage: " << decodeString << "\n" 
         << "Execute Stage: " << executeString << "\n" 

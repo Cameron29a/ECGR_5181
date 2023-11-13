@@ -5,14 +5,28 @@ inline void CPU::Fetch() {
     if (fetchStage.empty()) { return; }
     std::cout << "//////////////Fetch Stage///////////////\n";
     
+    pc +=4;
+
     // fetchStage.front().printInstruction();
-    instructionCnt++;
 }
 
 inline void CPU::Decode() {
     // Decode the fetched instruction and extract opcode, registers, and immediate values
     if (decodeStage.empty()) { return; }
     std::cout << "//////////////Decode Stage//////////////\n";
+
+    // Set Control Signals
+    decodeStage.front().setregWrite();
+    decodeStage.front().setALUsrc1();
+    decodeStage.front().setALUsrc2();
+    decodeStage.front().setmemWrite();
+    decodeStage.front().setmemRead();
+    decodeStage.front().setBranch();
+    decodeStage.front().setJump();
+    decodeStage.front().setRM();
+    decodeStage.front().setALUop();
+    decodeStage.front().setWBsel();
+    decodeStage.front().setIsFloat();
 
     // decodeStage.front().printAssembly();
     // decodeStage.front().printSignals();
@@ -41,7 +55,6 @@ inline void CPU::Execute() {
 
     // Check ALU input control signals
     if (executeStage.front().checkALUsrc1()) {
-        // rs1 = pc;  // signed <-unsigned
         rs1 = static_cast<int32_t>(pc);
         std::cout << "ALU source 1 switched \n";
     }
@@ -63,15 +76,7 @@ inline void CPU::Execute() {
         executeStage.front().setALUfloatResult(floatResult);
         std::cout << "ALU FP Result: " << executeStage.front().getALUfloatResult() << "\n";
     }
-
-    // Adjust PC if there is a branch or jump
-    if (executeStage.front().checkPCsel()) {
-        pc = executeStage.front().getALUresult();
-        std::cout << "Next Instruction: PC = ALU result\n";
-    } else {
-        pc +=4;
-        std::cout << "Next Instruction: PC += 4\n";
-    }
+    
     std::cout << "Data in rs1: " << rs1 << "\n";
     std::cout << "Data in rs2: " << rs2 << "\n";
     std::cout << "Data in rs1_fp: " << rs1_fp << "\n";
@@ -107,7 +112,7 @@ inline void CPU::Memory() {
         // Memory write operation
         // Write Data to the memory location
         if (memoryStage.front().checkFloat()) {
-            float memoryAddressFP = memoryStage.front().getALUresult();
+            float memoryAddressFP = stackAddress + memoryStage.front().getALUresult();
             float dataToStoreFP;
             dataToStoreFP = registers.fp_regs[memoryStage.front().getrs2()];
             ram.WriteFloat(memoryAddressFP, dataToStoreFP);
@@ -115,7 +120,7 @@ inline void CPU::Memory() {
             std::cout << "Memory Address: " << memoryAddressFP << "\n";
             std::cout << "Data To Store: " << dataToStoreFP << "\n";
         } else {
-            uint32_t memoryAddress = memoryStage.front().getALUresult();
+            uint32_t memoryAddress = stackAddress + memoryStage.front().getALUresult();
             uint32_t dataToStore;
             dataToStore = registers.int_regs[memoryStage.front().getrs2()];
             ram.Write(memoryAddress, dataToStore);
@@ -123,6 +128,14 @@ inline void CPU::Memory() {
             std::cout << "Memory Address: " << memoryAddress << "\n";
             std::cout << "Data To Store: " << dataToStore << "\n";
         }
+    }
+
+    // Adjust PC if there is a branch or jump
+    if (memoryStage.front().checkPCsel()) {
+        pc = memoryStage.front().getALUresult();
+        std::cout << "Next Instruction: PC = ALU result\n";
+    } else {
+        std::cout << "Next Instruction: PC += 4\n";
     }
 }
 
@@ -161,7 +174,7 @@ inline void CPU::updateDataPath() {
     // Update Fetch stage
     if (fetchStage.empty() && decodeStage.empty() && executeStage.empty() && memoryStage.empty()) {
         uint32_t nextInstruction = ram.Read(pc);
-        if (nextInstruction != 0)       fetchStage.push(nextInstruction);
+        if (nextInstruction != 0) fetchStage.push(nextInstruction);
         if (!writeBackStage.empty()) {
             executedInstructions.push(writeBackStage.front());
             writeBackStage.pop();
@@ -182,19 +195,25 @@ inline void CPU::updateDataPath() {
 
     // Check and move instructions from Execute to Memory stage
     else if (!executeStage.empty()) {
-        memoryStage.push(executeStage.front());
-        executeStage.pop();
+        if (executeStage.front().checkFloat() == false || fpDelay >= 5) {
+            fpDelay = 0;
+            memoryStage.push(executeStage.front());
+            executeStage.pop();
+        } else fpDelay++;
     }
 
     // Check and move instructions from Memory to WriteBack stage
     else if (!memoryStage.empty()) {
-        writeBackStage.push(memoryStage.front());
-        memoryStage.pop();
+        if ((memoryStage.front().checkmemWrite() == false && memoryStage.front().checkmemRead() == false) || memDelay == true) {
+            memDelay = 0;
+            writeBackStage.push(memoryStage.front());
+            memoryStage.pop();
+        } else memDelay = true;
     }
 }
 
 inline void CPU::updatePipeLine() {
-
+    
 }
 
 inline void CPU::printRegisters() {
@@ -210,11 +229,12 @@ inline void CPU::printRegisters() {
 }
 
 // Function to print the event queue
-inline void CPU::printInstructions() {
-    std::cout << "**************Event Queue***************\n";
-    while (!events.empty()) {
-        events.front().print();
-        events.pop();
+inline void CPU::printExecutedInstructions() {
+    std::cout << "*********Executed Instructions**********\n";
+    uint32_t i = 0;
+    while (!executedInstructions.empty()) {
+        std::cout << "Instruction #" << i++ << ":\t" << executedInstructions.front().getAssemblyString() << "\n";
+        executedInstructions.pop();
     }
 }
 
@@ -251,7 +271,7 @@ inline void CPU::updateEventQueue() {
     if (writeBackStage.empty()) writeBackString = "No_Op";
     else writeBackString = writeBackStage.front().getAssemblyString();
 
-    events.push(Event(currentTick, pc, instructionCnt, fetchString, decodeString, executeString, memoryString, writeBackString));
+    events.push(Event(currentTick, pc, fetchString, decodeString, executeString, memoryString, writeBackString));
 }
 
 inline void CPU::runCPUcycle() {
@@ -263,7 +283,6 @@ inline void CPU::runCPUcycle() {
         if (pipeline) updatePipeLine();
         else updateDataPath();
         
-
         // Run each stage of the pipeline
         Fetch();
         Decode();

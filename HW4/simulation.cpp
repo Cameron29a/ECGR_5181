@@ -68,7 +68,7 @@ inline void Simulation::runSimulation() {
     std::cout << "Begin System Initialization\n";
 
     std::cout << "Create Virtual Memory\n";
-    RAM memory(0x77);
+    RAM memory(0xFFF);
 
     // write instructions to addresses 0x0 – 0x093
     std::cout << "Write Instructions to Memory\n";
@@ -87,7 +87,7 @@ inline void Simulation::runSimulation() {
     std::cout << "First Empty Address: 0x" << std::hex << i << std::dec << "\n";
 
     // Allocate addresses 0x200 - 0x2FF for the stack
-    uint32_t startStack = 0x200;
+    uint32_t stackAddress = 0x200;
     // uint32_t endStack = 0x2FF;
 
     // Initialize addresses 0x400 - 0xbFF (ARRAY_A & ARRAY_B) with random FP32 values.
@@ -99,11 +99,11 @@ inline void Simulation::runSimulation() {
 
     bool pipeline = false;
     std::cout << "=========================Create CPU=========================\n";
-    CPU cpu1{ memory, startAddress, startStack, pipeline };
+    CPU cpu1{ memory, startAddress, stackAddress, pipeline };
 
     
     // Main simulation loop.
-    int loopCnt = 0;
+    int loopCnt = 1;
     int loopMax = 750;
 
     // for testing lab 2
@@ -128,6 +128,7 @@ inline void Simulation::runSimulation() {
     std::cout << "\n=======================Simulation Ended=======================\n";
     if (loopCnt >= loopMax)
         std::cout << "=====Reason for Termination: Maximum loop counter reached=====\n"; 
+        
     // std::cout << "=====Event Queue for Simulation=====\n";
     // cpu1.printEventQueue();
 
@@ -137,6 +138,8 @@ inline void Simulation::runSimulation() {
     // std::cout << "=====Memory contents after end of Simulation=====\n";
     // memory.PrintMemoryContents();
     
+    cpu1.printExecutedInstructions();
+
     std::cout.rdbuf(coutBuffer); // Restore the original cout buffer
     outputFile.close();
 }
