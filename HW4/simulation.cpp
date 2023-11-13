@@ -104,7 +104,7 @@ inline void Simulation::runSimulation() {
     
     // Main simulation loop.
     int loopCnt = 0;
-    int loopMax = 40;
+    int loopMax = 750;
 
     // for testing lab 2
     cpu1.writeIntRegister(1, 160);
@@ -126,6 +126,8 @@ inline void Simulation::runSimulation() {
         // memory.PrintMemoryContents();
     }
     std::cout << "\n=======================Simulation Ended=======================\n";
+    if (loopCnt >= loopMax)
+        std::cout << "=====Reason for Termination: Maximum loop counter reached=====\n"; 
     // std::cout << "=====Event Queue for Simulation=====\n";
     // cpu1.printEventQueue();
 
@@ -133,7 +135,7 @@ inline void Simulation::runSimulation() {
     // cpu1.printRegisters();
 
     // std::cout << "=====Memory contents after end of Simulation=====\n";
-    memory.PrintMemoryContents();
+    // memory.PrintMemoryContents();
     
     std::cout.rdbuf(coutBuffer); // Restore the original cout buffer
     outputFile.close();

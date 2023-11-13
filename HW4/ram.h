@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cstring>
 // #include <iomanip> // Include the <iomanip> header for setw and setfill
 
 class RAM {

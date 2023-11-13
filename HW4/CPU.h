@@ -38,22 +38,25 @@ class CPU {
     std::queue<Instruction> executeStage;
     std::queue<Instruction> memoryStage;
     std::queue<Instruction> writeBackStage;
+    std::queue<Instruction> executedInstructions;
+    std::queue<Instruction> discardedInstructions;
     uint32_t instructionCnt;
 
-    uint32_t prevPC;
+    // uint32_t prevPC;
 
 public:
     CPU(RAM& ram, uint32_t pc, uint32_t stackStart, bool pipeline) 
-    : reset(false), pipeline(pipeline), currentTick(0), pc(pc), pcEnd(pc), sp(stackStart), stackStart(stackStart), ram(ram){ 
+    : reset(false), pipeline(pipeline), currentTick(0), pc(pc), sp(stackStart), stackStart(stackStart), ram(ram){ 
         // Initialize registers to 0
         for (int i = 0; i < 32; ++i) {
             registers.int_regs[i] = 0;
             registers.fp_regs[i] = 0.0f;
         }
         // Updates value of last address
-        while (ram.Read(pcEnd) != 0) {
-            pcEnd += 4;
-        }
+        // pcEnd = pc;
+        // while (ram.Read(pcEnd) != 0) {
+        //     pcEnd += 4;
+        // }
 
         instructionCnt = 0;
     };
@@ -79,8 +82,11 @@ public:
     void printCurrentEvent();
     void updateEventQueue();
 
+    void printInstructions();
+
     void printRegisters();
 
+    // the register functions are only used outside of the cpu class (i.e. set up x1 for running lab 2)
     void writeIntRegister(uint32_t address, uint32_t data) {
         if (address >= 0 && address < 32)
             registers.int_regs[address] = data;
@@ -95,9 +101,8 @@ public:
         if (regIndex >= 0 && regIndex < 32) {
             return registers.int_regs[regIndex];
         } else {
-            // Handle out-of-bounds error
             std::cerr << "Error: Integer register index out of bounds." << std::endl;
-            return 0; // You can choose to return an error value
+            return 0;
         }
     }
 
@@ -105,9 +110,8 @@ public:
         if (regIndex >= 0 && regIndex < 32) {
             return registers.fp_regs[regIndex];
         } else {
-            // Handle out-of-bounds error
             std::cerr << "Error: Float register index out of bounds." << std::endl;
-            return 0; // You can choose to return an error value
+            return 0;
         }
     }
  

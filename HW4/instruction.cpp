@@ -236,10 +236,10 @@ void Instruction::setALUop() {
     switch (opcode) {
         case I_TYPE:
         case R_TYPE:
-            ALUop = 0b0;
+            ALUop = ADD;
             break;
         case FP_TYPE:
-            ALUop = 0b1010;
+            ALUop = ADD_FP;
             break;
         case LOAD:
         case LOAD_FP:
@@ -250,10 +250,10 @@ void Instruction::setALUop() {
         case JAL:
         case AUIPC:
         case LUI:
-            ALUop = 0b0;
+            ALUop = ADD;
             break;
         default:
-            ALUop = 0b0;
+            ALUop = ADD;
     }
 }
 

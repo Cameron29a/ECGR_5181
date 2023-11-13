@@ -34,6 +34,23 @@ enum instructions {
     fcvt_w_s, fcvt_wu_s, fcvt_s_w, fcvt_s_wu, fmv_x_w, fclass_s, fmv_w_x
 };
 
+enum ALUop {
+    ADD = 0,
+    SUB,
+    AND,
+    OR,
+    XOR,
+    SLL,
+    SRL,
+    SRA,
+    MUL,
+    DIV,
+    ADD_FP,
+    SUB_FP,
+    MUL_FP,
+    DIV_FP,
+};
+
 // Define a class for RISC-V instructions
 class Instruction {
 public:
@@ -97,9 +114,9 @@ public:
     void setALUresult(int32_t ALUresult) { this->ALUresult = ALUresult; }
     int32_t getALUresult() { return ALUresult; }
 
-    float ALUresultFP;
-    void setALUresultFP(float ALUresultFP) { this->ALUresultFP = ALUresultFP; }
-    float getALUresultFP() { return ALUresultFP; }
+    float ALUfloatResult;
+    void setALUfloatResult(float ALUresultFP) { this->ALUfloatResult = ALUfloatResult; }
+    float getALUfloatResult() { return ALUfloatResult; }
 
     Instruction(uint32_t instruction) {
         // Get Values
@@ -111,6 +128,9 @@ public:
         funct3 = (instruction >> 12) & 0x7;
         funct7 = (instruction >> 25) & 0x7F;
         imm = setImmediate();
+
+        ALUresult = 0;
+        ALUfloatResult = 0;
 
         // Set Control Signals
         setregWrite();
