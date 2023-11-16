@@ -49,7 +49,9 @@ class CPU {
     // Functions for flow control, pipelined and single instruction
     void updateDataPath();
     void updatePipeline();
-    void flushPipeline(bool);
+    void flushPipeline();
+    bool controlHazardCheck();
+    bool dataHazardCheck();
 
     // Functions for fetch, decode, execute, memory, and write back stages of the data path
     void Fetch();

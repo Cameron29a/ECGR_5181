@@ -702,6 +702,9 @@ void Instruction::assembleString() {
                     break;
             }
             break;
+        case STALL:
+            instruction << "Branch/Jump Stall";
+            break;
         default:
             instruction << "Invalid Op.";
     }

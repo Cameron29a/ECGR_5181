@@ -3,22 +3,20 @@
 inline void CPU::Fetch() {
     // Fetch an instruction from memory based on the current PC
     if (fetchStage.empty()) { return; }
+
     std::cout << "//////////////Fetch Stage///////////////\n";
 
-    // Check Execute stage for jumps and branches
-    if ((!memoryStage.empty() && memoryStage.front().checkPCsel() == 0) || memoryStage.empty()) {
-        // Flow control places an empty instruction in the queue, so this stage will activate
-        // If there is a stall, the pc will not update twice on the same instruction
-        if (fetchStage.front().getInstruction() == 0) {
-            fetchStage.pop();
-            fetchStage.push(ram.Read(pc));
-            pc +=4;
-            std::cout << "Next Instruction: PC += 4\n";
-        }
+    // Flow control places an empty instruction in the queue, so this stage will activate
+    // If there is a stall, the pc will not update twice on the same instruction
+    if (fetchStage.front().getInstruction() == 0) {
+        fetchStage.pop();
+        fetchStage.push(ram.Read(pc));
+        pc +=4;
+        std::cout << "Next Instruction: PC += 4\n";
     }
     
-        
-    // fetchStage.front().printInstruction();
+    fetchStage.front().printInstruction();
+    fetchStage.front().printAssembly();
 }
 
 inline void CPU::Decode() {
@@ -37,7 +35,7 @@ inline void CPU::Decode() {
     decodeStage.front().setALUop();
     decodeStage.front().setWBsel();
     decodeStage.front().setIsFloat();
-    decodeStage.front().setPCsel(false);
+    decodeStage.front().setPCsel(true); // assume branch true to handle hazards, update in execute
 
     // decodeStage.front().printAssembly();
     // decodeStage.front().printSignals();
@@ -305,8 +303,8 @@ inline void CPU::runCPUcycle() {
 
         // Update event log for each cycle
         updateEventQueue();
-
-        if (fetchStage.empty() && decodeStage.empty() && executeStage.empty() && memoryStage.empty() && writeBackStage.empty() && readIntRegister(1) != 0) {
+// look at x1 end condition
+        if (fetchStage.empty() && decodeStage.empty() && executeStage.empty() && memoryStage.empty() && writeBackStage.empty()) {
             reset = true;
             std::cout << "All Stages of the data path are empty. Resetting CPU.\n";
             return;
@@ -319,30 +317,67 @@ inline void CPU::runCPUcycle() {
     }
 }
 
-inline void CPU::flushPipeline(bool branch) {
-    if (!decodeStage.empty() && branch) {
-        discardedInstructions.push(decodeStage.front());
-        decodeStage.pop();
-        std::cout << "Decode stage flushed:\n";
+inline void CPU::flushPipeline() {
+// need to fic pc decrement after flush
+    if (decodeStage.empty()) { return; }
+    
+    if (decodeStage.front().checkPCsel()) {
+        if (!fetchStage.empty()) {
+            discardedInstructions.push(fetchStage.front());
+            fetchStage.pop();
+            std::cout << "Fetch stage flushed:\n";
+            // if (pc >= 4) 
+                // pc -= 4; // seg fault if un commented
+                // prevPC -=4;
+                // std::cout << "prevPC - 4 = " << prevPC << "\n";
+                // pc = prevPC;
+                // 
+        }
     }
-    if (!fetchStage.empty()) {
-        discardedInstructions.push(fetchStage.front());
-        fetchStage.pop();
-        std::cout << "Fetch stage flushed:\n";
+    return;
+}
+
+inline bool CPU::controlHazardCheck() {
+    // PRIORITY ONE#### need to fix logic for not fetching while branch/jump in data path
+    if (fetchStage.empty()) {
+        std::cout << "Branch detected in: ";
+        if (decodeStage.front().checkPCsel() && !decodeStage.empty()) {
+            fetchStage.push(0b1111111);
+            std::cout << "Decode\n";
+        }
+
+        else if (executeStage.front().checkPCsel() && !executeStage.empty()) {
+            fetchStage.push(0b1111111);
+            std::cout << "Execute\n";
+        }
+
+        // else if (memoryStage.front().checkPCsel() /*&& !memoryStage.empty()*/) {
+        //     fetchStage.push(0b1111111);
+        //     std::cout << "Memory\n";
+        // }
+        else {
+            std::cout << "None\n";
+        }
     }
+
+    // 
+}
+
+// handle hazards with bubbling, look into raw war waw
+inline bool CPU::dataHazardCheck() {
+
+    return false;
 }
 
 
 inline void CPU::updatePipeline() {
-    bool branchPrediction = (executeStage.front().checkPCsel() && !executeStage.empty());
-    if (branchPrediction) {
-        flushPipeline(true);
-    }
-
-    bool jumpDetection = (decodeStage.front().checkPCsel() && !decodeStage.empty());
-    if (jumpDetection) {
-        flushPipeline(false);
-    }
+    // run branch prediction first before updating pipeline
+// need to prevent from grabbing instruction again after flush, fix before fixing the decrease on flush
+// getting +8 too high on pc, 4 is from not decreasing the pc after flush, the other 4 is because double grabbing
+    
+    flushPipeline();
+    controlHazardCheck();
+    // dataHazardCheck();
     
     // Check and update Write Back Stage. Move instructions from here to queue of executed functions
     if (!writeBackStage.empty()) {
@@ -352,54 +387,54 @@ inline void CPU::updatePipeline() {
 
     // Check and move instructions from Memory to WriteBack stage
     if (!memoryStage.empty() && writeBackStage.empty()) {
-        if ((memoryStage.front().checkmemWrite() == false && memoryStage.front().checkmemRead() == false) || memDelay == true) {
-            memDelay = 0;
+        // if ((memoryStage.front().checkmemWrite() == false && memoryStage.front().checkmemRead() == false) || memDelay == true) {
+            // memDelay = 0;
             writeBackStage.push(memoryStage.front());
             memoryStage.pop();
-        } else memDelay = true;
+        // } else memDelay = true;
     }
 
     // Check and move instructions from Execute to Memory stage
     if (!executeStage.empty() && memoryStage.empty()) {
-        if (executeStage.front().checkFloat() == false || fpDelay >= 5) {
-            fpDelay = 0;
+        // if (executeStage.front().checkFloat() == false || fpDelay > 5) {
+            // fpDelay = 0;
             memoryStage.push(executeStage.front());
             executeStage.pop();
-        } else fpDelay++;
+        // } else fpDelay++;
     }
 
     // Check and move instructions from Decode to Execute stage
     if (!decodeStage.empty() && executeStage.empty()) {
-        // Check for Data Hazards
-        uint32_t rd = memoryStage.front().getrd();
-        uint32_t rs1 = decodeStage.front().getrs1();
-        uint32_t rs2 = decodeStage.front().getrs2();
-        if ((!memoryStage.empty() && ((rd != rs1) && (rd != rs2))) || memoryStage.empty()) {
+        // // Check for Data Hazards
+        // uint32_t rd = memoryStage.front().getrd();
+        // uint32_t rs1 = decodeStage.front().getrs1();
+        // uint32_t rs2 = decodeStage.front().getrs2();
+        // if ((!memoryStage.empty() && ((rd != rs1) && (rd != rs2))) || memoryStage.empty()) {
             executeStage.push(decodeStage.front());
             decodeStage.pop();
-        }
+        // }
     }
 
     // Check and move instructions from Fetch to Decode stage
     if (!fetchStage.empty() && decodeStage.empty()) {
-        decodeStage.push(fetchStage.front());
-        fetchStage.pop();
+        // if (fetchStage.front().getInstruction() != 0b1111111) {
+            decodeStage.push(fetchStage.front());
+            fetchStage.pop();
+        // }
     }
+            
 
     // Update Fetch stage
     if (fetchStage.empty()) {
-        if ((!memoryStage.empty() && branchPrediction == 0) || memoryStage.empty()) {
-            if (ram.Read(pc) != 0) {
-                fetchStage.push(0);
-                std::cout << "New Instruction Fetched\n";
-            }
+        if (ram.Read(pc) != 0) {
+            fetchStage.push(0);
+            std::cout << "New Instruction Fetched\n";
         }
     }
 
+    // if (fetchStage.front().getInstruction() == 0b1111111 && !fetchStage.empty()) {
+    //     fetchStage.pop();
+    // }
+
+
 }
-
-// Jump in decode means to unschedule the event before it
-
-
-// if see branch need to stall
-// 

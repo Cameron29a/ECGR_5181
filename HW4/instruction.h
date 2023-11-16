@@ -20,8 +20,9 @@ typedef uint64_t tick_t;
 #define JALR         0b1100111
 #define JAL          0b1101111
 #define FP_TYPE      0b1010011
+#define STALL        0b1111111
 
-#define STALL 0b00000000000000000000000000010011    // ADDI X0, X0, 0
+// #define No_Op 0b00000000000000000000000000010011    // ADDI X0, X0, 0
 
 enum ALUop {
     ADD = 0,    // 0b0000
