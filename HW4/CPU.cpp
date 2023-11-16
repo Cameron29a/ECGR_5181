@@ -4,9 +4,20 @@ inline void CPU::Fetch() {
     // Fetch an instruction from memory based on the current PC
     if (fetchStage.empty()) { return; }
     std::cout << "//////////////Fetch Stage///////////////\n";
-    
-    pc +=4;
 
+    // Check Execute stage for jumps and branches
+    if ((!memoryStage.empty() && memoryStage.front().checkPCsel() == 0) || memoryStage.empty()) {
+        // Flow control places an empty instruction in the queue, so this stage will activate
+        // If there is a stall, the pc will not update twice on the same instruction
+        if (fetchStage.front().getInstruction() == 0) {
+            fetchStage.pop();
+            fetchStage.push(ram.Read(pc));
+            pc +=4;
+            std::cout << "Next Instruction: PC += 4\n";
+        }
+    }
+    
+        
     // fetchStage.front().printInstruction();
 }
 
@@ -22,11 +33,11 @@ inline void CPU::Decode() {
     decodeStage.front().setmemWrite();
     decodeStage.front().setmemRead();
     decodeStage.front().setBranch();
-    decodeStage.front().setJump();
     decodeStage.front().setRM();
     decodeStage.front().setALUop();
     decodeStage.front().setWBsel();
     decodeStage.front().setIsFloat();
+    decodeStage.front().setPCsel(false);
 
     // decodeStage.front().printAssembly();
     // decodeStage.front().printSignals();
@@ -135,7 +146,7 @@ inline void CPU::Memory() {
         pc = memoryStage.front().getALUresult();
         std::cout << "Next Instruction: PC = ALU result\n";
     } else {
-        std::cout << "Next Instruction: PC += 4\n";
+        
     }
 }
 
@@ -173,8 +184,7 @@ inline void CPU::WriteBack() {
 inline void CPU::updateDataPath() {
     // Update Fetch stage
     if (fetchStage.empty() && decodeStage.empty() && executeStage.empty() && memoryStage.empty()) {
-        uint32_t nextInstruction = ram.Read(pc);
-        if (nextInstruction != 0) fetchStage.push(nextInstruction);
+        if (ram.Read(pc) != 0) fetchStage.push(0);
         if (!writeBackStage.empty()) {
             executedInstructions.push(writeBackStage.front());
             writeBackStage.pop();
@@ -212,9 +222,9 @@ inline void CPU::updateDataPath() {
     }
 }
 
-inline void CPU::updatePipeLine() {
-    
-}
+// place update and fluch pipeline here when done
+
+
 
 inline void CPU::printRegisters() {
     std::cout << "Integer Registers:\n";
@@ -271,16 +281,16 @@ inline void CPU::updateEventQueue() {
     if (writeBackStage.empty()) writeBackString = "No_Op";
     else writeBackString = writeBackStage.front().getAssemblyString();
 
-    events.push(Event(currentTick, pc, fetchString, decodeString, executeString, memoryString, writeBackString));
+    events.push(Event(currentTick, prevPC, pc, fetchString, decodeString, executeString, memoryString, writeBackString));
 }
 
 inline void CPU::runCPUcycle() {
     if (reset == false) {
         // Save pc at start of cycle
-        // prevPC = pc;
+        prevPC = pc;
 
         // Update datapath
-        if (pipeline) updatePipeLine();
+        if (pipeline) updatePipeline();
         else updateDataPath();
         
         // Run each stage of the pipeline
@@ -296,7 +306,7 @@ inline void CPU::runCPUcycle() {
         // Update event log for each cycle
         updateEventQueue();
 
-        if (fetchStage.empty() && decodeStage.empty() && executeStage.empty() && memoryStage.empty() && writeBackStage.empty()) {
+        if (fetchStage.empty() && decodeStage.empty() && executeStage.empty() && memoryStage.empty() && writeBackStage.empty() && readIntRegister(1) != 0) {
             reset = true;
             std::cout << "All Stages of the data path are empty. Resetting CPU.\n";
             return;
@@ -309,3 +319,87 @@ inline void CPU::runCPUcycle() {
     }
 }
 
+inline void CPU::flushPipeline(bool branch) {
+    if (!decodeStage.empty() && branch) {
+        discardedInstructions.push(decodeStage.front());
+        decodeStage.pop();
+        std::cout << "Decode stage flushed:\n";
+    }
+    if (!fetchStage.empty()) {
+        discardedInstructions.push(fetchStage.front());
+        fetchStage.pop();
+        std::cout << "Fetch stage flushed:\n";
+    }
+}
+
+
+inline void CPU::updatePipeline() {
+    bool branchPrediction = (executeStage.front().checkPCsel() && !executeStage.empty());
+    if (branchPrediction) {
+        flushPipeline(true);
+    }
+
+    bool jumpDetection = (decodeStage.front().checkPCsel() && !decodeStage.empty());
+    if (jumpDetection) {
+        flushPipeline(false);
+    }
+    
+    // Check and update Write Back Stage. Move instructions from here to queue of executed functions
+    if (!writeBackStage.empty()) {
+        executedInstructions.push(writeBackStage.front());
+        writeBackStage.pop();
+    }
+
+    // Check and move instructions from Memory to WriteBack stage
+    if (!memoryStage.empty() && writeBackStage.empty()) {
+        if ((memoryStage.front().checkmemWrite() == false && memoryStage.front().checkmemRead() == false) || memDelay == true) {
+            memDelay = 0;
+            writeBackStage.push(memoryStage.front());
+            memoryStage.pop();
+        } else memDelay = true;
+    }
+
+    // Check and move instructions from Execute to Memory stage
+    if (!executeStage.empty() && memoryStage.empty()) {
+        if (executeStage.front().checkFloat() == false || fpDelay >= 5) {
+            fpDelay = 0;
+            memoryStage.push(executeStage.front());
+            executeStage.pop();
+        } else fpDelay++;
+    }
+
+    // Check and move instructions from Decode to Execute stage
+    if (!decodeStage.empty() && executeStage.empty()) {
+        // Check for Data Hazards
+        uint32_t rd = memoryStage.front().getrd();
+        uint32_t rs1 = decodeStage.front().getrs1();
+        uint32_t rs2 = decodeStage.front().getrs2();
+        if ((!memoryStage.empty() && ((rd != rs1) && (rd != rs2))) || memoryStage.empty()) {
+            executeStage.push(decodeStage.front());
+            decodeStage.pop();
+        }
+    }
+
+    // Check and move instructions from Fetch to Decode stage
+    if (!fetchStage.empty() && decodeStage.empty()) {
+        decodeStage.push(fetchStage.front());
+        fetchStage.pop();
+    }
+
+    // Update Fetch stage
+    if (fetchStage.empty()) {
+        if ((!memoryStage.empty() && branchPrediction == 0) || memoryStage.empty()) {
+            if (ram.Read(pc) != 0) {
+                fetchStage.push(0);
+                std::cout << "New Instruction Fetched\n";
+            }
+        }
+    }
+
+}
+
+// Jump in decode means to unschedule the event before it
+
+
+// if see branch need to stall
+// 

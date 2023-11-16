@@ -44,7 +44,19 @@ class CPU {
     bool memDelay;
 
     // uint32_t pcEnd;         // Address of last instruction
-    // uint32_t prevPC;
+    uint32_t prevPC;
+
+    // Functions for flow control, pipelined and single instruction
+    void updateDataPath();
+    void updatePipeline();
+    void flushPipeline(bool);
+
+    // Functions for fetch, decode, execute, memory, and write back stages of the data path
+    void Fetch();
+    void Decode();
+    void Execute();
+    void Memory();
+    void WriteBack();
 
 public:
     CPU(RAM& ram, uint32_t pc, uint32_t stackAddress, bool pipeline) 
@@ -66,17 +78,6 @@ public:
     };
 
     bool checkReset() { return reset; }
-
-    // Functions for flow control, pipelined and single instruction
-    void updateDataPath();
-    void updatePipeLine();
-
-    // Functions for fetch, decode, execute, memory, and write back stages of the data path
-    void Fetch();
-    void Decode();
-    void Execute();
-    void Memory();
-    void WriteBack();
 
     // Function to simulate the CPU for 1 cycle
     void runCPUcycle();

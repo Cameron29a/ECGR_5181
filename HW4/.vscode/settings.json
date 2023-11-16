@@ -52,6 +52,7 @@
         "ctime": "cpp",
         "iomanip": "cpp",
         "cstring": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "queue": "cpp"
     }
 }

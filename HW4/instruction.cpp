@@ -149,27 +149,6 @@ void Instruction::setBranch() {
     }
 }
 
-void Instruction::setJump() {
-    switch (opcode) {
-        case JALR:
-        case JAL:
-            jump = 1;
-            break;
-        case LOAD:
-        case LOAD_FP:
-        case I_TYPE:
-        case AUIPC:
-        case S_TYPE:
-        case S_TYPE_FP:
-        case R_TYPE:
-        case LUI:
-        case SB_TYPE:
-        case FP_TYPE:
-        default:
-            jump = 0;
-    }
-}
-
 void Instruction::setRM() {
     switch (opcode) {
         case FP_TYPE:
@@ -407,7 +386,6 @@ void Instruction::printSignals() {
     std::cout << "memRead = " << memRead << "\n";
     std::cout << "WBsel = " << WBsel << "\n";
     std::cout << "branch = " << branch << "\n";
-    std::cout << "jump = " << jump << "\n";
     std::cout << "rm = " << rm << "\n";
 }
 

@@ -50,7 +50,6 @@ enum ALUop {
 
 // Define a class for RISC-V instructions
 class Instruction {
-public:
     uint32_t instruction;
     std::string assemblyString;
 
@@ -58,65 +57,16 @@ public:
     uint32_t opcode, rs1, rs2, rd, funct3, funct7;
     int32_t imm = 0;
 
-    // Check Instruction Variables
-    uint32_t getrd() { return rd; }
-    uint32_t getOpcode() { return opcode; }
-    uint32_t getrs1() { return rs1; }
-    uint32_t getrs2() { return rs2; }
-    uint32_t getfunct3() { return funct3; }
-    int32_t getImm() { return imm; }
-
     // Control Signals
-    bool regWrite, ALUsrc1, ALUsrc2, memWrite, memRead, branch, jump, rm, PCsel;
+    bool regWrite, ALUsrc1, ALUsrc2, memWrite, memRead, branch, rm, PCsel;
     int ALUop, WBsel;
 
-    // Check Control Signals
-    bool checkregWrite() { return regWrite; }
-    bool checkALUsrc1() { return ALUsrc1; }
-    bool checkALUsrc2() { return ALUsrc2; }
-    bool checkmemWrite() { return memWrite; }
-    bool checkmemRead() { return memRead; }
-    bool checkBranch() { return branch; }
-    bool checkJump() { return jump; }
-    bool checkRM() { return rm; }
-    bool checkPCsel() { return PCsel; }
-    int checkALUop() { return ALUop; }
-    int checkWBsel() { return WBsel; }
-
-    // Float
     bool isFloat;
-    void setIsFloat();
-    bool checkFloat() { return isFloat; }    
 
-    // Decode functions
-    int32_t setImmediate();
-    void setregWrite();
-    void setALUsrc1();
-    void setALUsrc2();
-    void setmemWrite();
-    void setmemRead();
-    void setBranch();
-    void setJump();
-    void setRM();
-    void setPCsel(bool);
-    void setALUop();
-    void setWBsel();
-
-    void printSignals();
-    void printInstruction();
-    void printAssembly();
-    void assembleString();    
-    std::string getAssemblyString() { return assemblyString; }
-    
-    // ALU related variables and functions 
     int32_t ALUresult;
-    void setALUresult(int32_t ALUresult) { this->ALUresult = ALUresult; }
-    int32_t getALUresult() { return ALUresult; }
-
     float ALUfloatResult;
-    void setALUfloatResult(float ALUresultFP) { this->ALUfloatResult = ALUfloatResult; }
-    float getALUfloatResult() { return ALUfloatResult; }
 
+public:
     Instruction(uint32_t instruction) {
         // Get Values
         this->instruction = instruction;
@@ -132,6 +82,60 @@ public:
         ALUresult = 0;
         ALUfloatResult = 0;
     }
+
+    // Decode functions
+    int32_t setImmediate();
+    void setregWrite();
+    void setALUsrc1();
+    void setALUsrc2();
+    void setmemWrite();
+    void setmemRead();
+    void setBranch();
+    void setRM();
+    void setPCsel(bool);
+    void setALUop();
+    void setWBsel();
+
+    void assembleString();   
+
+    // Check Instruction Variables
+    uint32_t getrd() { return rd; }
+    uint32_t getOpcode() { return opcode; }
+    uint32_t getrs1() { return rs1; }
+    uint32_t getrs2() { return rs2; }
+    uint32_t getfunct3() { return funct3; }
+    int32_t getImm() { return imm; }
+
+    // Check Control Signals
+    bool checkregWrite() { return regWrite; }
+    bool checkALUsrc1() { return ALUsrc1; }
+    bool checkALUsrc2() { return ALUsrc2; }
+    bool checkmemWrite() { return memWrite; }
+    bool checkmemRead() { return memRead; }
+    bool checkBranch() { return branch; }
+    bool checkRM() { return rm; }
+    bool checkPCsel() { return PCsel; }
+    int checkALUop() { return ALUop; }
+    int checkWBsel() { return WBsel; }
+
+    // Float
+    void setIsFloat();
+    bool checkFloat() { return isFloat; }    
+
+    // Print functions
+    void printSignals();
+    void printInstruction();
+    void printAssembly();
+     
+    uint32_t getInstruction() { return instruction; }
+    std::string getAssemblyString() { return assemblyString; }
+    
+    // ALU related variables and functions 
+    void setALUresult(int32_t ALUresult) { this->ALUresult = ALUresult; }
+    int32_t getALUresult() { return ALUresult; }
+    
+    void setALUfloatResult(float ALUresultFP) { this->ALUfloatResult = ALUfloatResult; }
+    float getALUfloatResult() { return ALUfloatResult; }
 };
 
 #endif //INSTRUCTION_H

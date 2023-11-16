@@ -72,7 +72,7 @@ inline void Simulation::runSimulation() {
 
     // write instructions to addresses 0x0 – 0x093
     std::cout << "Write Instructions to Memory\n";
-    std::string filename = "instructions.txt";
+    std::string filename = "assembly_code/instructions.txt";
     uint32_t startAddress = 0x0;
     uint32_t stopAddress = 0x94;
     loadInstructionsToMemory(filename, memory, startAddress, stopAddress);
@@ -98,13 +98,14 @@ inline void Simulation::runSimulation() {
     // memory.PrintMemoryContents();
 
     bool pipeline = false;
+    pipeline = true;     // comment this out to run as single cycle processor
     std::cout << "=========================Create CPU=========================\n";
     CPU cpu1{ memory, startAddress, stackAddress, pipeline };
 
     
     // Main simulation loop.
     int loopCnt = 1;
-    int loopMax = 750;
+    int loopMax = 1000;
 
     // for testing lab 2
     cpu1.writeIntRegister(1, 160);
@@ -143,3 +144,6 @@ inline void Simulation::runSimulation() {
     std::cout.rdbuf(coutBuffer); // Restore the original cout buffer
     outputFile.close();
 }
+
+// need num of executed instructions
+// num cycles

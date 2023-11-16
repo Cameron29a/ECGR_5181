@@ -26,8 +26,7 @@ public:
     void Write(uint32_t address, uint32_t data) {
         // std::cout << "Memory Write to Address 0x" << std::hex << address << std::dec << "\n";
         for (int i = 0; i <= 3; i++) {
-            uint32_t byte = (data >> (i * 8)) & 0xFF;
-            memory[address + i] = byte;
+            memory[address + i] = (data >> (i * 8)) & 0xFF;
         }
     }
 
