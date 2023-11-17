@@ -7,7 +7,7 @@ int32_t Instruction::setImmediate() {
         case LOAD_FP:
         case I_TYPE:
         case JALR:
-            return (static_cast<int32_t>(instruction) >> 20) & 0xFFF; // Sign-extend the immediate field
+            return (static_cast<int32_t>(instruction) >> 20); // Sign-extend the immediate field
         case S_TYPE:
         case S_TYPE_FP:
             return ((static_cast<int32_t>(instruction) >> 20) & 0xFE0) | ((instruction >> 7) & 0x1F); // Sign-extend and combine imm[11:5] and imm[4:0]

@@ -41,14 +41,15 @@ public:
     }
 
     // Method to get the response from the completed memory request
-    uint32_t getMemoryResponse() {
+    uint32_t getMemoryResponse(uint32_t cpuId) {
         if (!memoryResponses.empty()) {
             auto response = memoryResponses.front();
-            memoryResponses.pop();
-            return response;
-        } else {
-            return 0; // Placeholder value, adjust as needed
+            if (response.first == cpuId) {
+                memoryResponses.pop();
+                return response.second;
+            }
         }
+        return 0; // Placeholder value, adjust as needed
     }
 
     bool isWriteRequestPending(uint32_t cpuId) const {
@@ -66,7 +67,7 @@ public:
 private:
     // Define Memory Request Queue type
     using MemoryRequestQueue = std::queue<std::pair<uint32_t, MemoryRequest>>;
-    std::queue<uint32_t> memoryResponses;
+    std::queue<std::pair<uint32_t, uint32_t>> memoryResponses;
 
     RAM& ram;
 
@@ -83,17 +84,17 @@ private:
         if (!memoryRequests.empty()) {
             auto [cpuId, request] = memoryRequests.front();
             memoryRequests.pop();
-
+            std::cout << "Memory Bus Access:\n";
             // Check if the address is already being accessed
             if (request.type == MemoryRequestType::READ) {
                 // Read from memory
                 uint32_t data = ram.Read(request.address);
-                std::cout << "CPU " << cpuId << " reads from address " << request.address << ": " << data << std::endl;
-                memoryResponses.push(data);
+                std::cout << "CPU " << cpuId << " reads from address: 0x" << std::hex << request.address << std::dec << ": 0b" << std::bitset<32>(data) << std::endl;
+                memoryResponses.push({cpuId, data});
             } else {
                 // Write to memory
                 ram.Write(request.address, request.data);
-                std::cout << "CPU " << cpuId << " writes to address " << request.address << ": " << request.data << std::endl;
+                std::cout << "CPU " << cpuId << " writes to address " << std::hex << request.address << std::dec << ": " << std::bitset<32>(request.data) << std::endl;
             }
         }
     }

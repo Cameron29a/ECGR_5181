@@ -60,12 +60,7 @@ void CPU::Write(uint32_t address, uint32_t data) {
 //     std::memcpy(&result, &floatData, sizeof(float));
 // }
 
-// Write float to memory at the specified address
-void CPU::WriteFloat(uint32_t address, float data) {
-    uint32_t floatData;
-    std::memcpy(&floatData, &data, sizeof(uint32_t));
-    Write(address, floatData);
-}
+// 
 
 // // Method to make a memory read request
 // uint32_t CPU::Read(uint32_t address) {

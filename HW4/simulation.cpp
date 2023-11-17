@@ -159,7 +159,7 @@ inline void Simulation::runSimulation() {
         std::cout << "=====Reason for Termination: Maximum loop counter reached=====\n"; 
         
     // std::cout << "=====Event Queue for Simulation=====\n";
-    // cpu1.printEventQueue();
+    cpu1.printEventQueue();
     // cpu2.printEventQueue();
 
     // std::cout << "=====Registers after end of Simulation=====\n";
@@ -170,6 +170,7 @@ inline void Simulation::runSimulation() {
     // ram.PrintMemoryContents();
     
     cpu1.printExecutedInstructions();
+    // cpu2.printExecutedInstructions();
 
     std::cout.rdbuf(coutBuffer); // Restore the original cout buffer
     outputFile.close();

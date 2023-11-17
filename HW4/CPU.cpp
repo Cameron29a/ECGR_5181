@@ -98,22 +98,27 @@ inline void CPU::Memory() {
     if (memoryStage.empty())  { return; }
     std::cout << "//////////////Memory Stage//////////////\n";
 
-    if (!memoryStage.front().checkmemRead() && !memoryStage.front().checkmemWrite() && !memoryStage.front().checkPCsel()) { return; }
+    // Adjust PC if there is a branch or jump
+    if (memoryStage.front().checkPCsel()) {
+        pc = memoryStage.front().getALUresult();
+        std::cout << "Next Instruction: PC = ALU result\n";
+        return;
+    }
+
+    if (!memoryStage.front().checkmemRead() && !memoryStage.front().checkmemWrite()) { return; }
 
     if (!memRequestPending) {
         if (memoryStage.front().checkmemRead()) {
             // Memory read operation
             // Set the loaded data to the destination register
             if (memoryStage.front().checkFloat()) {
-                float memoryAddressFP = memoryStage.front().getALUfloatResult();
+                float memoryAddressFP = stackAddress + memoryStage.front().getALUfloatResult();
                 Read(memoryAddressFP); // read float
-                // memoryStage.front().loadDataFP(loadedDataFP);
                 std::cout << "FP Memory Read Operation\n";
                 // std::cout << "Memory Address: " << memoryAddressFP << "\n";
             } else {
-                uint32_t memoryAddress = memoryStage.front().getALUresult();
+                uint32_t memoryAddress = stackAddress + memoryStage.front().getALUresult();
                 Read(memoryAddress);
-                // memoryStage.front().loadData(loadedData);
                 std::cout << "Int Memory Read Operation\n";
                 // std::cout << "Memory Address: " << memoryAddress << "\n";
             }
@@ -124,9 +129,11 @@ inline void CPU::Memory() {
             if (memoryStage.front().checkFloat()) {
                 float memoryAddressFP = stackAddress + memoryStage.front().getALUresult();
                 float dataToStoreFP = registers.fp_regs[memoryStage.front().getrs2()];
-                WriteFloat(memoryAddressFP, dataToStoreFP);
+                uint32_t memoryAddress = static_cast<uint32_t>(memoryAddressFP);
+                uint32_t dataToStore = static_cast<uint32_t>(dataToStoreFP);
+                Write(memoryAddress, dataToStore);
                 std::cout << "FP Memory Write Operation\n";
-                std::cout << "Memory Address: " << memoryAddressFP << "\n";
+                std::cout << "Memory Address: " << memoryAddress << "\n";
                 std::cout << "Data To Store: " << dataToStoreFP << "\n";
             } else {
                 uint32_t memoryAddress = stackAddress + memoryStage.front().getALUresult();
@@ -142,9 +149,10 @@ inline void CPU::Memory() {
         if (memBus.isMemoryRequestComplete()) {
             if (memoryStage.front().checkmemRead()) {
                 if (memoryStage.front().checkFloat()) {
-                    memoryStage.front().loadDataFP(memBus.getMemoryResponse());
+
+                    memoryStage.front().loadDataFP(memBus.getMemoryResponse(cpuId));
                 } else {
-                    memoryStage.front().loadData(memBus.getMemoryResponse());
+                    memoryStage.front().loadData(memBus.getMemoryResponse(cpuId));
                 }
             }
             memRequestPending = false;
@@ -155,15 +163,6 @@ inline void CPU::Memory() {
             std::cout << "Memory Access still Pending\n";
             return; 
         }
-    }
-
-
-    // Adjust PC if there is a branch or jump
-    if (memoryStage.front().checkPCsel()) {
-        pc = memoryStage.front().getALUresult();
-        std::cout << "Next Instruction: PC = ALU result\n";
-    } else {
-        
     }
 }
 
