@@ -303,7 +303,6 @@ inline void CPU::runCPUcycle() {
 
         // Update event log for each cycle
         updateEventQueue();
-// look at x1 end condition
         if (fetchStage.empty() && decodeStage.empty() && executeStage.empty() && memoryStage.empty() && writeBackStage.empty()) {
             reset = true;
             std::cout << "All Stages of the data path are empty. Resetting CPU.\n";
@@ -318,66 +317,54 @@ inline void CPU::runCPUcycle() {
 }
 
 inline void CPU::flushPipeline() {
-// need to fic pc decrement after flush
-    if (decodeStage.empty()) { return; }
-    
-    if (decodeStage.front().checkPCsel()) {
+    if (decodeStage.front().checkPCsel() && !decodeStage.empty()) {
         if (!fetchStage.empty()) {
             discardedInstructions.push(fetchStage.front());
             fetchStage.pop();
             std::cout << "Fetch stage flushed:\n";
-            // if (pc >= 4) 
-                // pc -= 4; // seg fault if un commented
-                // prevPC -=4;
-                // std::cout << "prevPC - 4 = " << prevPC << "\n";
-                // pc = prevPC;
-                // 
+            pc -= 4;
         }
     }
-    return;
 }
 
-inline bool CPU::controlHazardCheck() {
-    // PRIORITY ONE#### need to fix logic for not fetching while branch/jump in data path
-    if (fetchStage.empty()) {
-        std::cout << "Branch detected in: ";
-        if (decodeStage.front().checkPCsel() && !decodeStage.empty()) {
-            fetchStage.push(0b1111111);
-            std::cout << "Decode\n";
-        }
-
-        else if (executeStage.front().checkPCsel() && !executeStage.empty()) {
-            fetchStage.push(0b1111111);
-            std::cout << "Execute\n";
-        }
-
-        // else if (memoryStage.front().checkPCsel() /*&& !memoryStage.empty()*/) {
-        //     fetchStage.push(0b1111111);
-        //     std::cout << "Memory\n";
-        // }
-        else {
-            std::cout << "None\n";
-        }
+inline void CPU::controlHazardCheck() {
+    if (executeStage.front().checkPCsel() && !executeStage.empty()) {
+        std::cout << "Control Hazard detected in: Execute\n";
+        controlHazard = 1;
+    } else if (memoryStage.front().checkPCsel() && !memoryStage.empty()) {
+        std::cout << "Control Hazard detected in: Memory\n";
+        controlHazard = 1;
+    } else {
+        controlHazard = 0;
     }
-
-    // 
 }
 
-// handle hazards with bubbling, look into raw war waw
-inline bool CPU::dataHazardCheck() {
-
-    return false;
+inline void CPU::dataHazardCheck() {
+    // Check for Data Hazards
+    if (!memoryStage.empty()) {
+        uint32_t rd = memoryStage.front().getrd();
+        uint32_t rs1 = decodeStage.front().getrs1();
+        uint32_t rs2 = decodeStage.front().getrs2();
+        if ((rd == rs1) || (rd == rs2)) {
+            std::cout << "Data Hazard detected in: Memory\n";
+            dataHazard = 1;
+        }
+    } else if (!writeBackStage.empty()) {
+        uint32_t rd = writeBackStage.front().getrd();
+        uint32_t rs1 = decodeStage.front().getrs1();
+        uint32_t rs2 = decodeStage.front().getrs2();
+        if ((rd == rs1) || (rd == rs2)) {
+            std::cout << "Data Hazard detected in: Write Back\n";
+            dataHazard = 1;
+        }
+    } else {
+        dataHazard = 0;
+    }
 }
-
 
 inline void CPU::updatePipeline() {
-    // run branch prediction first before updating pipeline
-// need to prevent from grabbing instruction again after flush, fix before fixing the decrease on flush
-// getting +8 too high on pc, 4 is from not decreasing the pc after flush, the other 4 is because double grabbing
-    
+    // flush before updating pipeline
     flushPipeline();
-    controlHazardCheck();
-    // dataHazardCheck();
     
     // Check and update Write Back Stage. Move instructions from here to queue of executed functions
     if (!writeBackStage.empty()) {
@@ -405,36 +392,27 @@ inline void CPU::updatePipeline() {
 
     // Check and move instructions from Decode to Execute stage
     if (!decodeStage.empty() && executeStage.empty()) {
-        // // Check for Data Hazards
-        // uint32_t rd = memoryStage.front().getrd();
-        // uint32_t rs1 = decodeStage.front().getrs1();
-        // uint32_t rs2 = decodeStage.front().getrs2();
-        // if ((!memoryStage.empty() && ((rd != rs1) && (rd != rs2))) || memoryStage.empty()) {
+        dataHazardCheck();
+        if(!dataHazard) {
             executeStage.push(decodeStage.front());
             decodeStage.pop();
-        // }
+        }
     }
 
     // Check and move instructions from Fetch to Decode stage
     if (!fetchStage.empty() && decodeStage.empty()) {
-        // if (fetchStage.front().getInstruction() != 0b1111111) {
-            decodeStage.push(fetchStage.front());
-            fetchStage.pop();
-        // }
+        decodeStage.push(fetchStage.front());
+        fetchStage.pop();
     }
             
-
     // Update Fetch stage
     if (fetchStage.empty()) {
-        if (ram.Read(pc) != 0) {
-            fetchStage.push(0);
-            std::cout << "New Instruction Fetched\n";
+        controlHazardCheck();
+        if (!controlHazard) {
+            if (ram.Read(pc) != 0) {
+                fetchStage.push(0);
+                // std::cout << "New Instruction Fetched\n";
+            }
         }
     }
-
-    // if (fetchStage.front().getInstruction() == 0b1111111 && !fetchStage.empty()) {
-    //     fetchStage.pop();
-    // }
-
-
 }

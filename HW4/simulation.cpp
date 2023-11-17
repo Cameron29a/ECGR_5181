@@ -105,7 +105,7 @@ inline void Simulation::runSimulation() {
     
     // Main simulation loop.
     int loopCnt = 1;
-    int loopMax = 150;
+    int loopMax = 1500;
 
     // for testing lab 2
     cpu1.writeIntRegister(1, 160);

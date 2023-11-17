@@ -43,6 +43,9 @@ class CPU {
     uint32_t fpDelay;
     bool memDelay;
 
+    bool controlHazard;
+    bool dataHazard;
+
     // uint32_t pcEnd;         // Address of last instruction
     uint32_t prevPC;
 
@@ -50,8 +53,8 @@ class CPU {
     void updateDataPath();
     void updatePipeline();
     void flushPipeline();
-    bool controlHazardCheck();
-    bool dataHazardCheck();
+    void controlHazardCheck();
+    void dataHazardCheck();
 
     // Functions for fetch, decode, execute, memory, and write back stages of the data path
     void Fetch();
@@ -76,6 +79,8 @@ public:
 
         fpDelay = 0;
         memDelay = 0;
+        controlHazard = 0;
+        dataHazard = 0;
 
     };
 
