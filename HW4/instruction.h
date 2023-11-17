@@ -67,6 +67,9 @@ class Instruction {
     int32_t ALUresult;
     float ALUfloatResult;
 
+    uint32_t loadedData;
+    float loadedDataFP;
+    
 public:
     Instruction(uint32_t instruction) {
         // Get Values
@@ -137,6 +140,13 @@ public:
     
     void setALUfloatResult(float ALUresultFP) { this->ALUfloatResult = ALUfloatResult; }
     float getALUfloatResult() { return ALUfloatResult; }
+
+    // Loaded data
+    void loadData(int32_t loadedData) { this->loadedData = loadedData; }
+    int32_t getLoadedData() { return loadedData; }
+    
+    void loadDataFP(float loadedDataFP) { this->loadedDataFP = loadedDataFP; }
+    float getLoadedDataFP() { return loadedDataFP; }
 };
 
 #endif //INSTRUCTION_H

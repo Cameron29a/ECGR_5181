@@ -10,7 +10,7 @@ inline void CPU::Fetch() {
     // If there is a stall, the pc will not update twice on the same instruction
     if (fetchStage.front().getInstruction() == 0) {
         fetchStage.pop();
-        fetchStage.push(ram.Read(pc));
+        fetchStage.push(memBus.readInstruction(pc, instructionStart));
         pc +=4;
         std::cout << "Next Instruction: PC += 4\n";
     }
@@ -98,46 +98,65 @@ inline void CPU::Memory() {
     if (memoryStage.empty())  { return; }
     std::cout << "//////////////Memory Stage//////////////\n";
 
-    if (memoryStage.front().checkmemRead()) {
-        // Memory read operation
-        // Set the loaded data to the destination register
-        if (memoryStage.front().checkFloat()) {
-            float memoryAddressFP = memoryStage.front().getALUfloatResult();
-            float loadedDataFP = ram.ReadFloat(memoryAddressFP);
-            registers.fp_regs[memoryStage.front().getrd()] = loadedDataFP;
-            std::cout << "FP Memory Read Operation\n";
-            std::cout << "Memory Address: " << memoryAddressFP << "\n";
-            std::cout << "Loaded Data: " << loadedDataFP << "\n";
-        } else {
-            uint32_t memoryAddress = memoryStage.front().getALUresult();
-            int32_t loadedData = ram.Read(memoryAddress);
-            registers.int_regs[memoryStage.front().getrd()] = loadedData;
-            std::cout << "Int Memory Read Operation\n";
-            std::cout << "Memory Address: " << memoryAddress << "\n";
-            std::cout << "Loaded Data: " << loadedData << "\n";
+    if (!memoryStage.front().checkmemRead() && !memoryStage.front().checkmemWrite() && !memoryStage.front().checkPCsel()) { return; }
+
+    if (!memRequestPending) {
+        if (memoryStage.front().checkmemRead()) {
+            // Memory read operation
+            // Set the loaded data to the destination register
+            if (memoryStage.front().checkFloat()) {
+                float memoryAddressFP = memoryStage.front().getALUfloatResult();
+                Read(memoryAddressFP); // read float
+                // memoryStage.front().loadDataFP(loadedDataFP);
+                std::cout << "FP Memory Read Operation\n";
+                // std::cout << "Memory Address: " << memoryAddressFP << "\n";
+            } else {
+                uint32_t memoryAddress = memoryStage.front().getALUresult();
+                Read(memoryAddress);
+                // memoryStage.front().loadData(loadedData);
+                std::cout << "Int Memory Read Operation\n";
+                // std::cout << "Memory Address: " << memoryAddress << "\n";
+            }
         }
-    } 
-    else if (memoryStage.front().checkmemWrite()) {
-        // Memory write operation
-        // Write Data to the memory location
-        if (memoryStage.front().checkFloat()) {
-            float memoryAddressFP = stackAddress + memoryStage.front().getALUresult();
-            float dataToStoreFP;
-            dataToStoreFP = registers.fp_regs[memoryStage.front().getrs2()];
-            ram.WriteFloat(memoryAddressFP, dataToStoreFP);
-            std::cout << "FP Memory Write Operation\n";
-            std::cout << "Memory Address: " << memoryAddressFP << "\n";
-            std::cout << "Data To Store: " << dataToStoreFP << "\n";
+        else if (memoryStage.front().checkmemWrite()) {
+            // Memory write operation
+            // Write Data to the memory location
+            if (memoryStage.front().checkFloat()) {
+                float memoryAddressFP = stackAddress + memoryStage.front().getALUresult();
+                float dataToStoreFP = registers.fp_regs[memoryStage.front().getrs2()];
+                WriteFloat(memoryAddressFP, dataToStoreFP);
+                std::cout << "FP Memory Write Operation\n";
+                std::cout << "Memory Address: " << memoryAddressFP << "\n";
+                std::cout << "Data To Store: " << dataToStoreFP << "\n";
+            } else {
+                uint32_t memoryAddress = stackAddress + memoryStage.front().getALUresult();
+                uint32_t dataToStore = registers.int_regs[memoryStage.front().getrs2()];
+                Write(memoryAddress, dataToStore);
+                std::cout << "Int Memory Write Operation\n";
+                std::cout << "Memory Address: " << memoryAddress << "\n";
+                std::cout << "Data To Store: " << dataToStore << "\n";
+            }
+        }
+        memRequestPending = true;
+    } else {
+        if (memBus.isMemoryRequestComplete()) {
+            if (memoryStage.front().checkmemRead()) {
+                if (memoryStage.front().checkFloat()) {
+                    memoryStage.front().loadDataFP(memBus.getMemoryResponse());
+                } else {
+                    memoryStage.front().loadData(memBus.getMemoryResponse());
+                }
+            }
+            memRequestPending = false;
+               // Return if request isn't complete
+        } if (!memBus.isWriteRequestPending(cpuId)) {
+            memRequestPending = false;
         } else {
-            uint32_t memoryAddress = stackAddress + memoryStage.front().getALUresult();
-            uint32_t dataToStore;
-            dataToStore = registers.int_regs[memoryStage.front().getrs2()];
-            ram.Write(memoryAddress, dataToStore);
-            std::cout << "Int Memory Write Operation\n";
-            std::cout << "Memory Address: " << memoryAddress << "\n";
-            std::cout << "Data To Store: " << dataToStore << "\n";
+            std::cout << "Memory Access still Pending\n";
+            return; 
         }
     }
+
 
     // Adjust PC if there is a branch or jump
     if (memoryStage.front().checkPCsel()) {
@@ -156,10 +175,10 @@ inline void CPU::WriteBack() {
     switch(writeBackStage.front().checkWBsel()){
         case 0:
             if (writeBackStage.front().checkFloat()) {
-                registers.fp_regs[writeBackStage.front().getrd()] = ram.ReadFloat(writeBackStage.front().getALUfloatResult());
+                registers.fp_regs[writeBackStage.front().getrd()] = writeBackStage.front().getLoadedDataFP();
                 std::cout << "FP Write Back Case 0\n";
             } else {
-                registers.int_regs[writeBackStage.front().getrd()] = ram.Read(writeBackStage.front().getALUresult());
+                registers.int_regs[writeBackStage.front().getrd()] = writeBackStage.front().getLoadedData();
                 std::cout << "Int Write Back Case 0\n";
             }
             break;
@@ -176,13 +195,15 @@ inline void CPU::WriteBack() {
             // registers.int_regs[writeBackStage.front().getrd()] = prevPC+4;
             std::cout << "Int Write Back Case 2\n";
             break;
+        default:
+            return;
     }
 }
 
 inline void CPU::updateDataPath() {
     // Update Fetch stage
     if (fetchStage.empty() && decodeStage.empty() && executeStage.empty() && memoryStage.empty()) {
-        if (ram.Read(pc) != 0) fetchStage.push(0);
+        if (memBus.readInstruction(pc, instructionStart) != 0) fetchStage.push(0);
         if (!writeBackStage.empty()) {
             executedInstructions.push(writeBackStage.front());
             writeBackStage.pop();
@@ -212,11 +233,10 @@ inline void CPU::updateDataPath() {
 
     // Check and move instructions from Memory to WriteBack stage
     else if (!memoryStage.empty()) {
-        if ((memoryStage.front().checkmemWrite() == false && memoryStage.front().checkmemRead() == false) || memDelay == true) {
-            memDelay = 0;
+        if(!memRequestPending) {
             writeBackStage.push(memoryStage.front());
             memoryStage.pop();
-        } else memDelay = true;
+        }
     }
 }
 
@@ -224,17 +244,7 @@ inline void CPU::updateDataPath() {
 
 
 
-inline void CPU::printRegisters() {
-    std::cout << "Integer Registers:\n";
-    for (int i = 0; i < 32; ++i) {
-        std::cout << "x" << i << " (" << std::bitset<5>(i) << "): " << std::bitset<32>(registers.int_regs[i]) << "\n";
-    }
 
-    std::cout << "Floating-Point Registers:\n";
-    for (int i = 0; i < 32; ++i) {
-        std::cout << "f" << i << " (" << std::bitset<5>(i) << "): " << std::bitset<32>(*(reinterpret_cast<uint32_t*>(&registers.fp_regs[i])) ) << "\n";
-    }
-}
 
 // Function to print the event queue
 inline void CPU::printExecutedInstructions() {
@@ -248,7 +258,7 @@ inline void CPU::printExecutedInstructions() {
 
 // Function to print the event queue
 inline void CPU::printEventQueue() {
-    std::cout << "**************Event Queue***************\n";
+    std::cout << "***********CPU:" << cpuId << " Event Queue************\n";
     while (!events.empty()) {
         events.front().print();
         events.pop();
@@ -257,7 +267,7 @@ inline void CPU::printEventQueue() {
 
 // Function to print the current event
 inline void CPU::printCurrentEvent() {
-    std::cout << "*************Current Event**************\n";
+    std::cout << "*************CPU:" << cpuId << " Current Event**************\n";
     events.back().print();
 }
 
@@ -284,6 +294,7 @@ inline void CPU::updateEventQueue() {
 
 inline void CPU::runCPUcycle() {
     if (reset == false) {
+        std::cout << "Start Cycle for CPU:" << cpuId << "\n";
         // Save pc at start of cycle
         prevPC = pc;
 
@@ -374,11 +385,10 @@ inline void CPU::updatePipeline() {
 
     // Check and move instructions from Memory to WriteBack stage
     if (!memoryStage.empty() && writeBackStage.empty()) {
-        // if ((memoryStage.front().checkmemWrite() == false && memoryStage.front().checkmemRead() == false) || memDelay == true) {
-            // memDelay = 0;
+        if (!memRequestPending) {
             writeBackStage.push(memoryStage.front());
             memoryStage.pop();
-        // } else memDelay = true;
+        }
     }
 
     // Check and move instructions from Execute to Memory stage
@@ -409,7 +419,7 @@ inline void CPU::updatePipeline() {
     if (fetchStage.empty()) {
         controlHazardCheck();
         if (!controlHazard) {
-            if (ram.Read(pc) != 0) {
+            if (memBus.readInstruction(pc, instructionStart) != 0) {
                 fetchStage.push(0);
                 // std::cout << "New Instruction Fetched\n";
             }

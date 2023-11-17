@@ -30,20 +30,20 @@ public:
         }
     }
 
-    // Read float from memory at the specified address
-    float ReadFloat(uint32_t address) {
-        uint32_t floatData = Read(address);
-        float result;
-        std::memcpy(&result, &floatData, sizeof(float));
-        return result;
-    }
+    // // Read float from memory at the specified address
+    // float ReadFloat(uint32_t address) {
+    //     uint32_t floatData = Read(address);
+    //     float result;
+    //     std::memcpy(&result, &floatData, sizeof(float));
+    //     return result;
+    // }
 
-    // Write float to memory at the specified address
-    void WriteFloat(uint32_t address, float data) {
-        uint32_t floatData;
-        std::memcpy(&floatData, &data, sizeof(uint32_t));
-        Write(address, floatData);
-    }
+    // // Write float to memory at the specified address
+    // void WriteFloat(uint32_t address, float data) {
+    //     uint32_t floatData;
+    //     std::memcpy(&floatData, &data, sizeof(uint32_t));
+    //     Write(address, floatData);
+    // }
 
     // Print the contents of the memory map
     void PrintMemoryContents() {

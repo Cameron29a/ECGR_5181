@@ -9,7 +9,7 @@ inline void Simulation::printEvents() {
     }
 }
 
-inline void Simulation::loadInstructionsToMemory(const std::string& filename, RAM &memory, uint32_t startAddress, uint32_t stopAddress) {
+inline void Simulation::loadInstructionsToMemory(const std::string& filename, RAM &ram, uint32_t startAddress, uint32_t stopAddress) {
     std::ifstream file(filename);
     // if (!file.is_open()) {
     //     std::cerr << "Error: Unable to open the file: " << filename << "\n";
@@ -32,7 +32,7 @@ inline void Simulation::loadInstructionsToMemory(const std::string& filename, RA
                 instruction = (instruction << 1) | (line[i] - '0');
             }
 
-            memory.Write(address, instruction);
+            ram.Write(address, instruction);
             address += 4;
 
         } catch (const std::invalid_argument& e) {
@@ -44,14 +44,14 @@ inline void Simulation::loadInstructionsToMemory(const std::string& filename, RA
     file.close();
 }
 
-inline void Simulation::fillRandomData(RAM &memory, uint32_t startAddress, uint32_t endAddress) {
+inline void Simulation::fillRandomData(RAM &ram, uint32_t startAddress, uint32_t endAddress) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<uint32_t> dist(0, 0xFFFFFFFF);
 
     for (uint32_t address = startAddress; address <= endAddress; ++address) {
         uint32_t randomValue = dist(gen);
-        memory.Write(address, randomValue);
+        ram.Write(address, randomValue);
     }
 }
 
@@ -68,39 +68,62 @@ inline void Simulation::runSimulation() {
     std::cout << "Begin System Initialization\n";
 
     std::cout << "Create Virtual Memory\n";
-    RAM memory(0xFFF);
+    RAM ram(0x13FF);
 
     // write instructions to addresses 0x0 – 0x093
-    std::cout << "Write Instructions to Memory\n";
+    std::cout << "Write CPU 1's Instructions to Memory\n";
     std::string filename = "assembly_code/instructions.txt";
     uint32_t startAddress = 0x0;
     uint32_t stopAddress = 0x94;
-    loadInstructionsToMemory(filename, memory, startAddress, stopAddress);
+    loadInstructionsToMemory(filename, ram, startAddress, stopAddress);
 
     std::cout << "Check Instructions after writing to memory\n";
     uint32_t i = startAddress;
-    while (i <= stopAddress && memory.Read(i) != 0) {
-        Instruction temp = memory.Read(i);
+    while (i <= stopAddress && ram.Read(i) != 0) {
+        Instruction temp = ram.Read(i);
         std::cout << "Instruction #" << i/4 << ": " << temp.getAssemblyString() << "\n";
         i += 4;
     }
-    std::cout << "First Empty Address: 0x" << std::hex << i << std::dec << "\n";
 
-    // Allocate addresses 0x200 - 0x2FF for the stack
+    // write instructions to addresses 0x100 – 0x193
+    std::cout << "Write CPU 2's Instructions to Memory\n";
+    std::string filename1 = "assembly_code/instructions2.txt";
+    uint32_t startAddress1 = 0x100;
+    uint32_t stopAddress1 = 0x194;
+    loadInstructionsToMemory(filename1, ram, startAddress1, stopAddress1);
+
+    std::cout << "Check Instructions after writing to memory\n";
+    i = startAddress1;
+    while (i <= stopAddress1 && ram.Read(i) != 0) {
+        Instruction temp = ram.Read(i);
+        std::cout << "Instruction #" << i/4 << ": " << temp.getAssemblyString() << "\n";
+        i += 4;
+    }
+
+    // Allocate addresses 0x200 - 0x2FF for stack 0
     uint32_t stackAddress = 0x200;
     // uint32_t endStack = 0x2FF;
 
+    // Allocate addresses 0x300 - 0x3FF for stack 1
+    uint32_t stackAddress1 = 0x300;
+    // uint32_t endStack = 0x3FF;
+
     // Initialize addresses 0x400 - 0xbFF (ARRAY_A & ARRAY_B) with random FP32 values.
-    // std::cout << "Fill ranges 0x400-0xBFF with random values\n";
-    // fillRandomData(memory, 0x400, 0xBFF);
+    std::cout << "Fill ranges 0x400-0xBFF with random values\n";
+    fillRandomData(ram, 0x400, 0xBFF);
     
-    // std::cout << "=====Memory contents before start of Simulation=====\n";
-    // memory.PrintMemoryContents();
+    // std::cout << "=====Memory contents after Initilization=====\n";
+    // ram.PrintMemoryContents();
+
+    // Create Memory Bus with RAM
+    std::cout << "========================Create MemBus=======================\n";
+    MemBus memBus(ram);
 
     bool pipeline = false;
     pipeline = true;     // comment this out to run as single cycle processor
     std::cout << "=========================Create CPU=========================\n";
-    CPU cpu1{ memory, startAddress, stackAddress, pipeline };
+    CPU cpu1{ memBus, 1, startAddress, stackAddress, pipeline };
+    CPU cpu2{ memBus, 2, startAddress1, stackAddress1, pipeline };
 
     
     // Main simulation loop.
@@ -116,15 +139,20 @@ inline void Simulation::runSimulation() {
         std::cout << "\n=====================Simulation Loop #" << std::dec << loopCnt++ << "=====================\n";
 
         cpu1.runCPUcycle();
+        // cpu2.runCPUcycle();
+
+        memBus.processMemoryRequests();
 
         // Uncomment to print event queue every cycle
         cpu1.printCurrentEvent();
+        // cpu2.printCurrentEvent();
 
         // Uncomment to print registers every cycle
         // cpu1.printRegisters();
+        // cpu2.printRegisters();
 
-        // Uncomment to print ram contents every cycle
-        // memory.PrintMemoryContents();
+        // Uncomment to print memory contents every cycle
+        // ram.PrintMemoryContents();
     }
     std::cout << "\n=======================Simulation Ended=======================\n";
     if (loopCnt >= loopMax)
@@ -132,12 +160,14 @@ inline void Simulation::runSimulation() {
         
     // std::cout << "=====Event Queue for Simulation=====\n";
     // cpu1.printEventQueue();
+    // cpu2.printEventQueue();
 
     // std::cout << "=====Registers after end of Simulation=====\n";
     // cpu1.printRegisters();
+    // cpu2.printRegisters();
 
     // std::cout << "=====Memory contents after end of Simulation=====\n";
-    // memory.PrintMemoryContents();
+    // ram.PrintMemoryContents();
     
     cpu1.printExecutedInstructions();
 
@@ -147,3 +177,5 @@ inline void Simulation::runSimulation() {
 
 // need num of executed instructions
 // num cycles
+// cpi
+// clock cycles

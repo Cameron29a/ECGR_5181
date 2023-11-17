@@ -1,6 +1,9 @@
-#include <iostream>
-#include <vector>
+#ifndef MEMBUS_H
+#define MEMBUS_H
+
 #include <queue>
+#include <iostream>
+#include <functional>
 
 #include "ram.h"
 
@@ -12,10 +15,14 @@ struct MemoryRequest {
     uint32_t data;
 };
 
-class MemoryBus {
+class MemBus {
 public:
     // Constructor to initialize memory banks
-    MemoryBus(RAM& ram) : ram(ram) {}
+    MemBus(RAM& ram) : ram(ram) {}
+
+    uint32_t readInstruction(uint32_t pc, uint32_t instructionStart) {
+        return readInstructionPort(pc + instructionStart);
+    }
 
     // Method to process memory requests
     void processMemoryRequests() {
@@ -28,15 +35,48 @@ public:
         memoryRequests.push({cpuId, request});
     }
 
+    // Method to check if a memory request is complete
+    bool isMemoryRequestComplete() const {
+        return !memoryResponses.empty();
+    }
+
+    // Method to get the response from the completed memory request
+    uint32_t getMemoryResponse() {
+        if (!memoryResponses.empty()) {
+            auto response = memoryResponses.front();
+            memoryResponses.pop();
+            return response;
+        } else {
+            return 0; // Placeholder value, adjust as needed
+        }
+    }
+
+    bool isWriteRequestPending(uint32_t cpuId) const {
+        auto requestsCopy = memoryRequests;  // Make a copy to avoid modifying the original queue
+        while (!requestsCopy.empty()) {
+            const auto& request = requestsCopy.front();
+            if (request.first == cpuId && request.second.type == MemoryRequestType::WRITE) {
+                return true;
+            }
+            requestsCopy.pop();
+        }
+        return false;
+    }
+
 private:
     // Define Memory Request Queue type
     using MemoryRequestQueue = std::queue<std::pair<uint32_t, MemoryRequest>>;
+    std::queue<uint32_t> memoryResponses;
 
-    // RAM
     RAM& ram;
+
+    uint32_t readInstructionPort(uint32_t address) {
+        return ram.Read(address);
+    }
 
     // Memory Requests Queue
     MemoryRequestQueue memoryRequests;
+
 
     // Method to process memory requests for RAM
     void processMemoryBankRequests() {
@@ -47,7 +87,9 @@ private:
             // Check if the address is already being accessed
             if (request.type == MemoryRequestType::READ) {
                 // Read from memory
-                std::cout << "CPU " << cpuId << " reads from address " << request.address << ": " << ram.Read(request.address) << std::endl;
+                uint32_t data = ram.Read(request.address);
+                std::cout << "CPU " << cpuId << " reads from address " << request.address << ": " << data << std::endl;
+                memoryResponses.push(data);
             } else {
                 // Write to memory
                 ram.Write(request.address, request.data);
@@ -57,46 +99,4 @@ private:
     }
 };
 
-// Define CPU class
-class CPU {
-public:
-    // Constructor to initialize CPU with a memory bus and ID
-    CPU(MemoryBus& bus, uint32_t id) : memoryBus(bus), cpuId(id) {}
-
-    // Method to make a memory read request
-    void readMemory(uint32_t address) {
-        MemoryRequest request{MemoryRequestType::READ, address};
-        memoryBus.addMemoryRequest(cpuId, request);
-    }
-
-    // Method to make a memory write request
-    void writeMemory(uint32_t address, uint32_t data) {
-        MemoryRequest request{MemoryRequestType::WRITE, address, data};
-        memoryBus.addMemoryRequest(cpuId, request);
-    }
-
-private:
-    MemoryBus& memoryBus;
-    uint32_t cpuId;
-};
-
-int main() {
-    // Create RAM
-    RAM ram(0xFF);
-
-    // Create Memory Bus with RAM
-    MemoryBus memoryBus(ram);
-
-    // Create two CPUs with the same memory bus
-    CPU cpu1(memoryBus, 1);
-    CPU cpu2(memoryBus, 2);
-
-    // Simulate memory access
-    cpu1.readMemory(0x1000);
-    cpu2.writeMemory(0x1000, 42);
-
-    // Process memory requests on the memory bus
-    memoryBus.processMemoryRequests();
-
-    return 0;
-}
+#endif //MEMBUS

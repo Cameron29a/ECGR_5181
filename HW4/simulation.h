@@ -6,7 +6,6 @@
 #include <random>
 
 #include "CPU.cpp"
-#include "ram.h"
 
 class Simulation {
     std::queue<Event> systemEvents;  // Event queue for entire simulation

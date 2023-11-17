@@ -10,7 +10,7 @@
 #include "instruction.h"
 #include "ALU.h"
 #include "branchCtl.h"
-#include "ram.h"
+#include "memBus.h"
 
 // Define RISC-V registers
 struct Registers {
@@ -24,9 +24,11 @@ class CPU {
     bool pipeline;
     tick_t currentTick;
     uint32_t pc;            // Program Counter
+    uint32_t instructionStart;
     uint32_t sp;            // Stack pointer
     uint32_t stackAddress;    // Start of the stack
-    RAM& ram;
+    MemBus& memBus;
+    uint32_t cpuId;
 
     ALU alu;
     BranchCtl branchCtl;
@@ -41,13 +43,14 @@ class CPU {
     std::queue<Instruction> discardedInstructions;
     
     uint32_t fpDelay;
-    bool memDelay;
 
     bool controlHazard;
     bool dataHazard;
 
     // uint32_t pcEnd;         // Address of last instruction
     uint32_t prevPC;
+
+    bool memRequestPending;
 
     // Functions for flow control, pipelined and single instruction
     void updateDataPath();
@@ -64,8 +67,9 @@ class CPU {
     void WriteBack();
 
 public:
-    CPU(RAM& ram, uint32_t pc, uint32_t stackAddress, bool pipeline) 
-    : reset(false), pipeline(pipeline), currentTick(0), pc(pc), sp(stackAddress), stackAddress(stackAddress), ram(ram){ 
+    CPU(MemBus& bus, uint32_t id, uint32_t instructionStart, uint32_t stackAddress, bool pipeline) 
+    : reset(false), pipeline(pipeline), currentTick(0), pc(0), instructionStart(instructionStart), 
+      sp(stackAddress), stackAddress(stackAddress), memBus(bus), cpuId(id) { 
         // Initialize registers to 0
         for (int i = 0; i < 32; ++i) {
             registers.int_regs[i] = 0;
@@ -78,9 +82,9 @@ public:
         // }
 
         fpDelay = 0;
-        memDelay = 0;
-        controlHazard = 0;
-        dataHazard = 0;
+        controlHazard = false;
+        dataHazard = false;
+        memRequestPending = false;
 
     };
 
@@ -97,34 +101,17 @@ public:
     void printExecutedInstructions();
     void printRegisters();
 
-    // the register functions are only used outside of the cpu class (i.e. set up x1 for running lab 2)
-    void writeIntRegister(uint32_t address, uint32_t data) {
-        if (address >= 0 && address < 32)
-            registers.int_regs[address] = data;
-    }
+    // Register Access Functions
+    void writeIntRegister(uint32_t address, uint32_t data);
+    void writeFPRegister(uint32_t address, float data);
+    int32_t readIntRegister(int regIndex);
+    float readFloatRegister(int regIndex);
 
-    void writeFPRegister(uint32_t address, float data) {
-        if (address >= 0 && address < 32)
-            registers.fp_regs[address] = data;
-    }
-
-    int32_t readIntRegister(int regIndex) {
-        if (regIndex >= 0 && regIndex < 32) {
-            return registers.int_regs[regIndex];
-        } else {
-            std::cerr << "Error: Integer register index out of bounds." << std::endl;
-            return 0;
-        }
-    }
-
-    float readFloatRegister(int regIndex) {
-        if (regIndex >= 0 && regIndex < 32) {
-            return registers.fp_regs[regIndex];
-        } else {
-            std::cerr << "Error: Float register index out of bounds." << std::endl;
-            return 0;
-        }
-    }
+    // Memory Access Functions
+    void Read(uint32_t);
+    void Write(uint32_t, uint32_t);
+    void ReadFloat(uint32_t);
+    void WriteFloat(uint32_t, float);
  
 };
 
