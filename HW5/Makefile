@@ -1,40 +1,39 @@
 # Compiler and flags
-CXX := g++
+CXX      := -c++
 CXXFLAGS := -std=c++17 -Wall
-LDFLAGS := -lm
-INCLUDES := -Iinclude  # Add your include directory here
+LDFLAGS  := -L/usr/lib -lstdc++ -lm
+OBJ_DIR  := ./obj
+TARGET   := test
+INCLUDE  := -Iinclude/
+SRC      := $(wildcard src/*.cpp)         \
 
-# Directories
-SRC_DIR := src
-OBJ_DIR := obj
+OBJECTS  := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
+DEPENDENCIES := $(OBJECTS:.o=.d)
 
-# File extensions
-SRC_EXT := cpp
-OBJ_EXT := o
-
-# Source and Object files
-SRCS := $(wildcard $(SRC_DIR)/*.$(SRC_EXT))
-OBJS := $(patsubst $(SRC_DIR)/%.$(SRC_EXT),$(OBJ_DIR)/%.$(OBJ_EXT),$(SRCS))
-
-# Executable name
-TARGET := test
-
-# Default target
 all: $(TARGET)
 
-# Linking
-$(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+$(OBJ_DIR)/%.o: %.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -MMD -o $@
 
-# Compilation
-$(OBJ_DIR)/%.$(OBJ_EXT): $(SRC_DIR)/%.$(SRC_EXT) | $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@ $(LDFLAGS)
+$(TARGET): $(OBJECTS)
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $^ $(LDFLAGS)
 
-# Create obj directory
-$(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
+-include $(DEPENDENCIES)
 
-# Phony target to clean the project
-.PHONY: clean
+.PHONY: all build clean debug release info
+
+build:
+	@mkdir -p $(OBJ_DIR)
+
+debug: CXXFLAGS += -DDEBUG -g
+debug: all
+
+release: CXXFLAGS += -O2
+release: all
+
 clean:
 	rm -rf $(OBJ_DIR) $(TARGET)
+
+.PHONY: all clean

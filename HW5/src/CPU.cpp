@@ -246,7 +246,7 @@ inline void CPU::updateDataPath() {
 
 
 // Function to print the event queue
-inline void CPU::printExecutedInstructions() {
+void CPU::printExecutedInstructions() {
     std::cout << "*********Executed Instructions**********\n";
     float totalCycles = currentTick/10;
     float totalInstructions = executedInstructions.size();
@@ -262,7 +262,7 @@ inline void CPU::printExecutedInstructions() {
 }
 
 // Function to print the event queue
-inline void CPU::printEventQueue() {
+void CPU::printEventQueue() {
     std::cout << "***********CPU:" << cpuId << " Event Queue************\n";
     while (!events.empty()) {
         events.front().print();
@@ -271,7 +271,7 @@ inline void CPU::printEventQueue() {
 }
 
 // Function to print the current event
-inline void CPU::printCurrentEvent() {
+void CPU::printCurrentEvent() {
     std::cout << "*************CPU:" << cpuId << " Current Event**************\n";
     events.back().print();
 }
@@ -297,7 +297,7 @@ inline void CPU::updateEventQueue() {
     events.push(Event(currentTick, prevPC, pc, fetchString, decodeString, executeString, memoryString, writeBackString));
 }
 
-inline void CPU::runCPUcycle() {
+void CPU::runCPUcycle() {
     if (reset == false) {
         std::cout << "Start Cycle for CPU:" << cpuId << "\n";
         // Save pc at start of cycle

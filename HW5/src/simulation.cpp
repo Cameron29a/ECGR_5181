@@ -163,6 +163,7 @@ inline void Simulation::runSimulation() {
     
     cpu1.printExecutedInstructions();
     cpu2.printExecutedInstructions();
+    
 }
 
 // need num of executed instructions

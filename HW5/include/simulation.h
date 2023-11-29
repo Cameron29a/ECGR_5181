@@ -11,6 +11,7 @@ class Simulation {
     std::queue<Event> systemEvents;  // Event queue for entire simulation
 
 public:
+    ALU alu;
     // Function to run the simulation
     void printEvents();
     void loadInstructionsToMemory(const std::string&, RAM&, uint32_t, uint32_t);
