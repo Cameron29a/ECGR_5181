@@ -3,18 +3,23 @@ CXX      := -c++
 CXXFLAGS := -std=c++17 -Wall
 LDFLAGS  := -L/usr/lib -lstdc++ -lm
 OBJ_DIR  := ./obj
+DEP_DIR  := ./dep
 TARGET   := test
 INCLUDE  := -Iinclude/
-SRC      := $(wildcard src/*.cpp)         \
+SRC      := $(wildcard src/*.cpp)
 
-OBJECTS  := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
-DEPENDENCIES := $(OBJECTS:.o=.d)
+OBJECTS  := $(SRC:src/%.cpp=$(OBJ_DIR)/%.o)
+DEPENDENCIES := $(OBJECTS:$(OBJ_DIR)/%.o=$(DEP_DIR)/%.d)
 
-all: $(TARGET)
+all: build $(TARGET)
 
-$(OBJ_DIR)/%.o: %.cpp
+$(OBJ_DIR)/%.o: src/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -MMD -o $@
+
+$(DEP_DIR)/%.d: src/%.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) $(INCLUDE) -M $< -MT $(@:$(DEP_DIR)/%.d=$(OBJ_DIR)/%.o) > $@
 
 $(TARGET): $(OBJECTS)
 	@mkdir -p $(@D)
@@ -25,7 +30,10 @@ $(TARGET): $(OBJECTS)
 .PHONY: all build clean debug release info
 
 build:
-	@mkdir -p $(OBJ_DIR)
+	@mkdir -p $(OBJ_DIR) $(DEP_DIR)
+
+clean:
+	rm -rf $(OBJ_DIR) $(DEP_DIR) $(TARGET)
 
 debug: CXXFLAGS += -DDEBUG -g
 debug: all
@@ -33,7 +41,10 @@ debug: all
 release: CXXFLAGS += -O2
 release: all
 
-clean:
-	rm -rf $(OBJ_DIR) $(TARGET)
-
-.PHONY: all clean
+info:
+	@echo "[*] Application dir: ${APP_DIR}     "
+	@echo "[*] Object dir:      ${OBJ_DIR}     "
+	@echo "[*] Dependency dir:  ${DEP_DIR}     "
+	@echo "[*] Sources:         ${SRC}         "
+	@echo "[*] Objects:         ${OBJECTS}     "
+	@echo "[*] Dependencies:    ${DEPENDENCIES}"
