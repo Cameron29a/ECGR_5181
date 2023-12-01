@@ -5,6 +5,7 @@
 
 class BusArbiter {
     std::vector<int> requestQueue;
+    
 public:
     BusArbiter() {}
 

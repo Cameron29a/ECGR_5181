@@ -21,9 +21,15 @@ class Cache {
 public:
     Cache(int id, MemoryBus& memBus) : id(id), memBus(memBus) {}
 
-    void read(uint64_t);
-    void write(uint64_t);
+    void setCurrentState(uint64_t, CacheState);
+    CacheState getCurrentState(uint64_t);
+
+    uint64_t readFromCache(uint64_t);
+    void writeToCache(uint64_t);
+    
     void handleBusRequest(int, CacheState, uint64_t);
+    void handleLocalAccess(uint64_t, bool);
+    
 
 };
 

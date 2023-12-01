@@ -36,8 +36,8 @@ void Simulation::runSimulation() {
 
         // Simulate processor read and write requests
         for (int i = 0; i < numCPU; ++i) {
-            caches[i].read(address);
-            caches[i].write(address);
+            caches[i].readFromCache(0);
+            caches[i].writeToCache(0);
         }
 
         // Simulate bus operations
@@ -47,7 +47,7 @@ void Simulation::runSimulation() {
                 memBus.requestBusAccess(i);
                 for (int j = 0; j < numCPU; ++j) {
                     if (j != i) {
-                        caches[j].handleBusRequest(i, CacheState::SHARED, tag);
+                        // caches[j].handleBusRequest(i, CacheState::SHARED, tag);
                     }
                 }
                 memBus.releaseBusAccess(i);
