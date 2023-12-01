@@ -1,5 +1,10 @@
 #include "cache.h"
 
+bool Cache::checkOtherStates() {
+    
+    return false;
+}
+
 CacheState Cache::getCurrentState(uint64_t address)
 {
     auto it = cacheData.find(address);
@@ -20,16 +25,24 @@ void Cache::setCurrentState(uint64_t address, CacheState newState) {
 }
 
 uint64_t Cache::readFromCache(uint64_t address) {
-    return 0;
+    CacheState state = getCurrentState(address);
+
+    // If the cache line is upto date, return the data from the cache
+    if (state != CacheState::INVALID) {
+        return cacheData[address].data; 
+    } else {
+        return -1;
+    }
 }
 
-void Cache::writeToCache(uint64_t address) {
+void Cache::writeToCache(uint64_t address, uint64_t data) {
+    // CacheState state = getCurrentState(address);
+
 
 }
 
-void Cache::handleBusRequest(int processorID, CacheState busRequestState, uint64_t tag) {
-    // Implement switch case for remotely initiated accesses
-    CacheState currentState = getCurrentState(tag);
+void Cache::handleBusRequest(int processorID, uint64_t address) {
+    CacheState currentState = getCurrentState(address);
 
     switch (currentState) {
         case CacheState::INVALID:
@@ -58,47 +71,88 @@ void Cache::handleBusRequest(int processorID, CacheState busRequestState, uint64
     }
 }
 
-void Cache::handleLocalAccess(uint64_t address, bool isWrite) {
-    // Implement switch case for locally initiated accesses
+BusSnoop Cache::updateState(bool isRead, bool isHit, uint64_t address) {
     CacheState currentState = getCurrentState(address);
+    BusSnoop SnoopingUpdate;
 
-    switch(currentState) {
+    switch (currentState) {
         case CacheState::INVALID:
-            // Handle transitions for locally initiated access in INVALID state
-            if (isWrite) {
-                // Transition to MODIFIED or EXCLUSIVE based on your policy
-                // Update cacheData and send write request to Memory Bus if needed
-            } else {
-                // Send read request to Memory Bus to check for the data
+            if (!isHit) {
+                if(!isRead) {
+                    currentState = CacheState::MODIFIED;
+                    SnoopingUpdate = BusSnoop::WRITEMISS;
+                } else {
+                    SnoopingUpdate = BusSnoop::READMISS;
+                    // if () {
+                    currentState = CacheState::SHARED;
+                    // }
+                }
             }
             break;
 
         case CacheState::SHARED:
-            // Handle transitions for locally initiated access in SHARED state
-            if (isWrite) {
-                // Transition to MODIFIED and invalidate other caches
-                // Update cacheData and send write request to Memory Bus if needed
+            if (isHit == 1) {
+                if (isRead == 1) {
+                    currentState = CacheState::SHARED;
+                } else {
+                    currentState = CacheState::MODIFIED;
+                    SnoopingUpdate = BusSnoop::INVALIDATE;
+                }
             }
-            // Read operation doesn't require state transition in SHARED state
             break;
 
         case CacheState::MODIFIED:
-            // Handle transitions for locally initiated access in MODIFIED state
-            // No state change for read, just update cacheData
-            // For write, update cacheData
+            if (isHit == 1) {
+                if (isRead == 1) {
+                    currentState = CacheState::MODIFIED;
+                } else {
+                    currentState = CacheState::MODIFIED;
+                }
+            }
             break;
 
         case CacheState::EXCLUSIVE:
-            // Handle transitions for locally initiated access in EXCLUSIVE state
-            // No state change for read, just update cacheData
-            // For write, update cacheData
+            if (isHit == 1) {
+                if (isRead == 1) {
+                    currentState = CacheState::EXCLUSIVE;
+                } else {
+                    currentState = CacheState::MODIFIED;
+                }
+            }
             break;
 
         default:
-            // Handle other cases or throw an error
+            break;
+    }
+
+    // Update the current state
+
+
+    return SnoopingUpdate;
+}
+
+void Cache::updateSnoopingState(BusSnoop update, uint64_t address) {
+    CacheState currentState = getCurrentState(address);
+    switch (update) {
+        case BusSnoop::READMISS:
+            switch(currentState) {
+                case CacheState::SHARED:
+                case CacheState::MODIFIED:
+                case CacheState::EXCLUSIVE:
+                default:
+                    break;
+            }
+            break;
+
+        case BusSnoop::WRITEMISS:
+
+            break;
+        
+        case BusSnoop::INVALIDATE:
+
+            break;
+
+        default:
             break;
     }
 }
-
-
-

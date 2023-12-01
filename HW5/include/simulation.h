@@ -2,6 +2,7 @@
 #define SIMULATION_H
 
 #include <queue>
+#include <cstdlib>
 
 #include "event.h"
 #include "cache.h"

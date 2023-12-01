@@ -1,14 +1,15 @@
 #ifndef BUSARBITER_H
 #define BUSARBITER_H
 
-#include <vector>
+#include <queue>
 
 class BusArbiter {
-    std::vector<int> requestQueue;
+    std::queue<int> requestQueue;
     
 public:
     BusArbiter() {}
 
+    void requestAccess(int processorID);
     int grantAccess();
 
 };

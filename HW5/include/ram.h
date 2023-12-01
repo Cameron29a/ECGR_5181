@@ -9,11 +9,20 @@ class Ram {
 
 public:
     uint64_t read(uint64_t address) {
-        return 0;
+         // Check if the address is present in the memoryData map
+        auto it = memoryData.find(address);
+
+        if (it != memoryData.end()) {
+            // Return the data associated with the address
+            return it->second;
+        } else {
+            std::cerr << "Read from uninitialized memory address: " << std::hex << address << std::endl;
+            return -1; 
+        }
     }
 
     void write(uint64_t address, uint64_t data) {
-
+        memoryData[address] = data;
     }
 
 };
