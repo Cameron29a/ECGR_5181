@@ -8,34 +8,16 @@ typedef uint64_t tick_t;
 
 class Event {
     tick_t simTick;
-    uint32_t prevPC;
-    uint32_t pc;
-    std::string fetchString;
-    std::string decodeString;
-    std::string executeString;
-    std::string memoryString;
-    std::string writeBackString;
     
 public:
-    Event(tick_t clk, uint32_t prevPC, uint32_t pc, const std::string& fetchString, const std::string& decodeString,
-    const std::string& executeString, const std::string& memoryString,
-    const std::string& writeBackString)
-    : simTick(clk), prevPC(prevPC), pc(pc), fetchString(fetchString), decodeString(decodeString),
-      executeString(executeString), memoryString(memoryString),
-      writeBackString(writeBackString) {}
+    Event(tick_t clk) : simTick(clk) {}
 
     tick_t getTime() { return simTick; }
-    // Function to print the details of an event
+
     void print() {
         std::cout << "****************************************\n" 
         << "Clock ticks: " << simTick << "\n" 
-        << "PC at start of cycle: 0x" << std::hex << prevPC << std::dec << "\n"
-        << "PC at end of cycle: 0x" << std::hex << pc << std::dec << "\n"
-        << "Fetch Stage: " << fetchString << "\n" 
-        << "Decode Stage: " << decodeString << "\n" 
-        << "Execute Stage: " << executeString << "\n" 
-        << "Memory Stage: " << memoryString << "\n" 
-        << "Write Back Stage: " << writeBackString << "\n"
+
         << "****************************************\n";
     }
 };

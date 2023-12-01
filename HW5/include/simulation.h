@@ -1,20 +1,19 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
 
-#include <fstream>
-#include <string>
-#include <random>
+#include <queue>
 
-#include "CPU.h"
+#include "event.h"
+#include "cache.h"
+#include "BusArbiter.h"
 
 class Simulation {
-    std::queue<Event> systemEvents;  // Event queue for entire simulation
+    std::queue<Event> systemEvents;
+    tick_t currentTick;
 
 public:
     // Function to run the simulation
     void printEvents();
-    void loadInstructionsToMemory(const std::string&, RAM&, uint32_t, uint32_t);
-    void fillRandomData(RAM&, uint32_t, uint32_t);
     void runSimulation();
     
 };

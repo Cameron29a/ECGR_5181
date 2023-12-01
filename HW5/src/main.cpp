@@ -1,4 +1,5 @@
-#include "simulation.cpp"
+#include "simulation.h"
+#include <fstream>
 
 int main() {
     std::ofstream outputFile("output.txt");
