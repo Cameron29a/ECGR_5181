@@ -23,9 +23,12 @@ class Cache {
     bool waitingForMemoryAccess;
 
     bool checkOtherStates();
+ static const size_t LocalMemoryBankSize = 256 * 1024;  // 256 KB in bytes
+    std::vector<uint8_t> localMemoryBank;  // Represents local memory bank
 
 public:
-    Cache(int id, MemoryBus& memBus) : id(id), memBus(memBus) {}
+    Cache(int id, MemoryBus& memBus) : id(id), memBus(memBus) {        localMemoryBank.resize(LocalMemoryBankSize);
+}
 
     bool isWaiting() { return waitingForMemoryAccess; }
     void setWaitFlag() { waitingForMemoryAccess = true; }
