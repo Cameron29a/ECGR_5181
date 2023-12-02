@@ -8,90 +8,51 @@ void Simulation::printEvents() {
         systemEvents.pop();
     }
 }
-
 void Simulation::runSimulation() {
     std::cout << "Begin System Initialization\n";
-    srand (time(NULL));
+    srand(time(NULL));
 
     int numCPU = 4;
+    const size_t numEntries = 4096; // Total number of cache lines
 
-    std::cout << "========================Create MemBus=======================\n";
-    MemoryBus memBus;
-    
-    std::cout << "======================Create BusArbiter=====================\n";
-    BusArbiter busArbiter;
-
-    std::cout << "========================Create Caches=======================\n";
+    std::cout << "========================Create Caches and Directory=======================\n";
+    Directory directory(numEntries);
     std::vector<Cache> caches;
     for (int i = 0; i < numCPU; ++i) {
-        caches.emplace_back(i, memBus);
+       caches.emplace_back(i, mainMemory, directory);  // Pass directory and mainMemory to each Cache
     }
 
-    // Simulation loop.
+    // Simulation loop
     int loopCnt = 1;
     int loopMax = 1500;
 
-    // Start Simulation loop and run until reset
     std::cout << "======================Simulation Begin======================\n";
     while (loopCnt <= loopMax) {
-        std::cout << "\n=====================Simulation Loop #" << std::dec << loopCnt++ << "=====================\n";
+        std::cout << "\n=====================Simulation Loop #" << loopCnt++ << "=====================\n";
 
         // Simulate processor read and write requests
-        // update state after each request; syncronous update
         for (int i = 0; i < numCPU; ++i) {
-            if (i != caches[i].isWaiting()) {
-                caches[i].setWaitFlag();
+            // Randomly Select to Read or Write
+            int isRead = rand() % 2;
+            int addressMax = 1024;
+            int dataMax = 1000;
+            int address = rand() % addressMax;
+            int data = rand() % dataMax;
 
-                // Randomly Select to Read or Write
-                // Implement other test vectors later
-                int isRead = rand() % 2;
-                int addressMax = 1024;
-                int dataMax = 1000;
-                int address = rand() % addressMax;
-                int data = rand() % dataMax;
-                
-                bool isHit;
-
-                if (isRead == true) {
-                    std::cout << "CPU" << i << " Reads from Address:" << 0 << "\n";
-                    data = caches[i].readFromCache(address);
-                    if(data == -1) {
-                        isHit = false;
-                        caches[i].clearWaitFlag();
-                    } else {
-                        busArbiter.requestAccess(i);
-                        memBus.addRequest(i, 0, address, 0);
-                    }
-                }
-                else {
-                    std::cout << "CPU" << i << " Write to Address:" << 0 << "\n";
-                    caches[i].writeToCache(address, data);
-                    if(data == -1) {
-                        isHit = false;
-                        caches[i].clearWaitFlag();
-                    } else {
-                        busArbiter.requestAccess(i);
-                        memBus.addRequest(i, 1, address, data);
-                    }
-                }
-                caches[i].updateState(isRead, isHit, address);
+            if (isRead) {
+                std::cout << "CPU" << i << " Reads from Address: " << address << "\n";
+                data = caches[i].readFromCache(address);
             }
+            else {
+                std::cout << "CPU" << i << " Writes to Address: " << address << "\n";
+                caches[i].writeToCache(address, data);
+            }
+
+            // Additional logic can be added here to simulate network communication delays,
+            // directory updates, and invalidation messages to other caches.
         }
 
-        // Simulate bus operations
-        int grantedProcessor = busArbiter.grantAccess();
-        if (grantedProcessor != -1) {
-            // Simulate bus request handling
-            memBus.requestBusAccess(grantedProcessor);
-            if (memBus.isBusinUse() && memBus.getCurrentProcessorID() ==  grantedProcessor) {
-                // caches[grantedProcessor].handleBusRequest(grantedProcessor, address);
-
-                // caches[i].updateState(isRead, isHit, address);
-                caches[grantedProcessor].clearWaitFlag();
-            }
-            memBus.releaseBusAccess(grantedProcessor);
-        }
-
+        // Increment simulation time
         currentTick += 10;
         systemEvents.push(Event(currentTick));
     }
@@ -101,8 +62,6 @@ void Simulation::runSimulation() {
         
     std::cout << "=====Event Queue for Simulation=====\n";
     printEvents();
-
-    
 }
 
 // every possible transation for both state machines, 

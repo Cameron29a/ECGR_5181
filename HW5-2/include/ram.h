@@ -3,6 +3,8 @@
 
 #include <cstdint>
 #include <unordered_map>
+#include <iostream>
+#include <ostream>
 
 class Ram {
     std::unordered_map<uint64_t, uint64_t> memoryData;

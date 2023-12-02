@@ -6,11 +6,12 @@
 
 #include "event.h"
 #include "cache.h"
-#include "BusArbiter.h"
+#include "ram.h"
 
 class Simulation {
     std::queue<Event> systemEvents;
     tick_t currentTick;
+    Ram mainMemory;
 
 public:
     // Function to run the simulation
