@@ -47,7 +47,10 @@ void Simulation::runSimulation() {
                 std::cout << "CPU" << i << " Writes to Address: " << address << "\n";
                 caches[i].writeToCache(address, data);
             }
-
+     // After each significant step, or at the end of each loop iteration
+        for (Cache& cache : caches) {
+            cache.printCacheLineState(address);
+        }
             // Additional logic can be added here to simulate network communication delays,
             // directory updates, and invalidation messages to other caches.
         }

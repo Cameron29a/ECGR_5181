@@ -40,7 +40,7 @@ public:
         // Modified methods
     uint64_t readFromCache(uint64_t address);
     void writeToCache(uint64_t address, uint64_t data);
-
+void printCacheLineState(uint64_t address);
 };
 
 
