@@ -16,11 +16,22 @@ void Simulation::runSimulation() {
     const size_t numEntries = 4096; // Total number of cache lines
 
     std::cout << "========================Create Caches and Directory=======================\n";
-    Directory directory(numEntries);
-    std::vector<Cache> caches;
-    for (int i = 0; i < numCPU; ++i) {
-       caches.emplace_back(i, mainMemory, directory);  // Pass directory and mainMemory to each Cache
-    }
+Network network;
+Directory directory(numEntries, &network, mainMemory);
+std::vector<NetworkNode> networkNodes;
+
+// Create NetworkNode instances
+for (int i = 0; i < numCPU; ++i) {
+    networkNodes.emplace_back(i, nullptr); // Initially, Cache pointers are null
+    network.addNode(networkNodes.back());
+}
+
+// Now create Cache instances
+std::vector<Cache> caches;
+for (int i = 0; i < numCPU; ++i) {
+    caches.emplace_back(i, mainMemory, directory, &networkNodes[i]);
+    networkNodes[i].cache = &caches.back(); // Link back NetworkNode to Cache
+}
 
     // Simulation loop
     int loopCnt = 1;

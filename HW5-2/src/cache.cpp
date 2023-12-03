@@ -1,4 +1,5 @@
 #include "cache.h"
+#include "directory.h" 
 
 CacheState Cache::getCurrentState(uint64_t address)
 {
@@ -64,4 +65,57 @@ void Cache::printCacheLineState(uint64_t address) {
         std::cout << "Address: " << address << " State: Not in Cache" << std::endl;
     }
 }
+void Cache::handleNetworkMessage(const Message& message) {
+    switch (message.type) {
+        case MessageType::ReadMiss:
+            if (getCurrentState(message.address) == CacheState::MODIFIED) {
+                // If the current state is MODIFIED, write back the data and change state to SHARED
+                networkNode->sendMessage(Message(MessageType::DataWriteBack, message.address, readFromCache(message.address), id, message.sourceID));
+                setCurrentState(message.address, CacheState::SHARED);
+            }
+            break;
+
+        case MessageType::WriteMiss:
+            if (getCurrentState(message.address) == CacheState::MODIFIED || getCurrentState(message.address) == CacheState::EXCLUSIVE) {
+                // For WriteMiss, if the state is MODIFIED or EXCLUSIVE, write back and invalidate
+                networkNode->sendMessage(Message(MessageType::DataWriteBack, message.address, readFromCache(message.address), id, message.sourceID));
+                setCurrentState(message.address, CacheState::INVALID);
+            }
+            break;
+
+        case MessageType::Invalidate:
+            // Invalidate the cache line if it's in the cache
+            setCurrentState(message.address, CacheState::INVALID);
+            break;
+
+        case MessageType::DataWriteBack:
+            // Update the cache with the new data if the cache line is present
+            if (getCurrentState(message.address) != CacheState::INVALID) {
+                writeToCache(message.address, message.data);
+                setCurrentState(message.address, CacheState::SHARED);
+            }
+            break;
+
+        case MessageType::DataValueReply:
+            // Update the cache line with the data from the directory
+            writeToCache(message.address, message.data);
+            if (getCurrentState(message.address) == CacheState::INVALID) {
+                setCurrentState(message.address, CacheState::SHARED);
+            }
+            break;
+
+        case MessageType::Fetch:
+            // Respond to a fetch request by sending the data back to the directory
+            if (getCurrentState(message.address) == CacheState::MODIFIED || getCurrentState(message.address) == CacheState::EXCLUSIVE) {
+                networkNode->sendMessage(Message(MessageType::DataValueReply, message.address, readFromCache(message.address), id, -1));
+                setCurrentState(message.address, CacheState::SHARED);
+            }
+            break;
+
+        default:
+            // Default action or unrecognized message type
+            break;
+    }
+}
+
 

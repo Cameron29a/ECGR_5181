@@ -3,6 +3,7 @@
 
 #include <queue>
 #include <cstdlib>
+#include "directory.h"
 
 #include "event.h"
 #include "cache.h"
