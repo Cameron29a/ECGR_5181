@@ -3,23 +3,27 @@
 void Directory::updateEntry(uint64_t address, int cpuID, CacheState newState) {
     size_t index = address % numEntries;  // Simple hash function for indexing
     DirectoryEntry& entry = entries[index];
-
     // Update the tag and state
-    entry.tag = address;  // Assuming full address is used as a tag
+    entry.tag = address;
     entry.state = newState;
 
     // Update the CPU mask based on the new state
-    if (newState == CacheState::MODIFIED || newState == CacheState::EXCLUSIVE) {
-        // Only one CPU can have the line in these states
-        entry.cpuMask.reset();
-        entry.cpuMask.set(cpuID);
-    } else if (newState == CacheState::SHARED) {
-        // Multiple CPUs can share the line
-        entry.cpuMask.set(cpuID);
-    } else {
-        // If state is INVALID, remove the CPU from the mask
-        entry.cpuMask.reset(cpuID);
-    }
+    switch(newState) {
+        case CacheState::MODIFIED:
+        case CacheState::EXCLUSIVE:
+            entry.cpuMask.reset();
+            entry.cpuMask.set(cpuID);
+            break;
+        case CacheState::SHARED:
+            entry.cpuMask.set(cpuID);
+            break;
+        case CacheState::INVALID:
+            entry.cpuMask.reset(cpuID);
+            break;
+        default:
+            // Handle default or unknown cases if necessary
+            break;
+}
 }
 
 bool Directory::isCachedElsewhere(uint64_t address, int cpuID) {
@@ -128,4 +132,3 @@ void Directory::receiveMessage(const Message& message) {
             break;
     }
 }
-

@@ -21,11 +21,11 @@ class Directory {
     size_t numEntries;
     std::vector<DirectoryEntry> entries;
     Network* network;
-        Ram& ram;
+    Ram& ram;
 public:
-    Directory(size_t numEntries, Network* net, Ram& ram) : 
+     Directory(size_t numEntries, Network* net, Ram& ram) : 
         numEntries(numEntries), entries(numEntries), network(net), ram(ram) {}
-        
+    
     DirectoryEntry& getEntry(size_t index) { return entries.at(index); }
     const DirectoryEntry& getEntry(size_t index) const { return entries.at(index); }
     
@@ -36,6 +36,33 @@ public:
 
     void sendNetworkMessage(const Message& message);  // Method to send network messages
     void receiveMessage(const Message& message);
+
+    void printDirectoryEntryState(uint64_t address) const {
+        size_t index = address % numEntries; // Assuming directory indexing logic
+        const DirectoryEntry& entry = entries[index];
+
+        std::cout << "Directory Entry for Address " << address << " " ;
+        std::cout << "State: " << toString(entry.state) << " " ; // Convert state to string
+        std::cout << "Cached by CPUs: ";
+        for (size_t i = 0; i < entry.cpuMask.size(); ++i) {
+            if (entry.cpuMask.test(i)) {
+                std::cout << i << " ";
+            }
+        }
+        std::cout << "\n";
+    }
+    
+    // Helper method to convert state enum to string
+    std::string toString(CacheState state) const {
+        switch (state) {
+            case CacheState::INVALID: return "INVALID";
+            case CacheState::SHARED: return "SHARED";
+            case CacheState::MODIFIED: return "MODIFIED";
+            case CacheState::EXCLUSIVE: return "EXCLUSIVE";
+            default: return "UNKNOWN";
+        }
+    }
+
 };
 
 

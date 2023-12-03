@@ -13,6 +13,7 @@ public:
     uint64_t read(uint64_t address) {
          // Check if the address is present in the memoryData map
         auto it = memoryData.find(address);
+    std::cout << "RAM Read at Address: " << address << ", Data: " << memoryData[address] << std::endl;
 
         if (it != memoryData.end()) {
             // Return the data associated with the address
@@ -24,6 +25,8 @@ public:
     }
 
     void write(uint64_t address, uint64_t data) {
+        std::cout << "RAM Write at Address: " << address << ", Data: " << data << std::endl;
+
         memoryData[address] = data;
     }
 

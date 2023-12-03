@@ -40,42 +40,45 @@ for (int i = 0; i < numCPU; ++i) {
     std::cout << "======================Simulation Begin======================\n";
     while (loopCnt <= loopMax) {
         std::cout << "\n=====================Simulation Loop #" << loopCnt++ << "=====================\n";
+     uint64_t testAddress = 100; // Example address for testing
+    // Manually triggering state transitions for a cache block and directory
+    for (int cpu = 0; cpu < numCPU; ++cpu) {
+        std::cout << "\n====== CPU " << cpu << " ======\n";
 
-        // Simulate processor read and write requests
-        for (int i = 0; i < numCPU; ++i) {
-            // Randomly Select to Read or Write
-            int isRead = rand() % 2;
-            int addressMax = 1024;
-            int dataMax = 1000;
-            int address = rand() % addressMax;
-            int data = rand() % dataMax;
+        // INVALID -> SHARED (Read Miss)
+        std::cout << "Transition: INVALID -> SHARED (Read Miss) at Address " << testAddress << "\n";
+        caches[cpu].readFromCache(testAddress);
 
-            if (isRead) {
-                std::cout << "CPU" << i << " Reads from Address: " << address << "\n";
-                data = caches[i].readFromCache(address);
-            }
-            else {
-                std::cout << "CPU" << i << " Writes to Address: " << address << "\n";
-                caches[i].writeToCache(address, data);
-            }
-     // After each significant step, or at the end of each loop iteration
+        // SHARED -> MODIFIED (Write Miss)
+        std::cout << "Transition: SHARED -> MODIFIED (Write Miss) at Address " << testAddress << "\n";
+        caches[cpu].writeToCache(testAddress, 123); // Example data
+
+        // MODIFIED -> INVALID (Data Write-Back)
+        std::cout << "Transition: MODIFIED -> INVALID (Data Write-Back) at Address " << testAddress << "\n";
+        // Implement logic for Data Write-Back
+        // ...
+
+        // INVALID -> MODIFIED (Write Miss)
+        std::cout << "Transition: INVALID -> MODIFIED (Write Miss) at Address " << testAddress << "\n";
+        caches[cpu].writeToCache(testAddress, 456); // Example data
+
+        // Print the cache line state after each operation
         for (Cache& cache : caches) {
-            cache.printCacheLineState(address);
+            cache.printCacheLineState(testAddress);
         }
-            // Additional logic can be added here to simulate network communication delays,
-            // directory updates, and invalidation messages to other caches.
-        }
+        
+            directory.printDirectoryEntryState(testAddress); // Assuming such a method exists
 
-        // Increment simulation time
+
+        // Increment simulation time and record the event
         currentTick += 10;
         systemEvents.push(Event(currentTick));
     }
+}
+
     std::cout << "\n=======================Simulation Ended=======================\n";
-    if (loopCnt >= loopMax)
-        std::cout << "=====Reason for Termination: Maximum loop counter reached=====\n"; 
-        
-    std::cout << "=====Event Queue for Simulation=====\n";
-    printEvents();
+ //   std::cout << "=====Event Queue for Simulation=====\n";
+ //   printEvents();
 }
 
 // every possible transation for both state machines, 
