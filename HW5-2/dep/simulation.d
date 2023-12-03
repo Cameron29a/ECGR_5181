@@ -172,5 +172,5 @@ dep/simulation.d: src/simulation.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/11/bits/stl_algo.h \
  /usr/include/c++/11/bits/algorithmfwd.h \
  /usr/include/c++/11/bits/stl_tempbuf.h \
- /usr/include/c++/11/bits/uniform_int_dist.h include/event.h \
- include/cache.h
+ /usr/include/c++/11/bits/uniform_int_dist.h include/message.h \
+ include/event.h include/cache.h

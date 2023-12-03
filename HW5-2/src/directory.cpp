@@ -73,7 +73,9 @@ uint64_t Directory::readData(uint64_t address, int requestingCpuID, Ram& ram) {
 
 void Directory::sendNetworkMessage(const Message& message) {
     network->sendMessage(message);
+    Directory::printDirectoryEntryState(message.address);
 }
+
 void Directory::receiveMessage(const Message& message) {
     size_t index = message.address % numEntries;
     DirectoryEntry& entry = entries[index];
@@ -94,6 +96,7 @@ void Directory::receiveMessage(const Message& message) {
                 sendNetworkMessage(Message(MessageType::Fetch, message.address, 0, currentOwner, message.sourceID));
                 entry.state = CacheState::SHARED;
             }
+                    Directory::printDirectoryEntryState(message.address);
             break;
 
         case MessageType::WriteMiss:
@@ -109,6 +112,7 @@ void Directory::receiveMessage(const Message& message) {
             entry.cpuMask.reset();
             entry.cpuMask.set(message.sourceID);
             entry.state = CacheState::EXCLUSIVE;
+                   Directory::printDirectoryEntryState(message.address);(message.address);
             break;
 
         case MessageType::DataWriteBack:
@@ -117,6 +121,7 @@ void Directory::receiveMessage(const Message& message) {
             if (entry.state == CacheState::MODIFIED) {
                 entry.state = CacheState::SHARED;
             }
+                    Directory::printDirectoryEntryState(message.address);
             break;
 
         case MessageType::Invalidate:
@@ -125,10 +130,14 @@ void Directory::receiveMessage(const Message& message) {
             if (entry.cpuMask.none()) {
                 entry.state = CacheState::INVALID;
             }
+                    Directory::printDirectoryEntryState(message.address);
             break;
 
         default:
             // Other message types or default action
             break;
+            
     }
+
+
 }

@@ -18,41 +18,40 @@ void Cache::setCurrentState(uint64_t address, CacheState newState) {
     if (it != cacheData.end()) {
         it->second.state = newState;
     }
-        printCacheLineState(address); // Display the state of the cache line
+      //  printCacheLineState(address); // Display the state of the cache line
 
 }
 
 uint64_t Cache::readFromCache(uint64_t address) {
     auto it = cacheData.find(address);
-    // Check if cache line is in the cache
     if (it != cacheData.end() && it->second.state != CacheState::INVALID) {
         return it->second.data; // Cache hit
     } else {
-        uint64_t data = 0;
-        // Cache miss, consult the directory
-        if (directory.isCachedElsewhere(address, this->id)) {
-            // Logic to handle case when cache line is cached elsewhere
-	data = directory.readData(address, this->id, ram);
-            cacheData[address] = {CacheState::SHARED, address, data}; // Update cache
-        } else {
-            // Cache line is not in other caches, fetch from main memory (or simulate fetching)
-            data = ram.read(address);
-            cacheData[address] = {CacheState::EXCLUSIVE, address, data}; // Update cache
-        }
-     printCacheLineState(address); // Display the state of the cache line
-     return data;
+        // Cache miss
+        Message readMissMsg(MessageType::ReadMiss, address, 0, this->id, -1);
+        directory.sendNetworkMessage(readMissMsg);
+        // Assume the data is now fetched and updated in the cache
+        return cacheData[address].data;
     }
 }
 
 void Cache::writeToCache(uint64_t address, uint64_t data) {
-    directory.updateEntry(address, this->id, CacheState::MODIFIED);
-    cacheData[address] = {CacheState::MODIFIED, address, data};
+    auto it = cacheData.find(address);
+    if (it != cacheData.end() && (it->second.state == CacheState::MODIFIED || it->second.state == CacheState::EXCLUSIVE)) {
+        it->second.data = data; // Direct update in cache
+    } else {
+        // Write miss
+        Message writeMissMsg(MessageType::WriteMiss, address, data, this->id, -1);
+        directory.sendNetworkMessage(writeMissMsg);
+        // Assume the directory handles the request and updates the cache as needed
+    }
 }
 
-void Cache::printCacheLineState(uint64_t address) {
+
+void Cache::printCacheLineState(uint64_t address,int cpuID) const {
     auto it = cacheData.find(address);
     if (it != cacheData.end()) {
-        std::cout << "Address: " << address << " State: ";
+        std::cout  << "CPU" << cpuID << " Address: " << address << " State: ";
         switch (it->second.state) {
             case CacheState::MODIFIED: std::cout << "M"; break;
             case CacheState::EXCLUSIVE: std::cout << "E"; break;
@@ -62,18 +61,22 @@ void Cache::printCacheLineState(uint64_t address) {
         }
         std::cout << std::endl;
     } else {
-        std::cout << "Address: " << address << " State: Not in Cache" << std::endl;
+        std::cout  << "CPU" << cpuID << " Address: " << address << " State: Not in Cache" << std::endl;
     }
 }
 void Cache::handleNetworkMessage(const Message& message) {
     switch (message.type) {
-        case MessageType::ReadMiss:
-            if (getCurrentState(message.address) == CacheState::MODIFIED) {
-                // If the current state is MODIFIED, write back the data and change state to SHARED
-                networkNode->sendMessage(Message(MessageType::DataWriteBack, message.address, readFromCache(message.address), id, message.sourceID));
-                setCurrentState(message.address, CacheState::SHARED);
-            }
-            break;
+    case MessageType::ReadMiss:
+        if (getCurrentState(message.address) == CacheState::MODIFIED || 
+            getCurrentState(message.address) == CacheState::EXCLUSIVE) {
+            // Write back the data and change state to SHARED
+            networkNode->sendMessage(Message(MessageType::DataWriteBack, message.address, readFromCache(message.address), id, message.sourceID));
+            setCurrentState(message.address, CacheState::SHARED);
+        } else if (directory.isCachedElsewhere(message.address, id)) {
+            // If the block is exclusive in another cache, set this cache's state to SHARED
+            setCurrentState(message.address, CacheState::SHARED);
+        }
+        break;
 
         case MessageType::WriteMiss:
             if (getCurrentState(message.address) == CacheState::MODIFIED || getCurrentState(message.address) == CacheState::EXCLUSIVE) {

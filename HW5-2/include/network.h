@@ -5,48 +5,31 @@
 #include <vector>
 #include <functional>
 #include <cstdint>
+#include "message.h"
+
 // Forward declarations
 class Cache;
 class Directory;
 
-// Message Types for Network Communication
-enum class MessageType {
-    ReadMiss,
-    WriteMiss,
-    DataWriteBack,
-    Invalidate,
-    DataValueReply,
-    Fetch
-};
-
-// Structure for a message in the network
-struct Message {
-    MessageType type;
-    uint64_t address;
-    uint64_t data;  // Used for DataWriteBack and DataValueReply
-    int sourceID;   // ID of the source node
-    int destID;     // ID of the destination node
-
-    Message(MessageType type, uint64_t addr, uint64_t data, int srcID, int dstID)
-        : type(type), address(addr), data(data), sourceID(srcID), destID(dstID) {}
-};
-
 // Forward declaration
 class Cache;
+class Directory;
 
-// Network Node Class
+// Network Node Class, ie single nodes, cache etc
 class NetworkNode {
 public:
     int id;
     Cache* cache;
+    Directory* directory;
     std::function<void(Message)> sendMessage;
 
-    NetworkNode(int id, Cache* cache) : id(id), cache(cache) {}
+    NetworkNode(int id, Cache* cache, Directory* dir)
+        : id(id), cache(cache), directory(dir) {}
 
     void receiveMessage(const Message& message);
 };
 
-// Network Class
+// Network Class, routing for nodes
 class Network {
     std::vector<NetworkNode> nodes;
 

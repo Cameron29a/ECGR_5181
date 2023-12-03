@@ -15,23 +15,31 @@ void Simulation::runSimulation() {
     int numCPU = 4;
     const size_t numEntries = 4096; // Total number of cache lines
 
-    std::cout << "========================Create Caches and Directory=======================\n";
+std::cout << "========================Create Caches and Directory=======================\n";
 Network network;
 Directory directory(numEntries, &network, mainMemory);
+
+std::vector<Cache> caches;
 std::vector<NetworkNode> networkNodes;
 
-// Create NetworkNode instances
+// Create Cache instances first
 for (int i = 0; i < numCPU; ++i) {
-    networkNodes.emplace_back(i, nullptr); // Initially, Cache pointers are null
-    network.addNode(networkNodes.back());
+    // Initially create each Cache with a nullptr for the NetworkNode
+    caches.emplace_back(i, mainMemory, directory, nullptr);
 }
 
-// Now create Cache instances
-std::vector<Cache> caches;
+// Now create NetworkNode instances
 for (int i = 0; i < numCPU; ++i) {
-    caches.emplace_back(i, mainMemory, directory, &networkNodes[i]);
-    networkNodes[i].cache = &caches.back(); // Link back NetworkNode to Cache
+    // Create NetworkNode with a pointer to the corresponding Cache
+    networkNodes.emplace_back(i, &caches[i], &directory);
+    
+    // Update the NetworkNode pointer in the corresponding Cache
+    caches[i].setNetworkNode(&networkNodes[i]);
+
+    // Add the node to the network
+    network.addNode(networkNodes[i]);
 }
+
 
     // Simulation loop
     int loopCnt = 1;
@@ -40,45 +48,43 @@ for (int i = 0; i < numCPU; ++i) {
     std::cout << "======================Simulation Begin======================\n";
     while (loopCnt <= loopMax) {
         std::cout << "\n=====================Simulation Loop #" << loopCnt++ << "=====================\n";
-     uint64_t testAddress = 100; // Example address for testing
-    // Manually triggering state transitions for a cache block and directory
-    for (int cpu = 0; cpu < numCPU; ++cpu) {
-        std::cout << "\n====== CPU " << cpu << " ======\n";
 
-        // INVALID -> SHARED (Read Miss)
-        std::cout << "Transition: INVALID -> SHARED (Read Miss) at Address " << testAddress << "\n";
-        caches[cpu].readFromCache(testAddress);
+        // Simulate processor read and write requests
+        for (int i = 0; i < numCPU; ++i) {
+            // Randomly Select to Read or Write
+            int isRead = rand() % 2;
+            int addressMax = 1024;
+            int dataMax = 1000;
+            int address = rand() % addressMax;
+            int data = rand() % dataMax;
 
-        // SHARED -> MODIFIED (Write Miss)
-        std::cout << "Transition: SHARED -> MODIFIED (Write Miss) at Address " << testAddress << "\n";
-        caches[cpu].writeToCache(testAddress, 123); // Example data
-
-        // MODIFIED -> INVALID (Data Write-Back)
-        std::cout << "Transition: MODIFIED -> INVALID (Data Write-Back) at Address " << testAddress << "\n";
-        // Implement logic for Data Write-Back
-        // ...
-
-        // INVALID -> MODIFIED (Write Miss)
-        std::cout << "Transition: INVALID -> MODIFIED (Write Miss) at Address " << testAddress << "\n";
-        caches[cpu].writeToCache(testAddress, 456); // Example data
-
-        // Print the cache line state after each operation
-        for (Cache& cache : caches) {
-            cache.printCacheLineState(testAddress);
+            if (isRead) {
+                std::cout << "CPU" << i << " Reads from Address: " << address << "\n";
+                data = caches[i].readFromCache(address);
+            }
+            else {
+                std::cout << "CPU" << i << " Writes to Address: " << address << "\n";
+                caches[i].writeToCache(address, data);
+            }
+     // After each significant step, or at the end of each loop iteration
+        // Print the state of the current address in all caches
+        for (int j = 0; j < numCPU; ++j) {
+            caches[j].printCacheLineState(address, j);
         }
-        
-            directory.printDirectoryEntryState(testAddress); // Assuming such a method exists
+            // Additional logic can be added here to simulate network communication delays,
+            // directory updates, and invalidation messages to other caches.
+        }
 
-
-        // Increment simulation time and record the event
+        // Increment simulation time
         currentTick += 10;
         systemEvents.push(Event(currentTick));
     }
-}
-
     std::cout << "\n=======================Simulation Ended=======================\n";
- //   std::cout << "=====Event Queue for Simulation=====\n";
- //   printEvents();
+    if (loopCnt >= loopMax)
+        std::cout << "=====Reason for Termination: Maximum loop counter reached=====\n"; 
+        
+    std::cout << "=====Event Queue for Simulation=====\n";
+    printEvents();
 }
 
 // every possible transation for both state machines, 
