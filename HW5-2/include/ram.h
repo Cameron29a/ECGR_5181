@@ -10,6 +10,12 @@ class Ram {
     std::unordered_map<uint64_t, uint64_t> memoryData;
 
 public:
+    Ram() {
+        for (uint64_t address = 0; address < 1024; ++address) {
+            memoryData[address] = 0; // Prefill with 0
+        }
+    }
+    
     uint64_t read(uint64_t address) {
          // Check if the address is present in the memoryData map
         auto it = memoryData.find(address);

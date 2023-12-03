@@ -52,8 +52,11 @@ void Directory::receiveMessage(const Message& message) {
         case MessageType::ReadMiss:
             if (entry.state == DirectoryState::UNCACHED) {
                 entry.state = DirectoryState::SHARED;
+                 entry.sharers.clear();
+        entry.sharers.insert(message.sourceID);
                 sendNetworkMessage(Message(MessageType::DataValueReply, message.address, ram.read(message.address), -1, message.sourceID));
             } else if (entry.state == DirectoryState::SHARED) {
+                    entry.sharers.insert(message.sourceID);
                 sendNetworkMessage(Message(MessageType::DataValueReply, message.address, ram.read(message.address), -1, message.sourceID));
             } else if (entry.state == DirectoryState::EXCLUSIVE) {
                 sendNetworkMessage(Message(MessageType::Fetch, message.address, 0, -1, message.sourceID));
