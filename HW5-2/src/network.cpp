@@ -35,8 +35,8 @@ void Network::addNode(NetworkNode& node) {
 }
 
 void Network::sendMessage(const Message& message) {
-    // Simulate network delay here if necessary
-        std::cout << "Sending Message: Type=" << static_cast<int>(message.type) 
+    std::string messageType = message.messageTypeToString();
+    std::cout << "Sending Message: Type=" << messageType 
               << ", Address=" << message.address << ", SourceID=" << message.sourceID 
               << ", DestID=" << message.destID << std::endl;
     routeMessage(message);
@@ -45,10 +45,46 @@ void Network::sendMessage(const Message& message) {
 void Network::routeMessage(const Message& message) {
     for (auto& node : nodes) {
         if (node.id == message.destID) {
-            node.receiveMessage(message);
-            break;
+            switch (message.type) {
+                case MessageType::ReadMiss:
+                case MessageType::WriteMiss:
+                    // Route to the directory
+                    if (node.directory) {
+                        node.directory->receiveMessage(message);
+                    }
+                    break;
+
+                case MessageType::DataWriteBack:
+                    // Route DataWriteBack to the directory
+                    if (node.directory) {
+                        node.directory->receiveMessage(message);
+                    }
+                    break;
+
+                case MessageType::Invalidate:
+                case MessageType::Fetch:
+                    // Route Invalidate and Fetch to the cache
+                    if (node.cache) {
+                        node.cache->handleNetworkMessage(message);
+                    }
+                    break;
+
+                case MessageType::DataValueReply:
+                    // Route DataValueReply to the cache
+                    if (node.cache) {
+                        node.cache->handleNetworkMessage(message);
+                    }
+                    break;
+
+                default:
+                    // Handle default case or error handling
+                    std::cerr << "Unhandled message type received: " << message.messageTypeToString() << std::endl;
+                    break;
+            }
+            break; // Break from the loop once the message is routed
         }
     }
 }
+
 
 

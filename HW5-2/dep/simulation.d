@@ -173,4 +173,6 @@ dep/simulation.d: src/simulation.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/11/bits/algorithmfwd.h \
  /usr/include/c++/11/bits/stl_tempbuf.h \
  /usr/include/c++/11/bits/uniform_int_dist.h include/message.h \
- include/event.h include/cache.h
+ include/directorystate.h /usr/include/c++/11/set \
+ /usr/include/c++/11/bits/stl_tree.h /usr/include/c++/11/bits/stl_set.h \
+ /usr/include/c++/11/bits/stl_multiset.h include/event.h include/cache.h

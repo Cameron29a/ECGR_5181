@@ -17,29 +17,26 @@ void Simulation::runSimulation() {
 
 std::cout << "========================Create Caches and Directory=======================\n";
 Network network;
-Directory directory(numEntries, &network, mainMemory);
-
+std::vector<Directory> directories;
 std::vector<Cache> caches;
 std::vector<NetworkNode> networkNodes;
 
-// Create Cache instances first
+// Initialize directories
 for (int i = 0; i < numCPU; ++i) {
-    // Initially create each Cache with a nullptr for the NetworkNode
-    caches.emplace_back(i, mainMemory, directory, nullptr);
+    directories.emplace_back(numEntries, &network, mainMemory, i);
 }
 
-// Now create NetworkNode instances
+// Initialize caches
 for (int i = 0; i < numCPU; ++i) {
-    // Create NetworkNode with a pointer to the corresponding Cache
-    networkNodes.emplace_back(i, &caches[i], &directory);
-    
-    // Update the NetworkNode pointer in the corresponding Cache
-    caches[i].setNetworkNode(&networkNodes[i]);
+    caches.emplace_back(i, mainMemory, directories[i], nullptr);
+}
 
-    // Add the node to the network
+// Initialize network nodes
+for (int i = 0; i < numCPU; ++i) {
+    networkNodes.emplace_back(i, &caches[i], &directories[i]);
+    caches[i].setNetworkNode(&networkNodes[i]);
     network.addNode(networkNodes[i]);
 }
-
 
     // Simulation loop
     int loopCnt = 1;
@@ -57,12 +54,13 @@ for (int i = 0; i < numCPU; ++i) {
             int dataMax = 1000;
             int address = rand() % addressMax;
             int data = rand() % dataMax;
-
+            
             if (isRead) {
                 std::cout << "CPU" << i << " Reads from Address: " << address << "\n";
-                data = caches[i].readFromCache(address);
-            }
-            else {
+                caches[i].readFromCache(address, [i](uint64_t data) {
+                            std::cout << "CPU" << i << " Received Data: " << data << std::endl;
+            });
+            } else {
                 std::cout << "CPU" << i << " Writes to Address: " << address << "\n";
                 caches[i].writeToCache(address, data);
             }
