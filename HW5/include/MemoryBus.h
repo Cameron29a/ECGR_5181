@@ -4,8 +4,10 @@
 #include <queue>
 #include <iostream>
 #include <cstdint>
+#include <unordered_map>
 
 #include "ram.h"
+#include "BusArbiter.h"
 
 struct MemoryAccessRequest {
     int cpuID;
@@ -20,20 +22,22 @@ struct MemoryAccessRequest {
 class MemoryBus {
     std::queue<MemoryAccessRequest> requestQueue;
     Ram ram;
+    BusArbiter& busArbiter;
 
     bool busInUse = false;
     int currentProcessorID = -1;
 
 public:
-    MemoryBus() {}
+    MemoryBus(BusArbiter& busArbiter) : busArbiter(busArbiter) {}
 
     bool isBusinUse() { return busInUse; };
     int getCurrentProcessorID() { return currentProcessorID; };
 
-    void requestBusAccess(int processorID);
-    void releaseBusAccess(int processorID);
-    uint64_t readFromMemory(uint64_t address);
-    void writeToMemory(uint64_t address, uint64_t data);
+    void requestBusAccess(int);
+    void releaseBusAccess(int);
+    
+    uint64_t readFromMemory(uint64_t);
+    void writeToMemory(uint64_t, uint64_t);
 
     void addRequest(int, bool, uint64_t, uint64_t);
     MemoryAccessRequest getNextRequest();

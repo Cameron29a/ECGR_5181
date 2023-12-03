@@ -1,12 +1,35 @@
 #include "cache.h"
 
-bool Cache::checkOtherStates() {
-    
-    return false;
+static const char* cacheStateToString(CacheState state) {
+    switch (state) {
+        case CacheState::INVALID:
+            return "INVALID";
+        case CacheState::SHARED:
+            return "SHARED";
+        case CacheState::MODIFIED:
+            return "MODIFIED";
+        case CacheState::EXCLUSIVE:
+            return "EXCLUSIVE";
+        default:
+            return "UNKNOWN";
+    }
 }
 
-CacheState Cache::getCurrentState(uint64_t address)
-{
+void Cache::updateLRUOrder(uint64_t address) {
+    // Remove the address from the list (if it exists)
+    lruOrder.remove(address);
+    // Add the address to the front of the list
+    lruOrder.push_front(address);
+
+    // If the list exceeds the max size, remove the least recently used element
+    while (lruOrder.size() > maxCacheLines) {
+        uint64_t lruAddress = lruOrder.back();
+        lruOrder.pop_back();
+        cacheData.erase(lruAddress);
+    }
+}
+
+CacheState Cache::getCurrentState(uint64_t address) {
     auto it = cacheData.find(address);
 
     if (it != cacheData.end()) {
@@ -17,28 +40,44 @@ CacheState Cache::getCurrentState(uint64_t address)
 }
 
 void Cache::setCurrentState(uint64_t address, CacheState newState) {
-    auto it = cacheData.find(address);
-
-    if (it != cacheData.end()) {
-        it->second.state = newState;
+    auto result = cacheData.emplace(address, CacheLine{});
+    if (result.second) {
+        result.first->second.state = newState;
+        std::cout << "CPU" << id << " Changing to state : " << cacheStateToString(newState) << "\n";
+        updateLRUOrder(address);
+    } else {
+        // Cache hit: update the state, and the LRU order is already handled in read/write functions
+        result.first->second.state = newState;
+        std::cout << "CPU" << id << " Changing to state: " << cacheStateToString(newState) << "\n";
     }
 }
 
 uint64_t Cache::readFromCache(uint64_t address) {
-    CacheState state = getCurrentState(address);
-
-    // If the cache line is upto date, return the data from the cache
-    if (state != CacheState::INVALID) {
-        return cacheData[address].data; 
-    } else {
-        return -1;
+    updateLRUOrder(address);
+    auto it = cacheData.find(address);
+    
+    if (it != cacheData.end()) {
+        return it->second.data;
     }
+    return -1;
 }
 
 void Cache::writeToCache(uint64_t address, uint64_t data) {
-    // CacheState state = getCurrentState(address);
+    updateLRUOrder(address);
+    auto it = cacheData.find(address);
 
+    if (it != cacheData.end()) {
+        it->second.data = data;
+    } else {
+        // If the cache line does not exist, create a new one
+        CacheLine newCacheLine;
+        newCacheLine.state = CacheState::INVALID;
+        newCacheLine.tag = address;
+        newCacheLine.data = data;
 
+        // Insert the new cache line into the cacheData map
+        cacheData[address] = newCacheLine;
+    }
 }
 
 void Cache::handleBusRequest(int processorID, uint64_t address) {
@@ -71,21 +110,24 @@ void Cache::handleBusRequest(int processorID, uint64_t address) {
     }
 }
 
-BusSnoop Cache::updateState(bool isRead, bool isHit, uint64_t address) {
+BusSnoopState Cache::updateState(bool isRead, bool isHit, uint64_t address, bool shared) {
     CacheState currentState = getCurrentState(address);
-    BusSnoop SnoopingUpdate;
+    CacheState nextState = CacheState::INVALID;
+    BusSnoopState SnoopingUpdate;
 
     switch (currentState) {
         case CacheState::INVALID:
             if (!isHit) {
                 if(!isRead) {
-                    currentState = CacheState::MODIFIED;
-                    SnoopingUpdate = BusSnoop::WRITEMISS;
+                    nextState = CacheState::MODIFIED;
+                    SnoopingUpdate = BusSnoopState::WRITEMISS;
                 } else {
-                    SnoopingUpdate = BusSnoop::READMISS;
-                    // if () {
-                    currentState = CacheState::SHARED;
-                    // }
+                    SnoopingUpdate = BusSnoopState::READMISS;
+                    if (shared) {
+                        nextState = CacheState::SHARED;
+                    } else {
+                        nextState = CacheState::EXCLUSIVE;
+                    }
                 }
             }
             break;
@@ -93,30 +135,26 @@ BusSnoop Cache::updateState(bool isRead, bool isHit, uint64_t address) {
         case CacheState::SHARED:
             if (isHit == 1) {
                 if (isRead == 1) {
-                    currentState = CacheState::SHARED;
+                    nextState = CacheState::SHARED;
                 } else {
-                    currentState = CacheState::MODIFIED;
-                    SnoopingUpdate = BusSnoop::INVALIDATE;
+                    nextState = CacheState::MODIFIED;
+                    SnoopingUpdate = BusSnoopState::INVALIDATE;
                 }
             }
             break;
 
         case CacheState::MODIFIED:
             if (isHit == 1) {
-                if (isRead == 1) {
-                    currentState = CacheState::MODIFIED;
-                } else {
-                    currentState = CacheState::MODIFIED;
-                }
+                nextState = CacheState::MODIFIED;
             }
             break;
 
         case CacheState::EXCLUSIVE:
             if (isHit == 1) {
                 if (isRead == 1) {
-                    currentState = CacheState::EXCLUSIVE;
+                    nextState = CacheState::EXCLUSIVE;
                 } else {
-                    currentState = CacheState::MODIFIED;
+                    nextState = CacheState::MODIFIED;
                 }
             }
             break;
@@ -126,33 +164,43 @@ BusSnoop Cache::updateState(bool isRead, bool isHit, uint64_t address) {
     }
 
     // Update the current state
-
-
+    setCurrentState(address, nextState);
     return SnoopingUpdate;
 }
 
-void Cache::updateSnoopingState(BusSnoop update, uint64_t address) {
+void Cache::updateSnoopingState(BusSnoopState update, uint64_t address) {
     CacheState currentState = getCurrentState(address);
+    CacheState nextState;
+
     switch (update) {
-        case BusSnoop::READMISS:
+        case BusSnoopState::READMISS:
             switch(currentState) {
                 case CacheState::SHARED:
                 case CacheState::MODIFIED:
                 case CacheState::EXCLUSIVE:
+                    nextState = CacheState::SHARED;
                 default:
                     break;
             }
             break;
 
-        case BusSnoop::WRITEMISS:
-
+        case BusSnoopState::WRITEMISS:
+            switch(currentState) {
+                case CacheState::MODIFIED:
+                case CacheState::EXCLUSIVE:
+                    nextState = CacheState::INVALID;
+                default:
+                    break;
+            }
             break;
         
-        case BusSnoop::INVALIDATE:
-
+        case BusSnoopState::INVALIDATE:
+            nextState = CacheState::INVALID;
             break;
 
         default:
             break;
     }
+    // Update the state
+    setCurrentState(address, nextState);
 }

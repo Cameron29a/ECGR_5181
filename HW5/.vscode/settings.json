@@ -53,6 +53,8 @@
         "iomanip": "cpp",
         "cstring": "cpp",
         "variant": "cpp",
-        "queue": "cpp"
-    }
+        "queue": "cpp",
+        "list": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "enabled"
 }
