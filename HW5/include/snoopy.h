@@ -2,14 +2,16 @@
 #define SNOOPY_H
 
 #include "cache.h"
+#include "BusArbiter.h"
 
 class Cache;  // Forward declaration
 
 class Snoopy {
-    std::vector<Cache> allCaches;
+    std::vector<Cache>& allCaches;
+    BusArbiter& busArbiter;
 
 public:
-    Snoopy(std::vector<Cache>& allCaches) : allCaches(allCaches) {}
+    Snoopy(std::vector<Cache>& allCaches, BusArbiter& busArbiter) : allCaches(allCaches), busArbiter(busArbiter) {}
     
     bool snoopRead(int, uint64_t);
     void snoopWrite(int, uint64_t);

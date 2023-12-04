@@ -14,3 +14,15 @@ int BusArbiter::grantAccess() {
         return -1;
     }
 }
+
+void BusArbiter::removeEntry(int processorID) {
+    std::queue<int> newQueue;
+    
+    while (!requestQueue.empty()) {
+        if (requestQueue.front() != processorID) {
+            newQueue.push(requestQueue.front());
+        }
+        requestQueue.pop();
+    }
+    requestQueue = newQueue;
+}

@@ -19,6 +19,7 @@ struct CacheLine {
 
 class Cache {
     int id;
+    int numCPU;
     MemoryBus& memBus;
     std::unordered_map<uint64_t, CacheLine> cacheData;
 
@@ -28,14 +29,18 @@ class Cache {
     void updateLRUOrder(uint64_t address);
 
     bool waitingForMemoryAccess;
+    bool shareFlag;
 
 
 public:
-    Cache(int id, MemoryBus& memBus) : id(id), memBus(memBus) {}
+    Cache(int id, int numCPU, MemoryBus& memBus) : id(id), numCPU(numCPU), memBus(memBus) {}
 
     bool isWaiting() { return waitingForMemoryAccess; }
     void setWaitFlag() { waitingForMemoryAccess = true; }
     void clearWaitFlag() { waitingForMemoryAccess = false; }
+
+    void setShareFlag() { shareFlag = true; }
+    void clearShareFlag() { shareFlag = false; }
 
     int getID() { return id; }
 
@@ -46,7 +51,7 @@ public:
     void writeToCache(uint64_t, uint64_t);
 
     /////////////////////////////
-    void handleBusRequest(int, uint64_t);
+    std::pair <BusSnoopState, uint64_t> handleBusRequest();
     
     BusSnoopState updateState(bool, bool, uint64_t, bool);
     void updateSnoopingState(BusSnoopState, uint64_t);

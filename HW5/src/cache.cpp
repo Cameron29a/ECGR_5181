@@ -80,34 +80,29 @@ void Cache::writeToCache(uint64_t address, uint64_t data) {
     }
 }
 
-void Cache::handleBusRequest(int processorID, uint64_t address) {
-    CacheState currentState = getCurrentState(address);
+std::pair <BusSnoopState, uint64_t> Cache::handleBusRequest() {
+    MemoryAccessRequest request = memBus.getRequestByCPUID(id);
+    // if (request.cpuID != id)
+        // return 0;
+    bool isRead = request.isRead;
+    uint64_t address = request.address;
+    uint64_t data = request.data;
 
-    switch (currentState) {
-        case CacheState::INVALID:
-            // Handle transitions for remotely initiated access in INVALID state
-            // Update cacheData based on busRequestState
-            break;
-
-        case CacheState::SHARED:
-            // Handle transitions for remotely initiated access in SHARED state
-            // Update cacheData based on busRequestState
-            break;
-
-        case CacheState::MODIFIED:
-            // Handle transitions for remotely initiated access in MODIFIED state
-            // Update cacheData based on busRequestState
-            break;
-
-        case CacheState::EXCLUSIVE:
-            // Handle transitions for remotely initiated access in EXCLUSIVE state
-            // Update cacheData based on busRequestState
-            break;
-
-        default:
-            // Handle other cases or throw an error
-            break;
+    if (isRead) {
+        std::cout << "Main Memory Read by Cache" << id << "\n";
+        memBus.readFromMemory(address);
+    } 
+    else {
+        std::cout << "Main Memory Written to by Cache" << id << "\n";
+        memBus.writeToMemory(address, data);
     }
+
+    std::pair <BusSnoopState, uint64_t> output;
+    output.first = updateState(isRead, 0, address, shareFlag);
+    output.second = address;
+    clearShareFlag();
+
+    return output;
 }
 
 BusSnoopState Cache::updateState(bool isRead, bool isHit, uint64_t address, bool shared) {

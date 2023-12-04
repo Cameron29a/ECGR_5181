@@ -9,8 +9,6 @@ void Simulation::printEvents() {
     }
 }
 
-
-
 void Simulation::runSimulation() {
     std::cout << "Begin System Initialization\n";
     srand (time(NULL));
@@ -29,19 +27,40 @@ void Simulation::runSimulation() {
     std::cout << "========================Create Caches=======================\n";
     std::vector<Cache> caches;
     for (int i = 0; i < numCPU; ++i) {
-        caches.emplace_back(i, memBus);
+        caches.emplace_back(i, numCPU, memBus);
     }
 
-    Snoopy snoopy(caches);
+    std::cout << "========================Create Snoopy=======================\n";
+    Snoopy snoopy(caches, busArbiter);
+
+    // Test Vectors
+    std::vector<bool> readArray = {
+        {}, 
+        {}, 
+        {}, 
+        {}
+    };
+    std::vector<int> addressArray = {
+        {}, 
+        {}, 
+        {}, 
+        {}
+    };
+    std::vector<int> dataArray = {
+        {}, 
+        {}, 
+        {}, 
+        {}
+    };
 
     // Simulation loop.
-    int loopCnt = 1;
     int loopMax = 100;
+    int loopCnt;
 
     // Start Simulation loop and run until reset
     std::cout << "======================Simulation Begin======================\n";
-    while (loopCnt <= loopMax) {
-        std::cout << "\n=====================Simulation Loop #" << std::dec << loopCnt++ << "=====================\n";
+    for (loopCnt = 0; loopCnt <= loopMax; loopCnt++) {
+        std::cout << "\n=====================Simulation Loop #" << loopCnt << "=====================\n";
 
         // Simulate processor read and write requests
         // update state after each request; syncronous update
@@ -51,19 +70,19 @@ void Simulation::runSimulation() {
                 // Implement other test vectors later
                 bool isRead = dis(gen) == 1;
                 // bool isRead = rand() % 2;
-                // int addressMax = 1024;
-                // int dataMax = 1000;
-                // int address = rand() % addressMax;
-                // int data = rand() % dataMax;
-                int address = 100 * (loopCnt % 2);
-                int data = 200;
+                int addressMax = 1024;
+                int dataMax = 1000;
+                int address = rand() % addressMax;
+                int data = rand() % dataMax;
+                // int address = addressArray[i][loopCnt];
+                // int data = dataArray[i][1];
                 
                 CacheState state = caches[i].getCurrentState(address);
 
                 bool isHit;
                 bool shared = false;
 
-                if (isRead == true) {
+                if (isRead) {
                     std::cout << "CPU" << i << " Reads from Address 0x" << std::hex << address << std::dec << "\n";
                     if(state == CacheState::INVALID) {
                         isHit = false;
@@ -72,7 +91,7 @@ void Simulation::runSimulation() {
                         if (!shared) {
                             caches[i].setWaitFlag();
                             memBus.addRequest(i, 0, address, 0);
-                        }
+                        } else caches[i].setShareFlag();
                     } else {
                         isHit = true;
                         std::cout << "Read Hit\n";
@@ -108,13 +127,18 @@ void Simulation::runSimulation() {
         // Simulate bus operations
         int grantedProcessor = busArbiter.grantAccess();
         if (grantedProcessor != -1) {
+            std::cout << "Bus Arbiter Granted Access to CPU" << grantedProcessor << "\n";
             // Simulate bus request handling
             memBus.requestBusAccess(grantedProcessor);
             if (memBus.isBusinUse() && memBus.getCurrentProcessorID() ==  grantedProcessor) {
-                // caches[grantedProcessor].handleBusRequest(grantedProcessor, address);
-
-                // caches[i].updateState(isRead, isHit, address);
+                std::cout << "Memory Bus Accessed\n";
+                std::pair <BusSnoopState, uint64_t> updatebus = caches[grantedProcessor].handleBusRequest();
                 caches[grantedProcessor].clearWaitFlag();
+                for (int j = 0; j <  numCPU; j++) {
+                    if (j != grantedProcessor) {
+                        caches[j].updateSnoopingState(updatebus.first, updatebus.second);
+                    }
+                }
             }
             memBus.releaseBusAccess(grantedProcessor);
         }

@@ -12,6 +12,7 @@ public:
 
     void requestAccess(int processorID);
     int grantAccess();
+    void removeEntry(int processorID);
 
     std::queue<int> returnQueue() { return requestQueue; }
 

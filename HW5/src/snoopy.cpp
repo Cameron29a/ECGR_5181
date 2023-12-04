@@ -31,6 +31,8 @@ void Snoopy::snoopWrite(int callingCache, uint64_t address) {
             switch (state) {
                 case CacheState::MODIFIED:
                     // wite modified line to main memory
+                    allCaches[i].handleBusRequest();
+                    busArbiter.removeEntry(i);
                 default:
                     break;
             }

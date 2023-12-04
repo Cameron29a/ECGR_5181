@@ -41,6 +41,7 @@ public:
 
     void addRequest(int, bool, uint64_t, uint64_t);
     MemoryAccessRequest getNextRequest();
+    MemoryAccessRequest getRequestByCPUID(int);
 
 };
 
