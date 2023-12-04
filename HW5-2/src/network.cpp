@@ -38,7 +38,7 @@ void Network::sendMessage(const Message& message) {
     std::string messageType = message.messageTypeToString();
     std::cout << "Sending Message: Type=" << messageType 
               << ", Address=" << message.address << ", SourceID=" << message.sourceID 
-              << ", DestID=" << message.destID << std::endl;
+              << ", DestID=" << message.destID << ", Data: " << message.data << std::endl;
     routeMessage(message);
 }
 

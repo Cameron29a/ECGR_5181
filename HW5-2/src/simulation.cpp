@@ -41,41 +41,48 @@ for (int i = 0; i < numCPU; ++i) {
     // Simulation loop
     int loopCnt = 1;
     int loopMax = 1500;
+    
+    
+    // Predefined sequences for specific transitions with descriptions
+    std::vector<std::tuple<int, uint64_t, int, bool, std::string>> transitions = {
+        // Format: (CPU ID, Address, Data, Is Read Operation, Description of Expected Transition)
+        // Example transitions
+        {0, 1024, 200, true, "Invalid to Shared due to CPU Read"},
+        {1, 1024, 100, false, "Shared to Modified due to CPU Write"},
+        // Add more transitions with descriptions here
+    };
 
     std::cout << "======================Simulation Begin======================\n";
-    while (loopCnt <= loopMax) {
+   // while (loopCnt <= loopMax) {
         std::cout << "\n=====================Simulation Loop #" << loopCnt++ << "=====================\n";
 
         // Simulate processor read and write requests
         for (int i = 0; i < numCPU; ++i) {
-            // Randomly Select to Read or Write
-            int isRead = rand() % 2;
-            int addressMax = 1024;
-            int dataMax = 1000;
-            int address = rand() % addressMax;
-            int data = rand() % dataMax;
-            
-            if (isRead) {
-                std::cout << "CPU" << i << " Reads from Address: " << address << "\n";
-                caches[i].readFromCache(address, [i](uint64_t data) {
-                            std::cout << "CPU" << i << " Received Data: " << data << std::endl;
+       
+    for (const auto& [cpuId, address, data, isRead, description] : transitions) {
+        std::cout << "\nExpected Transition: " << description << std::endl;
+
+        if (isRead) {
+            std::cout << "CPU" << cpuId << " Reads from Address: " << address << "\n";
+            caches[cpuId].readFromCache(address, [cpuId](uint64_t data) {
+                std::cout << "CPU" << cpuId << " Received Data: " << data << std::endl;
             });
-            } else {
-                std::cout << "CPU" << i << " Writes to Address: " << address << "\n";
-                caches[i].writeToCache(address, data);
-            }
-     // After each significant step, or at the end of each loop iteration
+        } else {
+            std::cout << "CPU" << cpuId << " Writes to Address: " << address << " with Data: " << data << "\n";
+            caches[cpuId].writeToCache(address, data);
+        }
+
         // Print the state of the current address in all caches
         for (int j = 0; j < numCPU; ++j) {
             caches[j].printCacheLineState(address, j);
         }
-            // Additional logic can be added here to simulate network communication delays,
-            // directory updates, and invalidation messages to other caches.
-        }
+
 
         // Increment simulation time
         currentTick += 10;
         systemEvents.push(Event(currentTick));
+    	
+    	}
     }
     std::cout << "\n=======================Simulation Ended=======================\n";
     if (loopCnt >= loopMax)

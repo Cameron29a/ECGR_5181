@@ -11,24 +11,24 @@ class Ram {
 
 public:
     Ram() {
-        for (uint64_t address = 0; address < 1024; ++address) {
+        for (uint64_t address = 0; address < 4096; ++address) {
             memoryData[address] = 0; // Prefill with 0
         }
     }
     
     uint64_t read(uint64_t address) {
-         // Check if the address is present in the memoryData map
-        auto it = memoryData.find(address);
-    std::cout << "RAM Read at Address: " << address << ", Data: " << memoryData[address] << std::endl;
-
-        if (it != memoryData.end()) {
-            // Return the data associated with the address
-            return it->second;
-        } else {
-            std::cerr << "Read from uninitialized memory address: " << std::hex << address << std::endl;
-            return -1; 
-        }
+    // Check if the address is present in the memoryData map
+    auto it = memoryData.find(address);
+    if (it != memoryData.end()) {
+        // Return the data associated with the address using the iterator
+        std::cout << "RAM Read at Address: " << address << ", Data: " << it->second << std::endl;
+        return it->second;
+    } else {
+        std::cerr << "Read from uninitialized memory address: " << std::hex << address << std::endl;
+        return -1; // Return a distinct error value
     }
+}
+
 
     void write(uint64_t address, uint64_t data) {
         std::cout << "RAM Write at Address: " << address << ", Data: " << data << std::endl;

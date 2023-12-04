@@ -53,6 +53,7 @@ void Cache::onDataReceived(uint64_t address, uint64_t data) {
 void Cache::readFromCache(uint64_t address, std::function<void(uint64_t)> callback) {
     auto it = cacheData.find(address);
     if (it != cacheData.end() && it->second.state != CacheState::INVALID) {
+            std::cout << "CPU" << id << " Reads from Address: " << address << " Data: " << it->second.data << std::endl;
         callback(it->second.data); // Immediate callback on cache hit
     } else {
         // Cache miss logic
@@ -86,13 +87,15 @@ void Cache::printCacheLineState(uint64_t address, int cpuID) const {
             case CacheState::INVALID: std::cout << "I"; break;
             default: std::cout << "Unknown";
         }
-        std::cout << std::endl;
+        // Additionally print the data stored at this cache line
+        std::cout << " Data: " << it->second.data << std::endl;
     } else {
         std::cout << "CPU" << cpuID << " Address: " << address << " State: Not in Cache" << std::endl;
     }
 }
 void Cache::handleNetworkMessage(const Message& message) {
-std::cout << "CPU" << id << " handling message type: " << message.messageTypeToString() << " for address: " << message.address << std::endl;
+ std::cout << "CPU" << id << " handling message type: " << message.messageTypeToString() 
+              << " for address: " << message.address << ", Data: " << message.data << std::endl;
 
     switch (message.type) {
         case MessageType::ReadMiss:
@@ -134,15 +137,20 @@ std::cout << "CPU" << id << " handling message type: " << message.messageTypeToS
             break;
 
         case MessageType::DataValueReply:
-            // Handle DataValueReply message
-            cacheData[message.address] = {CacheState::SHARED, message.address, message.data};
-                       // If there is a pending read, call the callback
-            auto readIt = pendingReads.find(message.address);
-            if (readIt != pendingReads.end()) {
-                readIt->second.callback(message.data);
-                pendingReads.erase(readIt);
-            }
-            std::cout << "CPU" << id << " received DataValueReply for Address: " << message.address << std::endl;
+    // Update the cache line with new data and state
+    auto it = cacheData.find(message.address);
+    if (it != cacheData.end()) {
+        it->second.data = message.data; // Update the existing cache line's data
+        it->second.state = CacheState::SHARED; // Update the state
+    } else {
+        // If the cache line doesn't exist, create a new one
+        cacheData[message.address] = {CacheState::SHARED, message.address, message.data};
+    }
+
+    // Debug statement to print the received data
+    std::cout << "CPU" << id << " Received DataValueReply for Address: " << message.address 
+              << " Data: " << message.data << std::endl;
+
             break;
 
     }
