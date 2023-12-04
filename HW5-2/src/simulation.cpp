@@ -44,13 +44,21 @@ for (int i = 0; i < numCPU; ++i) {
     
     
     // Predefined sequences for specific transitions with descriptions
-    std::vector<std::tuple<int, uint64_t, int, bool, std::string>> transitions = {
-        // Format: (CPU ID, Address, Data, Is Read Operation, Description of Expected Transition)
-        // Example transitions
-        {0, 1023, 200, true, "Invalid to Shared due to CPU Read"},
-        {1, 1023, 100, false, "Shared to Modified due to CPU Write"},
-        // Add more transitions with descriptions here
-    };
+std::vector<std::tuple<int, uint64_t, int, bool, std::string>> transitions = {
+    {2, 10, 0, false, "Write Miss on Exclusive Block"},
+    {3, 11, 0, true, "Read Miss on Modified Block"},
+   // {4, 12, 150, false, "Invalid to Exclusive due to CPU Write"},
+    {0, 13, 250, false, "Shared to Invalid due to Other CPU Write"},
+    {1, 14, 0, false, "Modified to Invalid (Direct Invalidation)"},
+   // {2, 15, 0, false, "Exclusive to Invalid (Direct Invalidation)"},
+    {0, 0, 200, true, "Invalid to Shared due to CPU Read"},
+    {1, 0, 100, false, "Shared to Modified due to CPU Write"},
+    {2, 1, 0, false, "Invalid to Modified due to CPU Write"},
+    {3, 2, 0, true, "Shared to Invalid due to Invalidate"},
+    {1, 3, 0, true, "Modified to Shared due to Read Miss"},
+    {0, 4, 0, true, "Exclusive to Shared due to Read Miss"},
+    // Add more transitions as needed...
+};
 
     std::cout << "======================Simulation Begin======================\n";
    // while (loopCnt <= loopMax) {

@@ -36,9 +36,11 @@ public:
         memoryData[address] = data;
     }
 void printContents() const {
-    std::cout << "RAM Contents:" << std::endl;
+    std::cout << "Non-zero RAM Contents:" << std::endl;
     for (const auto& pair : memoryData) {
-        std::cout << "Address " << pair.first << ": Data " << pair.second << std::endl;
+        if (pair.second != 0) {  // Check if the data is not zero
+            std::cout << "Address " << pair.first << ": Data " << pair.second << std::endl;
+        }
     }
 }
 

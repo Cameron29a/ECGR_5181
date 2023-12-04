@@ -124,16 +124,15 @@ void Cache::handleNetworkMessage(const Message& message) {
 
         case MessageType::DataWriteBack:
             // Handle DataWriteBack message
-            if (getCurrentState(message.address) == CacheState::MODIFIED) {
-                setCurrentState(message.address, CacheState::SHARED);
-            }
+    if (getCurrentState(message.address) == CacheState::MODIFIED) {
+        ram.write(message.address, readDataDirectly(message.address));
+        setCurrentState(message.address, CacheState::INVALID);
+    }
             break;
 
         case MessageType::Invalidate:
             // Handle Invalidate message
-            if (getCurrentState(message.address) == CacheState::SHARED) {
                 setCurrentState(message.address, CacheState::INVALID);
-            }
             break;
 
         case MessageType::DataValueReply:

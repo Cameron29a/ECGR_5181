@@ -65,8 +65,6 @@ void Directory::receiveMessage(const Message& message) {
                 entry.sharers.insert(message.sourceID);
                   // Read the data from RAM
             uint64_t data = ram.read(message.address);
-            std::cout << "RAM Read (inside directory recieve) at Address: " << message.address << ", Data: " << data << std::endl;
-
             sendNetworkMessage(Message(MessageType::DataValueReply, message.address, data, this->id, message.sourceID));
    
             } else if (entry.state == DirectoryState::SHARED) {
