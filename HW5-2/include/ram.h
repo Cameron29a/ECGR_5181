@@ -35,6 +35,12 @@ public:
 
         memoryData[address] = data;
     }
+void printContents() const {
+    std::cout << "RAM Contents:" << std::endl;
+    for (const auto& pair : memoryData) {
+        std::cout << "Address " << pair.first << ": Data " << pair.second << std::endl;
+    }
+}
 
 };
 

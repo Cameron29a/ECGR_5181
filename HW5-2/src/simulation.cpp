@@ -80,9 +80,8 @@ for (int i = 0; i < numCPU; ++i) {
     std::cout << "\n=======================Simulation Ended=======================\n";
     if (loopCnt >= loopMax)
         std::cout << "=====Reason for Termination: Maximum loop counter reached=====\n"; 
+    mainMemory.printContents();
         
-    std::cout << "=====Event Queue for Simulation=====\n";
-    printEvents();
 }
 
 // every possible transation for both state machines, 

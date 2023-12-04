@@ -52,14 +52,16 @@ void Directory::receiveMessage(const Message& message) {
         case MessageType::ReadMiss:
             if (entry.state == DirectoryState::UNCACHED) {
                 entry.state = DirectoryState::SHARED;
-                 entry.sharers.clear();
-        entry.sharers.insert(message.sourceID);
-                sendNetworkMessage(Message(MessageType::DataValueReply, message.address, ram.read(message.address), -1, message.sourceID));
+                entry.sharers.clear();
+                entry.sharers.insert(message.sourceID);
+                sendNetworkMessage(Message(MessageType::DataValueReply, message.address, ram.read(message.address), this->id, message.sourceID));
+                
             } else if (entry.state == DirectoryState::SHARED) {
                     entry.sharers.insert(message.sourceID);
-                sendNetworkMessage(Message(MessageType::DataValueReply, message.address, ram.read(message.address), -1, message.sourceID));
+                sendNetworkMessage(Message(MessageType::DataValueReply, message.address, ram.read(message.address), this->id, message.sourceID));
+                
             } else if (entry.state == DirectoryState::EXCLUSIVE) {
-                sendNetworkMessage(Message(MessageType::Fetch, message.address, 0, -1, message.sourceID));
+                sendNetworkMessage(Message(MessageType::Fetch, message.address, 0, this->id, message.sourceID));
             }
             break;
 
@@ -68,7 +70,7 @@ void Directory::receiveMessage(const Message& message) {
                 // Send invalidate messages to all sharers except the requesting node
                 for (int sharerID : entry.sharers) {
                     if (sharerID != message.sourceID) {
-                        sendNetworkMessage(Message(MessageType::Invalidate, message.address, 0, sharerID, -1));
+                        sendNetworkMessage(Message(MessageType::Invalidate, message.address, 0, sharerID, this->id));
                     }
                 }
             }
@@ -78,7 +80,7 @@ void Directory::receiveMessage(const Message& message) {
             entry.sharers.clear();
             entry.sharers.insert(message.sourceID);
             // Send the data value reply to the requesting node
-            sendNetworkMessage(Message(MessageType::DataValueReply, message.address, ram.read(message.address), -1, message.sourceID));
+            sendNetworkMessage(Message(MessageType::DataValueReply, message.address, ram.read(message.address), this->id, message.sourceID));
             break;
 
         case MessageType::DataWriteBack:

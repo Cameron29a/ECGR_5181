@@ -50,39 +50,12 @@ void Cache::onDataReceived(uint64_t address, uint64_t data) {
     }
 }
 
-int Cache::determineDestID(uint64_t address) {
-    const DirectoryEntry& entry = directory.getEntry(address % directory.getNumEntries());
-   
-    switch (entry.state) {
-        case DirectoryState::UNCACHED:
-            // Send to memory controller or a special ID. Here, -1 is used as an example.
-            return -1;
-
-        case DirectoryState::SHARED:
-        case DirectoryState::EXCLUSIVE:
-            // If the block is shared or exclusive, find the cache that has it.
-            for (int sharerID : entry.sharers) {
-                if (sharerID != this->id) {
-                    return sharerID;
-                }
-            }
-            break;
-
-        default:
-            break;
-    }
-    // Default or error case
-    return -1;
-}
-
-
 void Cache::readFromCache(uint64_t address, std::function<void(uint64_t)> callback) {
     auto it = cacheData.find(address);
     if (it != cacheData.end() && it->second.state != CacheState::INVALID) {
         callback(it->second.data); // Immediate callback on cache hit
     } else {
         // Cache miss logic
-       int destID = determineDestID(address);
        Message readMissMsg(MessageType::ReadMiss, address, 0, this->id,  this->id);
         directory.sendNetworkMessage(readMissMsg);
         pendingReads[address] = {callback}; // Store the callback for later invocation
@@ -95,7 +68,6 @@ void Cache::writeToCache(uint64_t address, uint64_t data) {
     if (it != cacheData.end() && it->second.state == CacheState::MODIFIED) {
         it->second.data = data;  // Update the data directly in the cache
     } else {
-        int destID = determineDestID(address);
         Message writeMissMsg(MessageType::WriteMiss, address, data, this->id, this->id);
         directory.sendNetworkMessage(writeMissMsg);
         // Update the cache line state as needed
@@ -129,6 +101,7 @@ std::cout << "CPU" << id << " handling message type: " << message.messageTypeToS
                 setCurrentState(message.address, CacheState::SHARED);
                 onDataReceived(message.address, message.data);
             }
+            
             break;
 
         case MessageType::WriteMiss:
@@ -163,13 +136,15 @@ std::cout << "CPU" << id << " handling message type: " << message.messageTypeToS
         case MessageType::DataValueReply:
             // Handle DataValueReply message
             cacheData[message.address] = {CacheState::SHARED, message.address, message.data};
+                       // If there is a pending read, call the callback
+            auto readIt = pendingReads.find(message.address);
+            if (readIt != pendingReads.end()) {
+                readIt->second.callback(message.data);
+                pendingReads.erase(readIt);
+            }
             std::cout << "CPU" << id << " received DataValueReply for Address: " << message.address << std::endl;
             break;
 
-
-        default:
-            // Other message types or default action
-            break;
     }
 }
 
