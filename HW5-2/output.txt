@@ -5,85 +5,86 @@ Begin System Initialization
 =====================Simulation Loop #1=====================
 
 Expected Transition: Invalid to Shared due to CPU Read
-CPU0 Reads from Address: 1024
-Sending Message: Type=ReadMiss, Address=1024, SourceID=0, DestID=0, Data: 0
-Directory received message type: ReadMiss for address: 1024 from CPU0, Data: 0
-RAM Read (inside directory recieve) at Address: 1024, Data: 18446744073709551615
-Sending Message: Type=DataValueReply, Address=1024, SourceID=0, DestID=0, Data: 18446744073709551615
-CPU0 handling message type: DataValueReply for address: 1024, Data: 18446744073709551615
-CPU0 Received DataValueReply for Address: 1024 Data: 18446744073709551615
-Directory (0) Entry State: Address=1024, State=SHARED
+CPU0 Reads from Address: 1023
+Sending Message: Type=ReadMiss, Address=1023, SourceID=0, DestID=0, Data: 0
+Directory received message type: ReadMiss for address: 1023 from CPU0, Data: 0
+RAM Read at Address: 1023, Data: 0
+RAM Read (inside directory recieve) at Address: 1023, Data: 0
+Sending Message: Type=DataValueReply, Address=1023, SourceID=0, DestID=0, Data: 0
+CPU0 handling message type: DataValueReply for address: 1023, Data: 0
+CPU0 Received DataValueReply for Address: 1023 Data: 0
+Directory (0) Entry State: Address=1023, State=SHARED
 Sharers: 0 
-Directory (0) Entry State: Address=1024, State=SHARED
+Directory (0) Entry State: Address=1023, State=SHARED
 Sharers: 0 
-CPU0 Address: 1024 State: S Data: 18446744073709551615
-CPU1 Address: 1024 State: Not in Cache
-CPU2 Address: 1024 State: Not in Cache
-CPU3 Address: 1024 State: Not in Cache
+CPU0 Address: 1023 State: S Data: 0
+CPU1 Address: 1023 State: Not in Cache
+CPU2 Address: 1023 State: Not in Cache
+CPU3 Address: 1023 State: Not in Cache
 
 Expected Transition: Shared to Modified due to CPU Write
-CPU1 Writes to Address: 1024 with Data: 100
-Sending Message: Type=WriteMiss, Address=1024, SourceID=1, DestID=1, Data: 100
-Directory received message type: WriteMiss for address: 1024 from CPU1, Data: 100
-Sending Message: Type=DataValueReply, Address=1024, SourceID=1, DestID=1, Data: 100
-CPU1 handling message type: DataValueReply for address: 1024, Data: 100
-CPU1 Received DataValueReply for Address: 1024 Data: 100
-Directory (1) Entry State: Address=1024, State=EXCLUSIVE
+CPU1 Writes to Address: 1023 with Data: 100
+Sending Message: Type=WriteMiss, Address=1023, SourceID=1, DestID=1, Data: 100
+Directory received message type: WriteMiss for address: 1023 from CPU1, Data: 100
+Sending Message: Type=DataValueReply, Address=1023, SourceID=1, DestID=1, Data: 100
+CPU1 handling message type: DataValueReply for address: 1023, Data: 100
+CPU1 Received DataValueReply for Address: 1023 Data: 100
+Directory (1) Entry State: Address=1023, State=EXCLUSIVE
 Sharers: 1 
-Directory (1) Entry State: Address=1024, State=EXCLUSIVE
+Directory (1) Entry State: Address=1023, State=EXCLUSIVE
 Sharers: 1 
-CPU0 Address: 1024 State: S Data: 18446744073709551615
-CPU1 Address: 1024 State: M Data: 100
-CPU2 Address: 1024 State: Not in Cache
-CPU3 Address: 1024 State: Not in Cache
+CPU0 Address: 1023 State: S Data: 0
+CPU1 Address: 1023 State: M Data: 100
+CPU2 Address: 1023 State: Not in Cache
+CPU3 Address: 1023 State: Not in Cache
 
 Expected Transition: Invalid to Shared due to CPU Read
-CPU0 Reads from Address: 1024
-CPU0 Reads from Address: 1024 Data: 18446744073709551615
-CPU0 Received Data: 18446744073709551615
-CPU0 Address: 1024 State: S Data: 18446744073709551615
-CPU1 Address: 1024 State: M Data: 100
-CPU2 Address: 1024 State: Not in Cache
-CPU3 Address: 1024 State: Not in Cache
+CPU0 Reads from Address: 1023
+CPU0 Reads from Address: 1023 Data: 0
+CPU0 Received Data: 0
+CPU0 Address: 1023 State: S Data: 0
+CPU1 Address: 1023 State: M Data: 100
+CPU2 Address: 1023 State: Not in Cache
+CPU3 Address: 1023 State: Not in Cache
 
 Expected Transition: Shared to Modified due to CPU Write
-CPU1 Writes to Address: 1024 with Data: 100
-CPU0 Address: 1024 State: S Data: 18446744073709551615
-CPU1 Address: 1024 State: M Data: 100
-CPU2 Address: 1024 State: Not in Cache
-CPU3 Address: 1024 State: Not in Cache
+CPU1 Writes to Address: 1023 with Data: 100
+CPU0 Address: 1023 State: S Data: 0
+CPU1 Address: 1023 State: M Data: 100
+CPU2 Address: 1023 State: Not in Cache
+CPU3 Address: 1023 State: Not in Cache
 
 Expected Transition: Invalid to Shared due to CPU Read
-CPU0 Reads from Address: 1024
-CPU0 Reads from Address: 1024 Data: 18446744073709551615
-CPU0 Received Data: 18446744073709551615
-CPU0 Address: 1024 State: S Data: 18446744073709551615
-CPU1 Address: 1024 State: M Data: 100
-CPU2 Address: 1024 State: Not in Cache
-CPU3 Address: 1024 State: Not in Cache
+CPU0 Reads from Address: 1023
+CPU0 Reads from Address: 1023 Data: 0
+CPU0 Received Data: 0
+CPU0 Address: 1023 State: S Data: 0
+CPU1 Address: 1023 State: M Data: 100
+CPU2 Address: 1023 State: Not in Cache
+CPU3 Address: 1023 State: Not in Cache
 
 Expected Transition: Shared to Modified due to CPU Write
-CPU1 Writes to Address: 1024 with Data: 100
-CPU0 Address: 1024 State: S Data: 18446744073709551615
-CPU1 Address: 1024 State: M Data: 100
-CPU2 Address: 1024 State: Not in Cache
-CPU3 Address: 1024 State: Not in Cache
+CPU1 Writes to Address: 1023 with Data: 100
+CPU0 Address: 1023 State: S Data: 0
+CPU1 Address: 1023 State: M Data: 100
+CPU2 Address: 1023 State: Not in Cache
+CPU3 Address: 1023 State: Not in Cache
 
 Expected Transition: Invalid to Shared due to CPU Read
-CPU0 Reads from Address: 1024
-CPU0 Reads from Address: 1024 Data: 18446744073709551615
-CPU0 Received Data: 18446744073709551615
-CPU0 Address: 1024 State: S Data: 18446744073709551615
-CPU1 Address: 1024 State: M Data: 100
-CPU2 Address: 1024 State: Not in Cache
-CPU3 Address: 1024 State: Not in Cache
+CPU0 Reads from Address: 1023
+CPU0 Reads from Address: 1023 Data: 0
+CPU0 Received Data: 0
+CPU0 Address: 1023 State: S Data: 0
+CPU1 Address: 1023 State: M Data: 100
+CPU2 Address: 1023 State: Not in Cache
+CPU3 Address: 1023 State: Not in Cache
 
 Expected Transition: Shared to Modified due to CPU Write
-CPU1 Writes to Address: 1024 with Data: 100
-CPU0 Address: 1024 State: S Data: 18446744073709551615
-CPU1 Address: 1024 State: M Data: 100
-CPU2 Address: 1024 State: Not in Cache
-CPU3 Address: 1024 State: Not in Cache
+CPU1 Writes to Address: 1023 with Data: 100
+CPU0 Address: 1023 State: S Data: 0
+CPU1 Address: 1023 State: M Data: 100
+CPU2 Address: 1023 State: Not in Cache
+CPU3 Address: 1023 State: Not in Cache
 
 =======================Simulation Ended=======================
 RAM Contents:

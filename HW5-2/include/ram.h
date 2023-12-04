@@ -25,7 +25,7 @@ public:
         return it->second;
     } else {
         std::cerr << "Read from uninitialized memory address: " << std::hex << address << std::endl;
-        return -1; // Return a distinct error value
+        return 1; // Return a distinct error value
     }
 }
 

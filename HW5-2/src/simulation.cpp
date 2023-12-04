@@ -47,8 +47,8 @@ for (int i = 0; i < numCPU; ++i) {
     std::vector<std::tuple<int, uint64_t, int, bool, std::string>> transitions = {
         // Format: (CPU ID, Address, Data, Is Read Operation, Description of Expected Transition)
         // Example transitions
-        {0, 1024, 200, true, "Invalid to Shared due to CPU Read"},
-        {1, 1024, 100, false, "Shared to Modified due to CPU Write"},
+        {0, 1023, 200, true, "Invalid to Shared due to CPU Read"},
+        {1, 1023, 100, false, "Shared to Modified due to CPU Write"},
         // Add more transitions with descriptions here
     };
 
