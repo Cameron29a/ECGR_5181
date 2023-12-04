@@ -15,70 +15,88 @@ void Simulation::runSimulation() {
     int numCPU = 4;
     const size_t numEntries = 4096; // Total number of cache lines
 
-    std::cout << "========================Create Caches and Directory=======================\n";
+std::cout << "========================Create Caches and Directory=======================\n";
 Network network;
-Directory directory(numEntries, &network, mainMemory);
+std::vector<Directory> directories;
+std::vector<Cache> caches;
 std::vector<NetworkNode> networkNodes;
 
-// Create NetworkNode instances
+// Initialize directories
 for (int i = 0; i < numCPU; ++i) {
-    networkNodes.emplace_back(i, nullptr); // Initially, Cache pointers are null
-    network.addNode(networkNodes.back());
+    directories.emplace_back(numEntries, &network, mainMemory, i);
 }
 
-// Now create Cache instances
-std::vector<Cache> caches;
+// Initialize caches
 for (int i = 0; i < numCPU; ++i) {
-    caches.emplace_back(i, mainMemory, directory, &networkNodes[i]);
-    networkNodes[i].cache = &caches.back(); // Link back NetworkNode to Cache
+    caches.emplace_back(i, mainMemory, directories[i], nullptr);
+}
+
+// Initialize network nodes
+for (int i = 0; i < numCPU; ++i) {
+    networkNodes.emplace_back(i, &caches[i], &directories[i]);
+    caches[i].setNetworkNode(&networkNodes[i]);
+    network.addNode(networkNodes[i]);
 }
 
     // Simulation loop
     int loopCnt = 1;
     int loopMax = 1500;
+    
+    
+    // Predefined sequences for specific transitions with descriptions
+std::vector<std::tuple<int, uint64_t, int, bool, std::string>> transitions = {
+    {2, 10, 0, false, "Write Miss on Exclusive Block"},
+    {3, 11, 0, true, "Read Miss on Modified Block"},
+   // {4, 12, 150, false, "Invalid to Exclusive due to CPU Write"},
+    {0, 13, 250, false, "Shared to Invalid due to Other CPU Write"},
+    {1, 14, 0, false, "Modified to Invalid (Direct Invalidation)"},
+   // {2, 15, 0, false, "Exclusive to Invalid (Direct Invalidation)"},
+    {0, 0, 200, true, "Invalid to Shared due to CPU Read"},
+    {1, 0, 100, false, "Shared to Modified due to CPU Write"},
+    {2, 1, 0, false, "Invalid to Modified due to CPU Write"},
+    {3, 2, 0, true, "Shared to Invalid due to Invalidate"},
+    {1, 3, 0, true, "Modified to Shared due to Read Miss"},
+    {0, 4, 0, true, "Exclusive to Shared due to Read Miss"},
+    // Add more transitions as needed...
+};
 
     std::cout << "======================Simulation Begin======================\n";
-    while (loopCnt <= loopMax) {
+   // while (loopCnt <= loopMax) {
         std::cout << "\n=====================Simulation Loop #" << loopCnt++ << "=====================\n";
-     uint64_t testAddress = 100; // Example address for testing
-    // Manually triggering state transitions for a cache block and directory
-    for (int cpu = 0; cpu < numCPU; ++cpu) {
-        std::cout << "\n====== CPU " << cpu << " ======\n";
 
-        // INVALID -> SHARED (Read Miss)
-        std::cout << "Transition: INVALID -> SHARED (Read Miss) at Address " << testAddress << "\n";
-        caches[cpu].readFromCache(testAddress);
+        // Simulate processor read and write requests
+        for (int i = 0; i < numCPU; ++i) {
+       
+    for (const auto& [cpuId, address, data, isRead, description] : transitions) {
+        std::cout << "\nExpected Transition: " << description << std::endl;
 
-        // SHARED -> MODIFIED (Write Miss)
-        std::cout << "Transition: SHARED -> MODIFIED (Write Miss) at Address " << testAddress << "\n";
-        caches[cpu].writeToCache(testAddress, 123); // Example data
-
-        // MODIFIED -> INVALID (Data Write-Back)
-        std::cout << "Transition: MODIFIED -> INVALID (Data Write-Back) at Address " << testAddress << "\n";
-        // Implement logic for Data Write-Back
-        // ...
-
-        // INVALID -> MODIFIED (Write Miss)
-        std::cout << "Transition: INVALID -> MODIFIED (Write Miss) at Address " << testAddress << "\n";
-        caches[cpu].writeToCache(testAddress, 456); // Example data
-
-        // Print the cache line state after each operation
-        for (Cache& cache : caches) {
-            cache.printCacheLineState(testAddress);
+        if (isRead) {
+            std::cout << "CPU" << cpuId << " Reads from Address: " << address << "\n";
+            caches[cpuId].readFromCache(address, [cpuId](uint64_t data) {
+                std::cout << "CPU" << cpuId << " Received Data: " << data << std::endl;
+            });
+        } else {
+            std::cout << "CPU" << cpuId << " Writes to Address: " << address << " with Data: " << data << "\n";
+            caches[cpuId].writeToCache(address, data);
         }
-        
-            directory.printDirectoryEntryState(testAddress); // Assuming such a method exists
+
+        // Print the state of the current address in all caches
+        for (int j = 0; j < numCPU; ++j) {
+            caches[j].printCacheLineState(address, j);
+        }
 
 
-        // Increment simulation time and record the event
+        // Increment simulation time
         currentTick += 10;
         systemEvents.push(Event(currentTick));
+    	
+    	}
     }
-}
-
     std::cout << "\n=======================Simulation Ended=======================\n";
- //   std::cout << "=====Event Queue for Simulation=====\n";
- //   printEvents();
+    if (loopCnt >= loopMax)
+        std::cout << "=====Reason for Termination: Maximum loop counter reached=====\n"; 
+    mainMemory.printContents();
+        
 }
 
 // every possible transation for both state machines, 
