@@ -6,25 +6,25 @@ Begin System Initialization
 ======================Simulation Begin======================
 
 =====================Simulation Loop #0=====================
-CPU0 Write to Address 0x67
-Write Miss
-CPU0 Changing to state : MODIFIED
+CPU0 Reads from Address 0x154
+Read Miss
+CPU0 Changing to state : EXCLUSIVE
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
-CPU1 Write to Address 0x16b
+CPU1 Write to Address 0x37
 Write Miss
 CPU1 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
-CPU2 Reads from Address 0x81
+CPU2 Reads from Address 0x186
 Read Miss
 CPU2 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
-CPU3 Write to Address 0xb8
+CPU3 Write to Address 0x340
 Write Miss
 CPU3 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -32,17 +32,17 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU0
 Memory Bus Accessed
-Main Memory Read by Cache0
-Memory Bus Reads from main memory
-CPU0 Changing to state : EXCLUSIVE
+Main Memory Written to by Cache0
+Memory Bus Writes from main memory
+CPU0 Changing to state : MODIFIED
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #1=====================
-CPU0 Write to Address 0x6b
-Write Miss
-CPU0 Changing to state : MODIFIED
+CPU0 Reads from Address 0x20e
+Read Miss
+CPU0 Changing to state : EXCLUSIVE
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
@@ -56,7 +56,7 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #2=====================
-CPU1 Write to Address 0x17b
+CPU1 Write to Address 0x132
 Write Miss
 CPU1 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -72,9 +72,9 @@ CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #3=====================
-CPU2 Reads from Address 0x2fe
-Read Miss
-CPU2 Changing to state : EXCLUSIVE
+CPU2 Write to Address 0x35e
+Write Miss
+CPU2 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
@@ -88,7 +88,7 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
 =====================Simulation Loop #4=====================
-CPU3 Reads from Address 0x1f8
+CPU3 Reads from Address 0x33f
 Read Miss
 CPU3 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -96,17 +96,17 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU0
 Memory Bus Accessed
-Main Memory Read by Cache0
-Memory Bus Reads from main memory
-CPU0 Changing to state : EXCLUSIVE
+Main Memory Written to by Cache0
+Memory Bus Writes from main memory
+CPU0 Changing to state : MODIFIED
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #5=====================
-CPU0 Reads from Address 0xe7
-Read Miss
-CPU0 Changing to state : EXCLUSIVE
+CPU0 Write to Address 0x29e
+Write Miss
+CPU0 Changing to state : MODIFIED
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
@@ -120,7 +120,7 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #6=====================
-CPU1 Reads from Address 0x2
+CPU1 Reads from Address 0x367
 Read Miss
 CPU1 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -128,15 +128,15 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU2
 Memory Bus Accessed
-Main Memory Written to by Cache2
-Memory Bus Writes from main memory
-CPU2 Changing to state : MODIFIED
+Main Memory Read by Cache2
+Memory Bus Reads from main memory
+CPU2 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #7=====================
-CPU2 Write to Address 0x67
+CPU2 Write to Address 0x6
 Write Miss
 CPU2 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -152,71 +152,7 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
 =====================Simulation Loop #8=====================
-CPU3 Reads from Address 0x5f
-Read Miss
-CPU3 Changing to state : EXCLUSIVE
-CPU0 Changing to state : UNKNOWN
-CPU1 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-Bus Arbiter Granted Access to CPU0
-Memory Bus Accessed
-Main Memory Written to by Cache0
-Memory Bus Writes from main memory
-CPU0 Changing to state : MODIFIED
-CPU1 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-
-=====================Simulation Loop #9=====================
-CPU0 Write to Address 0xc3
-Write Miss
-CPU0 Changing to state : MODIFIED
-CPU1 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-Bus Arbiter Granted Access to CPU1
-Memory Bus Accessed
-Main Memory Written to by Cache1
-Memory Bus Writes from main memory
-CPU1 Changing to state : MODIFIED
-CPU0 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-
-=====================Simulation Loop #10=====================
-CPU1 Reads from Address 0x13
-Read Miss
-CPU1 Changing to state : EXCLUSIVE
-CPU0 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-Bus Arbiter Granted Access to CPU2
-Memory Bus Accessed
-Main Memory Read by Cache2
-Memory Bus Reads from main memory
-CPU2 Changing to state : EXCLUSIVE
-CPU0 Changing to state : UNKNOWN
-CPU1 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-
-=====================Simulation Loop #11=====================
-CPU2 Reads from Address 0x383
-Read Miss
-CPU2 Changing to state : EXCLUSIVE
-CPU0 Changing to state : UNKNOWN
-CPU1 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-Bus Arbiter Granted Access to CPU3
-Memory Bus Accessed
-Main Memory Written to by Cache3
-Memory Bus Writes from main memory
-CPU3 Changing to state : MODIFIED
-CPU0 Changing to state : UNKNOWN
-CPU1 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-
-=====================Simulation Loop #12=====================
-CPU3 Write to Address 0xca
+CPU3 Write to Address 0x1a6
 Write Miss
 CPU3 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -231,8 +167,8 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
-=====================Simulation Loop #13=====================
-CPU0 Reads from Address 0xfe
+=====================Simulation Loop #9=====================
+CPU0 Reads from Address 0x3f7
 Read Miss
 CPU0 Changing to state : EXCLUSIVE
 CPU1 Changing to state : UNKNOWN
@@ -247,8 +183,72 @@ CPU0 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
+=====================Simulation Loop #10=====================
+CPU1 Write to Address 0x1f8
+Write Miss
+CPU1 Changing to state : MODIFIED
+CPU0 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+Bus Arbiter Granted Access to CPU2
+Memory Bus Accessed
+Main Memory Read by Cache2
+Memory Bus Reads from main memory
+CPU2 Changing to state : EXCLUSIVE
+CPU0 Changing to state : UNKNOWN
+CPU1 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+
+=====================Simulation Loop #11=====================
+CPU2 Write to Address 0x3c1
+Write Miss
+CPU2 Changing to state : MODIFIED
+CPU0 Changing to state : UNKNOWN
+CPU1 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+Bus Arbiter Granted Access to CPU3
+Memory Bus Accessed
+Main Memory Read by Cache3
+Memory Bus Reads from main memory
+CPU3 Changing to state : EXCLUSIVE
+CPU0 Changing to state : UNKNOWN
+CPU1 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+
+=====================Simulation Loop #12=====================
+CPU3 Write to Address 0x3b8
+Write Miss
+CPU3 Changing to state : MODIFIED
+CPU0 Changing to state : UNKNOWN
+CPU1 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+Bus Arbiter Granted Access to CPU0
+Memory Bus Accessed
+Main Memory Written to by Cache0
+Memory Bus Writes from main memory
+CPU0 Changing to state : MODIFIED
+CPU1 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+
+=====================Simulation Loop #13=====================
+CPU0 Reads from Address 0x364
+Read Miss
+CPU0 Changing to state : EXCLUSIVE
+CPU1 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+Bus Arbiter Granted Access to CPU1
+Memory Bus Accessed
+Main Memory Read by Cache1
+Memory Bus Reads from main memory
+CPU1 Changing to state : EXCLUSIVE
+CPU0 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+
 =====================Simulation Loop #14=====================
-CPU1 Reads from Address 0x3db
+CPU1 Reads from Address 0x35d
 Read Miss
 CPU1 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -256,15 +256,15 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU2
 Memory Bus Accessed
-Main Memory Written to by Cache2
-Memory Bus Writes from main memory
-CPU2 Changing to state : MODIFIED
+Main Memory Read by Cache2
+Memory Bus Reads from main memory
+CPU2 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #15=====================
-CPU2 Reads from Address 0x35d
+CPU2 Reads from Address 0x199
 Read Miss
 CPU2 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -280,7 +280,7 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
 =====================Simulation Loop #16=====================
-CPU3 Reads from Address 0x32c
+CPU3 Reads from Address 0x198
 Read Miss
 CPU3 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -296,7 +296,7 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #17=====================
-CPU0 Write to Address 0x2
+CPU0 Write to Address 0x2c4
 Write Miss
 CPU0 Changing to state : MODIFIED
 CPU1 Changing to state : UNKNOWN
@@ -312,7 +312,71 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #18=====================
-CPU1 Reads from Address 0x1cf
+CPU1 Write to Address 0x2f4
+Write Miss
+CPU1 Changing to state : MODIFIED
+CPU0 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+Bus Arbiter Granted Access to CPU2
+Memory Bus Accessed
+Main Memory Written to by Cache2
+Memory Bus Writes from main memory
+CPU2 Changing to state : MODIFIED
+CPU0 Changing to state : UNKNOWN
+CPU1 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+
+=====================Simulation Loop #19=====================
+CPU2 Reads from Address 0x1d8
+Read Miss
+CPU2 Changing to state : EXCLUSIVE
+CPU0 Changing to state : UNKNOWN
+CPU1 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+Bus Arbiter Granted Access to CPU3
+Memory Bus Accessed
+Main Memory Written to by Cache3
+Memory Bus Writes from main memory
+CPU3 Changing to state : MODIFIED
+CPU0 Changing to state : UNKNOWN
+CPU1 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+
+=====================Simulation Loop #20=====================
+CPU3 Write to Address 0x29c
+Write Miss
+CPU3 Changing to state : MODIFIED
+CPU0 Changing to state : UNKNOWN
+CPU1 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+Bus Arbiter Granted Access to CPU0
+Memory Bus Accessed
+Main Memory Read by Cache0
+Memory Bus Reads from main memory
+CPU0 Changing to state : EXCLUSIVE
+CPU1 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+
+=====================Simulation Loop #21=====================
+CPU0 Reads from Address 0x3b0
+Read Miss
+CPU0 Changing to state : EXCLUSIVE
+CPU1 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+Bus Arbiter Granted Access to CPU1
+Memory Bus Accessed
+Main Memory Read by Cache1
+Memory Bus Reads from main memory
+CPU1 Changing to state : EXCLUSIVE
+CPU0 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+
+=====================Simulation Loop #22=====================
+CPU1 Reads from Address 0x1bf
 Read Miss
 CPU1 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -327,8 +391,8 @@ CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
-=====================Simulation Loop #19=====================
-CPU2 Write to Address 0x1e0
+=====================Simulation Loop #23=====================
+CPU2 Write to Address 0x37d
 Write Miss
 CPU2 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -336,79 +400,15 @@ CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU3
 Memory Bus Accessed
-Main Memory Written to by Cache3
-Memory Bus Writes from main memory
-CPU3 Changing to state : MODIFIED
-CPU0 Changing to state : UNKNOWN
-CPU1 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-
-=====================Simulation Loop #20=====================
-CPU3 Reads from Address 0x87
-Read Miss
+Main Memory Read by Cache3
+Memory Bus Reads from main memory
 CPU3 Changing to state : EXCLUSIVE
-CPU0 Changing to state : UNKNOWN
-CPU1 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-Bus Arbiter Granted Access to CPU0
-Memory Bus Accessed
-Main Memory Read by Cache0
-Memory Bus Reads from main memory
-CPU0 Changing to state : EXCLUSIVE
-CPU1 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-
-=====================Simulation Loop #21=====================
-CPU0 Write to Address 0x290
-Write Miss
-CPU0 Changing to state : MODIFIED
-CPU1 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-Bus Arbiter Granted Access to CPU1
-Memory Bus Accessed
-Main Memory Written to by Cache1
-Memory Bus Writes from main memory
-CPU1 Changing to state : MODIFIED
-CPU0 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-
-=====================Simulation Loop #22=====================
-CPU1 Reads from Address 0x100
-Read Miss
-CPU1 Changing to state : EXCLUSIVE
-CPU0 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-Bus Arbiter Granted Access to CPU2
-Memory Bus Accessed
-Main Memory Read by Cache2
-Memory Bus Reads from main memory
-CPU2 Changing to state : EXCLUSIVE
-CPU0 Changing to state : UNKNOWN
-CPU1 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-
-=====================Simulation Loop #23=====================
-CPU2 Reads from Address 0xed
-Read Miss
-CPU2 Changing to state : EXCLUSIVE
-CPU0 Changing to state : UNKNOWN
-CPU1 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-Bus Arbiter Granted Access to CPU3
-Memory Bus Accessed
-Main Memory Written to by Cache3
-Memory Bus Writes from main memory
-CPU3 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
 =====================Simulation Loop #24=====================
-CPU3 Reads from Address 0x281
+CPU3 Reads from Address 0x1c1
 Read Miss
 CPU3 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -416,15 +416,15 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU0
 Memory Bus Accessed
-Main Memory Read by Cache0
-Memory Bus Reads from main memory
-CPU0 Changing to state : EXCLUSIVE
+Main Memory Written to by Cache0
+Memory Bus Writes from main memory
+CPU0 Changing to state : MODIFIED
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #25=====================
-CPU0 Reads from Address 0xe2
+CPU0 Reads from Address 0x15a
 Read Miss
 CPU0 Changing to state : EXCLUSIVE
 CPU1 Changing to state : UNKNOWN
@@ -440,7 +440,7 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #26=====================
-CPU1 Write to Address 0x135
+CPU1 Write to Address 0x386
 Write Miss
 CPU1 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -448,15 +448,15 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU2
 Memory Bus Accessed
-Main Memory Written to by Cache2
-Memory Bus Writes from main memory
-CPU2 Changing to state : MODIFIED
+Main Memory Read by Cache2
+Memory Bus Reads from main memory
+CPU2 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #27=====================
-CPU2 Reads from Address 0x2cf
+CPU2 Reads from Address 0x24a
 Read Miss
 CPU2 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -472,7 +472,7 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
 =====================Simulation Loop #28=====================
-CPU3 Reads from Address 0x4f
+CPU3 Reads from Address 0x231
 Read Miss
 CPU3 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -488,9 +488,9 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #29=====================
-CPU0 Reads from Address 0x34
-Read Miss
-CPU0 Changing to state : EXCLUSIVE
+CPU0 Write to Address 0x32e
+Write Miss
+CPU0 Changing to state : MODIFIED
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
@@ -504,9 +504,9 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #30=====================
-CPU1 Reads from Address 0x14d
-Read Miss
-CPU1 Changing to state : EXCLUSIVE
+CPU1 Write to Address 0x299
+Write Miss
+CPU1 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
@@ -520,7 +520,7 @@ CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #31=====================
-CPU2 Write to Address 0xbe
+CPU2 Write to Address 0x2c
 Write Miss
 CPU2 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -536,7 +536,7 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
 =====================Simulation Loop #32=====================
-CPU3 Reads from Address 0x359
+CPU3 Reads from Address 0x6f
 Read Miss
 CPU3 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -544,15 +544,15 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU0
 Memory Bus Accessed
-Main Memory Written to by Cache0
-Memory Bus Writes from main memory
-CPU0 Changing to state : MODIFIED
+Main Memory Read by Cache0
+Memory Bus Reads from main memory
+CPU0 Changing to state : EXCLUSIVE
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #33=====================
-CPU0 Reads from Address 0x122
+CPU0 Reads from Address 0x2fd
 Read Miss
 CPU0 Changing to state : EXCLUSIVE
 CPU1 Changing to state : UNKNOWN
@@ -560,15 +560,15 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU1
 Memory Bus Accessed
-Main Memory Written to by Cache1
-Memory Bus Writes from main memory
-CPU1 Changing to state : MODIFIED
+Main Memory Read by Cache1
+Memory Bus Reads from main memory
+CPU1 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #34=====================
-CPU1 Reads from Address 0x3c1
+CPU1 Reads from Address 0x114
 Read Miss
 CPU1 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -584,7 +584,7 @@ CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #35=====================
-CPU2 Reads from Address 0xef
+CPU2 Reads from Address 0x197
 Read Miss
 CPU2 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -600,7 +600,7 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
 =====================Simulation Loop #36=====================
-CPU3 Reads from Address 0x1c9
+CPU3 Reads from Address 0x14c
 Read Miss
 CPU3 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -616,7 +616,7 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #37=====================
-CPU0 Reads from Address 0xd1
+CPU0 Reads from Address 0x1b3
 Read Miss
 CPU0 Changing to state : EXCLUSIVE
 CPU1 Changing to state : UNKNOWN
@@ -632,9 +632,9 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #38=====================
-CPU1 Reads from Address 0x277
-Read Miss
-CPU1 Changing to state : EXCLUSIVE
+CPU1 Write to Address 0xfe
+Write Miss
+CPU1 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
@@ -648,9 +648,9 @@ CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #39=====================
-CPU2 Reads from Address 0x28
-Read Miss
-CPU2 Changing to state : EXCLUSIVE
+CPU2 Write to Address 0x271
+Write Miss
+CPU2 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
@@ -664,7 +664,7 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
 =====================Simulation Loop #40=====================
-CPU3 Reads from Address 0x370
+CPU3 Reads from Address 0xa6
 Read Miss
 CPU3 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -680,41 +680,41 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #41=====================
-CPU0 Write to Address 0x38c
-Write Miss
-CPU0 Changing to state : MODIFIED
+CPU0 Reads from Address 0x27a
+Read Miss
+CPU0 Changing to state : EXCLUSIVE
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU1
 Memory Bus Accessed
-Main Memory Written to by Cache1
-Memory Bus Writes from main memory
-CPU1 Changing to state : MODIFIED
+Main Memory Read by Cache1
+Memory Bus Reads from main memory
+CPU1 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #42=====================
-CPU1 Write to Address 0x16f
-Write Miss
-CPU1 Changing to state : MODIFIED
+CPU1 Reads from Address 0xe7
+Read Miss
+CPU1 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU2
 Memory Bus Accessed
-Main Memory Written to by Cache2
-Memory Bus Writes from main memory
-CPU2 Changing to state : MODIFIED
+Main Memory Read by Cache2
+Memory Bus Reads from main memory
+CPU2 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #43=====================
-CPU2 Reads from Address 0x2a4
-Read Miss
-CPU2 Changing to state : EXCLUSIVE
+CPU2 Write to Address 0x36b
+Write Miss
+CPU2 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
@@ -728,39 +728,39 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
 =====================Simulation Loop #44=====================
-CPU3 Reads from Address 0x229
-Read Miss
-CPU3 Changing to state : EXCLUSIVE
+CPU3 Write to Address 0x273
+Write Miss
+CPU3 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU0
 Memory Bus Accessed
-Main Memory Read by Cache0
-Memory Bus Reads from main memory
-CPU0 Changing to state : EXCLUSIVE
+Main Memory Written to by Cache0
+Memory Bus Writes from main memory
+CPU0 Changing to state : MODIFIED
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #45=====================
-CPU0 Write to Address 0x1e8
-Write Miss
-CPU0 Changing to state : MODIFIED
+CPU0 Reads from Address 0xa8
+Read Miss
+CPU0 Changing to state : EXCLUSIVE
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU1
 Memory Bus Accessed
-Main Memory Read by Cache1
-Memory Bus Reads from main memory
-CPU1 Changing to state : EXCLUSIVE
+Main Memory Written to by Cache1
+Memory Bus Writes from main memory
+CPU1 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #46=====================
-CPU1 Write to Address 0x269
+CPU1 Write to Address 0x360
 Write Miss
 CPU1 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -768,31 +768,31 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU2
 Memory Bus Accessed
-Main Memory Written to by Cache2
-Memory Bus Writes from main memory
-CPU2 Changing to state : MODIFIED
+Main Memory Read by Cache2
+Memory Bus Reads from main memory
+CPU2 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #47=====================
-CPU2 Write to Address 0x3f0
-Write Miss
-CPU2 Changing to state : MODIFIED
+CPU2 Reads from Address 0x13f
+Read Miss
+CPU2 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU3
 Memory Bus Accessed
-Main Memory Written to by Cache3
-Memory Bus Writes from main memory
-CPU3 Changing to state : MODIFIED
+Main Memory Read by Cache3
+Memory Bus Reads from main memory
+CPU3 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
 =====================Simulation Loop #48=====================
-CPU3 Write to Address 0x367
+CPU3 Write to Address 0x3c5
 Write Miss
 CPU3 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -800,15 +800,15 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU0
 Memory Bus Accessed
-Main Memory Read by Cache0
-Memory Bus Reads from main memory
-CPU0 Changing to state : EXCLUSIVE
+Main Memory Written to by Cache0
+Memory Bus Writes from main memory
+CPU0 Changing to state : MODIFIED
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #49=====================
-CPU0 Write to Address 0x2ea
+CPU0 Write to Address 0x334
 Write Miss
 CPU0 Changing to state : MODIFIED
 CPU1 Changing to state : UNKNOWN
@@ -824,23 +824,23 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #50=====================
-CPU1 Reads from Address 0x14
-Read Miss
-CPU1 Changing to state : EXCLUSIVE
+CPU1 Write to Address 0x111
+Write Miss
+CPU1 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU2
 Memory Bus Accessed
-Main Memory Read by Cache2
-Memory Bus Reads from main memory
-CPU2 Changing to state : EXCLUSIVE
+Main Memory Written to by Cache2
+Memory Bus Writes from main memory
+CPU2 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #51=====================
-CPU2 Reads from Address 0x370
+CPU2 Reads from Address 0x89
 Read Miss
 CPU2 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -856,9 +856,9 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
 =====================Simulation Loop #52=====================
-CPU3 Write to Address 0x359
-Write Miss
-CPU3 Changing to state : MODIFIED
+CPU3 Reads from Address 0x213
+Read Miss
+CPU3 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
@@ -872,7 +872,7 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #53=====================
-CPU0 Reads from Address 0xa6
+CPU0 Reads from Address 0x169
 Read Miss
 CPU0 Changing to state : EXCLUSIVE
 CPU1 Changing to state : UNKNOWN
@@ -880,15 +880,15 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU1
 Memory Bus Accessed
-Main Memory Written to by Cache1
-Memory Bus Writes from main memory
-CPU1 Changing to state : MODIFIED
+Main Memory Read by Cache1
+Memory Bus Reads from main memory
+CPU1 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #54=====================
-CPU1 Write to Address 0x201
+CPU1 Write to Address 0x36e
 Write Miss
 CPU1 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -904,25 +904,25 @@ CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #55=====================
-CPU2 Write to Address 0x2c9
-Write Miss
-CPU2 Changing to state : MODIFIED
+CPU2 Reads from Address 0x1d2
+Read Miss
+CPU2 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU3
 Memory Bus Accessed
-Main Memory Read by Cache3
-Memory Bus Reads from main memory
-CPU3 Changing to state : EXCLUSIVE
+Main Memory Written to by Cache3
+Memory Bus Writes from main memory
+CPU3 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
 =====================Simulation Loop #56=====================
-CPU3 Write to Address 0x1d8
-Write Miss
-CPU3 Changing to state : MODIFIED
+CPU3 Reads from Address 0x3a6
+Read Miss
+CPU3 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
@@ -936,9 +936,9 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #57=====================
-CPU0 Write to Address 0x216
-Write Miss
-CPU0 Changing to state : MODIFIED
+CPU0 Reads from Address 0x40
+Read Miss
+CPU0 Changing to state : EXCLUSIVE
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
@@ -952,7 +952,7 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #58=====================
-CPU1 Write to Address 0xb1
+CPU1 Write to Address 0x110
 Write Miss
 CPU1 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -960,49 +960,49 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU2
 Memory Bus Accessed
-Main Memory Read by Cache2
-Memory Bus Reads from main memory
-CPU2 Changing to state : EXCLUSIVE
+Main Memory Written to by Cache2
+Memory Bus Writes from main memory
+CPU2 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #59=====================
-CPU2 Write to Address 0x105
-Write Miss
-CPU2 Changing to state : MODIFIED
+CPU2 Reads from Address 0x3a6
+Read Miss
+CPU2 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU3
 Memory Bus Accessed
-Main Memory Read by Cache3
-Memory Bus Reads from main memory
-CPU3 Changing to state : EXCLUSIVE
-CPU0 Changing to state : UNKNOWN
-CPU1 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
+Main Memory Written to by Cache3
+Memory Bus Writes from main memory
+CPU3 Changing to state: INVALID
+CPU0 Changing to state: UNKNOWN
+CPU1 Changing to state: UNKNOWN
+CPU2 Changing to state: UNKNOWN
 
 =====================Simulation Loop #60=====================
-CPU3 Reads from Address 0x392
-Read Miss
-CPU3 Changing to state : EXCLUSIVE
+CPU3 Write to Address 0x244
+Write Miss
+CPU3 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU0
 Memory Bus Accessed
-Main Memory Read by Cache0
-Memory Bus Reads from main memory
-CPU0 Changing to state : EXCLUSIVE
+Main Memory Written to by Cache0
+Memory Bus Writes from main memory
+CPU0 Changing to state : MODIFIED
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #61=====================
-CPU0 Reads from Address 0x251
-Read Miss
-CPU0 Changing to state : EXCLUSIVE
+CPU0 Write to Address 0x91
+Write Miss
+CPU0 Changing to state : MODIFIED
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
@@ -1016,7 +1016,71 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #62=====================
-CPU1 Reads from Address 0x195
+CPU1 Write to Address 0x123
+Write Miss
+CPU1 Changing to state : MODIFIED
+CPU0 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+Bus Arbiter Granted Access to CPU2
+Memory Bus Accessed
+Main Memory Written to by Cache2
+Memory Bus Writes from main memory
+CPU2 Changing to state : MODIFIED
+CPU0 Changing to state : UNKNOWN
+CPU1 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+
+=====================Simulation Loop #63=====================
+CPU2 Write to Address 0x175
+Write Miss
+CPU2 Changing to state : MODIFIED
+CPU0 Changing to state : UNKNOWN
+CPU1 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+Bus Arbiter Granted Access to CPU3
+Memory Bus Accessed
+Main Memory Read by Cache3
+Memory Bus Reads from main memory
+CPU3 Changing to state : EXCLUSIVE
+CPU0 Changing to state : UNKNOWN
+CPU1 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+
+=====================Simulation Loop #64=====================
+CPU3 Write to Address 0x20c
+Write Miss
+CPU3 Changing to state : MODIFIED
+CPU0 Changing to state : UNKNOWN
+CPU1 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+Bus Arbiter Granted Access to CPU0
+Memory Bus Accessed
+Main Memory Read by Cache0
+Memory Bus Reads from main memory
+CPU0 Changing to state : EXCLUSIVE
+CPU1 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+
+=====================Simulation Loop #65=====================
+CPU0 Reads from Address 0x1c2
+Read Miss
+CPU0 Changing to state : EXCLUSIVE
+CPU1 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+Bus Arbiter Granted Access to CPU1
+Memory Bus Accessed
+Main Memory Read by Cache1
+Memory Bus Reads from main memory
+CPU1 Changing to state : EXCLUSIVE
+CPU0 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+
+=====================Simulation Loop #66=====================
+CPU1 Reads from Address 0x174
 Read Miss
 CPU1 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -1031,24 +1095,24 @@ CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
-=====================Simulation Loop #63=====================
-CPU2 Reads from Address 0x3bd
-Read Miss
-CPU2 Changing to state : EXCLUSIVE
+=====================Simulation Loop #67=====================
+CPU2 Write to Address 0x17b
+Write Miss
+CPU2 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU3
 Memory Bus Accessed
-Main Memory Written to by Cache3
-Memory Bus Writes from main memory
-CPU3 Changing to state : MODIFIED
+Main Memory Read by Cache3
+Memory Bus Reads from main memory
+CPU3 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
-=====================Simulation Loop #64=====================
-CPU3 Write to Address 0x354
+=====================Simulation Loop #68=====================
+CPU3 Write to Address 0x88
 Write Miss
 CPU3 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -1063,10 +1127,10 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
-=====================Simulation Loop #65=====================
-CPU0 Reads from Address 0x25
-Read Miss
-CPU0 Changing to state : EXCLUSIVE
+=====================Simulation Loop #69=====================
+CPU0 Write to Address 0x29a
+Write Miss
+CPU0 Changing to state : MODIFIED
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
@@ -1079,24 +1143,88 @@ CPU0 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
-=====================Simulation Loop #66=====================
-CPU1 Write to Address 0x280
-Write Miss
-CPU1 Changing to state : MODIFIED
+=====================Simulation Loop #70=====================
+CPU1 Reads from Address 0x2bf
+Read Miss
+CPU1 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU2
 Memory Bus Accessed
-Main Memory Written to by Cache2
-Memory Bus Writes from main memory
-CPU2 Changing to state : MODIFIED
+Main Memory Read by Cache2
+Memory Bus Reads from main memory
+CPU2 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
-=====================Simulation Loop #67=====================
-CPU2 Reads from Address 0x146
+=====================Simulation Loop #71=====================
+CPU2 Write to Address 0xa
+Write Miss
+CPU2 Changing to state : MODIFIED
+CPU0 Changing to state : UNKNOWN
+CPU1 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+Bus Arbiter Granted Access to CPU3
+Memory Bus Accessed
+Main Memory Read by Cache3
+Memory Bus Reads from main memory
+CPU3 Changing to state : EXCLUSIVE
+CPU0 Changing to state : UNKNOWN
+CPU1 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+
+=====================Simulation Loop #72=====================
+CPU3 Write to Address 0xb8
+Write Miss
+CPU3 Changing to state : MODIFIED
+CPU0 Changing to state : UNKNOWN
+CPU1 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+Bus Arbiter Granted Access to CPU0
+Memory Bus Accessed
+Main Memory Read by Cache0
+Memory Bus Reads from main memory
+CPU0 Changing to state : EXCLUSIVE
+CPU1 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+
+=====================Simulation Loop #73=====================
+CPU0 Write to Address 0x2f3
+Write Miss
+CPU0 Changing to state : MODIFIED
+CPU1 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+Bus Arbiter Granted Access to CPU1
+Memory Bus Accessed
+Main Memory Written to by Cache1
+Memory Bus Writes from main memory
+CPU1 Changing to state : MODIFIED
+CPU0 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+
+=====================Simulation Loop #74=====================
+CPU1 Reads from Address 0x3f6
+Read Miss
+CPU1 Changing to state : EXCLUSIVE
+CPU0 Changing to state : UNKNOWN
+CPU2 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+Bus Arbiter Granted Access to CPU2
+Memory Bus Accessed
+Main Memory Read by Cache2
+Memory Bus Reads from main memory
+CPU2 Changing to state : EXCLUSIVE
+CPU0 Changing to state : UNKNOWN
+CPU1 Changing to state : UNKNOWN
+CPU3 Changing to state : UNKNOWN
+
+=====================Simulation Loop #75=====================
+CPU2 Reads from Address 0x14c
 Read Miss
 CPU2 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -1111,74 +1239,10 @@ CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
-=====================Simulation Loop #68=====================
-CPU3 Reads from Address 0x3d7
-Read Miss
-CPU3 Changing to state : EXCLUSIVE
-CPU0 Changing to state : UNKNOWN
-CPU1 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-Bus Arbiter Granted Access to CPU0
-Memory Bus Accessed
-Main Memory Written to by Cache0
-Memory Bus Writes from main memory
-CPU0 Changing to state : MODIFIED
-CPU1 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-
-=====================Simulation Loop #69=====================
-CPU0 Write to Address 0x3ab
+=====================Simulation Loop #76=====================
+CPU3 Write to Address 0x2e8
 Write Miss
-CPU0 Changing to state : MODIFIED
-CPU1 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-Bus Arbiter Granted Access to CPU1
-Memory Bus Accessed
-Main Memory Read by Cache1
-Memory Bus Reads from main memory
-CPU1 Changing to state : EXCLUSIVE
-CPU0 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-
-=====================Simulation Loop #70=====================
-CPU1 Write to Address 0x2bb
-Write Miss
-CPU1 Changing to state : MODIFIED
-CPU0 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-Bus Arbiter Granted Access to CPU2
-Memory Bus Accessed
-Main Memory Written to by Cache2
-Memory Bus Writes from main memory
-CPU2 Changing to state : MODIFIED
-CPU0 Changing to state : UNKNOWN
-CPU1 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-
-=====================Simulation Loop #71=====================
-CPU2 Reads from Address 0x349
-Read Miss
-CPU2 Changing to state : EXCLUSIVE
-CPU0 Changing to state : UNKNOWN
-CPU1 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-Bus Arbiter Granted Access to CPU3
-Memory Bus Accessed
-Main Memory Written to by Cache3
-Memory Bus Writes from main memory
 CPU3 Changing to state : MODIFIED
-CPU0 Changing to state : UNKNOWN
-CPU1 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-
-=====================Simulation Loop #72=====================
-CPU3 Reads from Address 0xca
-Read Miss
-CPU3 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
@@ -1191,72 +1255,8 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
-=====================Simulation Loop #73=====================
-CPU0 Reads from Address 0x3db
-Read Miss
-CPU0 Changing to state : EXCLUSIVE
-CPU1 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-Bus Arbiter Granted Access to CPU1
-Memory Bus Accessed
-Main Memory Read by Cache1
-Memory Bus Reads from main memory
-CPU1 Changing to state : EXCLUSIVE
-CPU0 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-
-=====================Simulation Loop #74=====================
-CPU1 Write to Address 0x219
-Write Miss
-CPU1 Changing to state : MODIFIED
-CPU0 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-Bus Arbiter Granted Access to CPU2
-Memory Bus Accessed
-Main Memory Written to by Cache2
-Memory Bus Writes from main memory
-CPU2 Changing to state : MODIFIED
-CPU0 Changing to state : UNKNOWN
-CPU1 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-
-=====================Simulation Loop #75=====================
-CPU2 Reads from Address 0x56
-Read Miss
-CPU2 Changing to state : EXCLUSIVE
-CPU0 Changing to state : UNKNOWN
-CPU1 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-Bus Arbiter Granted Access to CPU3
-Memory Bus Accessed
-Main Memory Written to by Cache3
-Memory Bus Writes from main memory
-CPU3 Changing to state : MODIFIED
-CPU0 Changing to state : UNKNOWN
-CPU1 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-
-=====================Simulation Loop #76=====================
-CPU3 Write to Address 0x3ce
-Write Miss
-CPU3 Changing to state : MODIFIED
-CPU0 Changing to state : UNKNOWN
-CPU1 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-Bus Arbiter Granted Access to CPU0
-Memory Bus Accessed
-Main Memory Written to by Cache0
-Memory Bus Writes from main memory
-CPU0 Changing to state : MODIFIED
-CPU1 Changing to state : UNKNOWN
-CPU2 Changing to state : UNKNOWN
-CPU3 Changing to state : UNKNOWN
-
 =====================Simulation Loop #77=====================
-CPU0 Write to Address 0x3a6
+CPU0 Write to Address 0x3e0
 Write Miss
 CPU0 Changing to state : MODIFIED
 CPU1 Changing to state : UNKNOWN
@@ -1264,15 +1264,15 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU1
 Memory Bus Accessed
-Main Memory Read by Cache1
-Memory Bus Reads from main memory
-CPU1 Changing to state : EXCLUSIVE
+Main Memory Written to by Cache1
+Memory Bus Writes from main memory
+CPU1 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #78=====================
-CPU1 Write to Address 0xe9
+CPU1 Write to Address 0x3ad
 Write Miss
 CPU1 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -1288,9 +1288,9 @@ CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #79=====================
-CPU2 Reads from Address 0x260
-Read Miss
-CPU2 Changing to state : EXCLUSIVE
+CPU2 Write to Address 0xf3
+Write Miss
+CPU2 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
@@ -1304,9 +1304,9 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
 =====================Simulation Loop #80=====================
-CPU3 Reads from Address 0x20a
-Read Miss
-CPU3 Changing to state : EXCLUSIVE
+CPU3 Write to Address 0x1fe
+Write Miss
+CPU3 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
@@ -1320,7 +1320,7 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #81=====================
-CPU0 Reads from Address 0x3a5
+CPU0 Reads from Address 0xd7
 Read Miss
 CPU0 Changing to state : EXCLUSIVE
 CPU1 Changing to state : UNKNOWN
@@ -1336,23 +1336,23 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #82=====================
-CPU1 Reads from Address 0x21a
-Read Miss
-CPU1 Changing to state : EXCLUSIVE
+CPU1 Write to Address 0x101
+Write Miss
+CPU1 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU2
 Memory Bus Accessed
-Main Memory Written to by Cache2
-Memory Bus Writes from main memory
-CPU2 Changing to state : MODIFIED
+Main Memory Read by Cache2
+Memory Bus Reads from main memory
+CPU2 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #83=====================
-CPU2 Write to Address 0x265
+CPU2 Write to Address 0x2fa
 Write Miss
 CPU2 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -1360,15 +1360,15 @@ CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU3
 Memory Bus Accessed
-Main Memory Written to by Cache3
-Memory Bus Writes from main memory
-CPU3 Changing to state : MODIFIED
+Main Memory Read by Cache3
+Memory Bus Reads from main memory
+CPU3 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
 =====================Simulation Loop #84=====================
-CPU3 Reads from Address 0x2d8
+CPU3 Reads from Address 0x137
 Read Miss
 CPU3 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -1384,25 +1384,25 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #85=====================
-CPU0 Reads from Address 0x3ca
-Read Miss
-CPU0 Changing to state : EXCLUSIVE
+CPU0 Write to Address 0x180
+Write Miss
+CPU0 Changing to state : MODIFIED
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU1
 Memory Bus Accessed
-Main Memory Written to by Cache1
-Memory Bus Writes from main memory
-CPU1 Changing to state : MODIFIED
+Main Memory Read by Cache1
+Memory Bus Reads from main memory
+CPU1 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #86=====================
-CPU1 Reads from Address 0x84
-Read Miss
-CPU1 Changing to state : EXCLUSIVE
+CPU1 Write to Address 0x200
+Write Miss
+CPU1 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
@@ -1416,7 +1416,7 @@ CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #87=====================
-CPU2 Write to Address 0x226
+CPU2 Write to Address 0x25c
 Write Miss
 CPU2 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -1432,7 +1432,7 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
 =====================Simulation Loop #88=====================
-CPU3 Write to Address 0x73
+CPU3 Write to Address 0x1d5
 Write Miss
 CPU3 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -1440,15 +1440,15 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU0
 Memory Bus Accessed
-Main Memory Written to by Cache0
-Memory Bus Writes from main memory
-CPU0 Changing to state : MODIFIED
+Main Memory Read by Cache0
+Memory Bus Reads from main memory
+CPU0 Changing to state : EXCLUSIVE
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #89=====================
-CPU0 Reads from Address 0x2cb
+CPU0 Reads from Address 0x81
 Read Miss
 CPU0 Changing to state : EXCLUSIVE
 CPU1 Changing to state : UNKNOWN
@@ -1456,15 +1456,15 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU1
 Memory Bus Accessed
-Main Memory Written to by Cache1
-Memory Bus Writes from main memory
-CPU1 Changing to state : MODIFIED
+Main Memory Read by Cache1
+Memory Bus Reads from main memory
+CPU1 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #90=====================
-CPU1 Write to Address 0x2e2
+CPU1 Write to Address 0x3e9
 Write Miss
 CPU1 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -1480,7 +1480,7 @@ CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #91=====================
-CPU2 Write to Address 0x38
+CPU2 Write to Address 0x7
 Write Miss
 CPU2 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -1496,9 +1496,9 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
 =====================Simulation Loop #92=====================
-CPU3 Reads from Address 0x1c9
-Read Miss
-CPU3 Changing to state : EXCLUSIVE
+CPU3 Write to Address 0x3ab
+Write Miss
+CPU3 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
@@ -1512,7 +1512,7 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #93=====================
-CPU0 Write to Address 0x14
+CPU0 Write to Address 0x2dc
 Write Miss
 CPU0 Changing to state : MODIFIED
 CPU1 Changing to state : UNKNOWN
@@ -1528,7 +1528,7 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #94=====================
-CPU1 Reads from Address 0x342
+CPU1 Reads from Address 0x13c
 Read Miss
 CPU1 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -1544,23 +1544,23 @@ CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #95=====================
-CPU2 Write to Address 0x2ef
-Write Miss
-CPU2 Changing to state : MODIFIED
+CPU2 Reads from Address 0x112
+Read Miss
+CPU2 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU3
 Memory Bus Accessed
-Main Memory Written to by Cache3
-Memory Bus Writes from main memory
-CPU3 Changing to state : MODIFIED
+Main Memory Read by Cache3
+Memory Bus Reads from main memory
+CPU3 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
 =====================Simulation Loop #96=====================
-CPU3 Reads from Address 0xf9
+CPU3 Reads from Address 0x285
 Read Miss
 CPU3 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
@@ -1576,9 +1576,9 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #97=====================
-CPU0 Reads from Address 0x1d8
-Read Miss
-CPU0 Changing to state : EXCLUSIVE
+CPU0 Write to Address 0x2ac
+Write Miss
+CPU0 Changing to state : MODIFIED
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
@@ -1592,7 +1592,7 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #98=====================
-CPU1 Write to Address 0x380
+CPU1 Write to Address 0x3b
 Write Miss
 CPU1 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -1600,17 +1600,17 @@ CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU2
 Memory Bus Accessed
-Main Memory Read by Cache2
-Memory Bus Reads from main memory
-CPU2 Changing to state : EXCLUSIVE
+Main Memory Written to by Cache2
+Memory Bus Writes from main memory
+CPU2 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
 
 =====================Simulation Loop #99=====================
-CPU2 Write to Address 0x105
-Write Miss
-CPU2 Changing to state : MODIFIED
+CPU2 Reads from Address 0x10f
+Read Miss
+CPU2 Changing to state : EXCLUSIVE
 CPU0 Changing to state : UNKNOWN
 CPU1 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
@@ -1624,7 +1624,7 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 
 =====================Simulation Loop #100=====================
-CPU3 Write to Address 0x24d
+CPU3 Write to Address 0x33b
 Write Miss
 CPU3 Changing to state : MODIFIED
 CPU0 Changing to state : UNKNOWN
@@ -1632,9 +1632,9 @@ CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 Bus Arbiter Granted Access to CPU0
 Memory Bus Accessed
-Main Memory Written to by Cache0
-Memory Bus Writes from main memory
-CPU0 Changing to state : MODIFIED
+Main Memory Read by Cache0
+Memory Bus Reads from main memory
+CPU0 Changing to state : EXCLUSIVE
 CPU1 Changing to state : UNKNOWN
 CPU2 Changing to state : UNKNOWN
 CPU3 Changing to state : UNKNOWN
