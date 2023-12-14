@@ -22,7 +22,6 @@ public:
         << "Current BusArbiter Queue: "; printQueue(requestQueue);
         std::cout << "Next item here: " << 0 << "\n";
 
-
         std::cout << "****************************************\n";
     }
 

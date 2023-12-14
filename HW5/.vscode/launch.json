@@ -1,5 +1,5 @@
 {
-    "configurations": [
+    "configurations":[
         {
             "name": "C/C++: gcc build and debug active file",
             "type": "cppdbg",

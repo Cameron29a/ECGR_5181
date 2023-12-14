@@ -10,7 +10,7 @@
 #include "BusArbiter.h"
 #include "snoopy.h"
 
-class Simulation {
+class Simulation{
     // Event Log Data
     std::queue<Event> systemEvents;
     tick_t currentTick;
